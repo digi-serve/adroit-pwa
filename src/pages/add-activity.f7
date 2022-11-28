@@ -1,0 +1,316 @@
+<template>
+  <div class="page">
+    <div class="navbar">
+      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a href="#" class="link back text-color-white">
+            <!-- <i cl  ass="icon icon-back"></i> -->
+            <span>Cancel</span>
+          </a>
+        </div>
+        <div class="title text-color-white">Add Activity</div>
+      </div>
+    </div>
+    <div class="page-content">
+      <form id="addActivityForm">
+        <div class="block-title">Activity Name</div>
+        <div class="list no-margin">
+          <ul>
+            <li class="align-top">
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Activity Name</div>
+                  <div class="item-input-wrap">
+                    <textarea name="activityName" placeholder="Please use a name everyone associated with the activity will recognize." class="resizable charCount1"></textarea>
+                    <div class="item-input-info charCountHolder1">0/240 characters</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="align-top">
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">
+                    <div class="row no-gap">
+                      <div class="col-90" style="line-height: 26px;">
+                        Government Activity Name
+                      </div>
+                      <div class="col-10">
+                        <a href="#" @click=${copy} data-copy-from="charCount1" data-paste-into="charCount2" class="button button-fill button-small button-round"><i style="font-size: 10pt;" class="material-icons">content_copy</i></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-input-wrap">
+                    <textarea name="activityNameGovt" placeholder="Name used in immigration documents." class="resizable charCount2"></textarea>
+                    <div class="item-input-info charCountHolder2">0/240 characters</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="block-title">Activity Duration</div>
+        <div class="list inline-labels no-margin">
+          <ul>
+            <li>
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Start Date</div>
+                  <div class="item-input-wrap">
+                    <input name="startDate" style="text-align: right;" type="text" placeholder="Date the activity begins" readonly="readonly" id="startDate" />
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">End Date</div>
+                  <div class="item-input-wrap">
+                    <input name="endDate" style="text-align: right;" type="text" placeholder="Leave blank if ongoing" readonly="readonly" id="endDate" />
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="block-title">Team Objectives</div>
+        <div class="block block-strong no-padding">
+          <p class="no-margin" style="padding: 16px 16px 0 16px;">Every activity must meet at least one objective. Please choose all that apply.</p>
+          <div class="list inline-labels no-hairlines no-margin">
+            <ul>
+              <li>
+                <a class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
+                  data-searchbar-placeholder="Search objectives">
+                  <select name="teamObjectives" multiple>
+                    ${teamObjectives.value.map((objective) => $h`
+                    <option value="${objective.id}">${objective.description}</option>
+                    `)}
+                  </select>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title">Objectives</div>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-title">Description</div>
+        <div class="list">
+          <ul>
+            <li class="align-top">
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">Description</div>
+                  <div class="item-input-wrap">
+                    <textarea name="description" placeholder="Please describe this activity using the team objective as a guideline" class="resizable charCount3"></textarea>
+                    <div class="item-input-info charCountHolder3">0/240 characters</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="align-top">
+              <div class="item-content item-input">
+                <div class="item-inner">
+                  <div class="item-title item-label">
+                    <div class="row no-gap">
+                      <div class="col-90" style="line-height: 26px;">
+                        Government Description
+                      </div>
+                      <div class="col-10">
+                        <a href="#" @click=${copy} data-copy-from="charCount3" data-paste-into="charCount4" class="button button-fill button-small button-round"><i style="font-size: 10pt;" class="material-icons">content_copy</i></a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="item-input-wrap">
+                    <textarea name="descriptionGovt" placeholder="Name used in immigration documents." class="resizable charCount4"></textarea>
+                    <div class="item-input-info charCountHolder4">0/240 characters</div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </form>
+      <div class="block">
+        <button class="<!--disabled--> button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
+          @click=${save}>
+          <span class="preloader"></span>
+          <span>Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    let startDate;
+    let endDate;
+    let isLoading = false;
+    const teamObjectives = $store.getters.teamObjectives;
+
+    $on('pageInit', () => {
+      $store.dispatch("getTeamObjectives", props.teamId);
+      // Character count for fields
+      $('.charCount1').on('input', function (e) {
+        let length = e.target.value.length;
+        if (length <= 240) {
+          $('.charCountHolder1').html(`${e.target.value.length}/240 characters`);
+        } else {
+          let trimmed = e.target.value.substr(0,240);
+          $('.charCount1').value(trimmed);
+          $('.charCountHolder1').html(`240/240 characters`);
+        }
+      });
+      $('.charCount2').on('input', function (e) {
+        let length = e.target.value.length;
+        if (length <= 240) {
+          $('.charCountHolder2').html(`${e.target.value.length}/240 characters`);
+        } else {
+          let trimmed = e.target.value.substr(0,240);
+          $('.charCount2').value(trimmed);
+          $('.charCountHolder2').html(`240/240 characters`);
+        }
+      });
+      $('.charCount3').on('input', function (e) {
+        let length = e.target.value.length;
+        if (length <= 240) {
+          $('.charCountHolder3').html(`${e.target.value.length}/240 characters`);
+        } else {
+          let trimmed = e.target.value.substr(0,240);
+          $('.charCount3').value(trimmed);
+          $('.charCountHolder3').html(`240/240 characters`);
+        }
+      });
+      $('.charCount4').on('input', function (e) {
+        let length = e.target.value.length;
+        if (length <= 240) {
+          $('.charCountHolder4').html(`${e.target.value.length}/240 characters`);
+        } else {
+          let trimmed = e.target.value.substr(0,240);
+          $('.charCount4').value(trimmed);
+          $('.charCountHolder4').html(`240/240 characters`);
+        }
+      });
+
+      // Calendar
+      startDate = $f7.calendar.create({
+        inputEl: '#startDate',
+        openIn: "popover",
+        closeOnSelect: true,
+        firstDay: 0,
+        dateFormat: "yyyy-mm-dd"
+      });
+      endDate = $f7.calendar.create({
+        inputEl: '#endDate',
+        openIn: "popover",
+        closeOnSelect: true,
+        firstDay: 0,
+        dateFormat: "yyyy-mm-dd"
+      });
+
+    })
+
+    const copy = (evt) => {
+      $("."+evt.currentTarget.dataset.pasteInto).value($("."+evt.currentTarget.dataset.copyFrom).value());
+    }
+
+    const save = () => {
+      isLoading = true;
+      $update();
+      $f7.dialog.create({
+        title: 'Review your submission',
+        content: `<ul style="padding-inline-start: 15px; text-align: left;">
+                <li>My caption describes how this activity is helping the Thai community.</li>
+                <li>I have tagged everyone on my team who is in the photo.</li>
+              </ul>`,
+        buttons: [
+          {
+            text: 'Go Back',
+            onClick: function(dialog, e) {
+              isLoading = false;
+              $update();
+            }
+          },
+          {
+            text: 'Submit for Review',
+            bold: true,
+            cssClass: "bg-color-primary text-color-white",
+            onClick: function(dialog, e) {
+              submitActivity();
+              // isLoading = false;
+              // $update();
+            }
+          },
+        ],
+        verticalButtons: true,
+      }).open();
+    }
+
+    const submitActivity = () => {
+      var formData = $f7.form.convertToData('#addActivityForm');
+
+      const url = Api.urls.createActivity;
+      const body = new FormData();
+
+      body.append('team', props.teamId);
+      body.append('activity_name', formData.activityName);
+      body.append('activity_name_govt', formData.activityNameGovt);
+      body.append('date_start', formData.startDate);
+      body.append('date_end', formData.endDate);
+      body.append('activity_description', formData.description);
+      body.append('activity_description_govt', formData.descriptionGovt);
+      // body.append('default_image', props.default_image);
+      formData.teamObjectives.forEach((id) => {
+        body.append('objective', id);
+      });
+      const options = {
+        method: 'POST',
+        body,
+      };
+
+      // this.status = ActivityStatus.saving;
+      fetchJson(url, options)
+        .then(response => {
+          $f7.view.main.router.back();
+          // const newActivity = response.json.data;
+          // const activityDetails = {
+          //   id: newActivity.id,
+          //   activity_name: newActivity.activity_name,
+          //   date_start: this.startDate.toISOString(),
+          //   date_end: this.endDate.toISOString(),
+          // };
+          // runInAction(() => {
+          //   this.addedActivity = activityDetails;
+          //   this.status = ActivityStatus.succeeded;
+          // });
+          //
+          // this.rootStore.projects.addActivity(this.projectId, this.teamId, activityDetails);
+          //
+          // Monitoring.event(Event.ActivityCreationSuccess);
+          // Toast.success(Copy.toast.activityCreationSuccess);
+        })
+        .catch(async error => {
+          // runInAction(() => {
+          //   this.status = ActivityStatus.failed;
+          // });
+          // Monitoring.event(Event.ActivityCreationFail);
+          // Monitoring.exception(error, { problem: 'Failed to create new activity', body: options.body });
+          // if (error.status === 401) {
+          //   await this.onUnauthorised();
+          // } else {
+          //   Toast.danger(Copy.toast.genericError);
+          // }
+        });
+
+    }
+
+    return $render;
+  }
+</script>

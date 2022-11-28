@@ -1,0 +1,43 @@
+{
+  "name": "FCF Adroit",
+  "short_name": "Adroit",
+  "description": "The Adroit app allows the uploading of photos into Adroit for use in reports.",
+  "lang": "en-US",
+  "start_url": "/pwa/www/",
+  "id": "/pwa/www/",
+  "display": "standalone",
+  "background_color": "#007aff",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "/pwa/www/icons/128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/www/icons/144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/www/icons/152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/www/icons/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/www/icons/256x256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa/www/icons/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

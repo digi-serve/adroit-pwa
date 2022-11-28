@@ -1,0 +1,17 @@
+{
+  "cwd": "/Users/jamesduncan/Desktop/AdroitPWA",
+  "type": ["pwa"],
+  "name": "FCF Adroit",
+  "framework": "core",
+  "template": "single-view",
+  "bundler": "vite",
+  "cssPreProcessor": false,
+  "theming": {
+    "customColor": true,
+    "color": "#366989",
+    "darkTheme": false,
+    "iconFonts": true,
+    "fillBars": false
+  },
+  "customBuild": false
+}

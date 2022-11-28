@@ -1,0 +1,301 @@
+<template>
+  <div class="page" data-name="home">
+    <!-- Top Navbar -->
+    <div class="navbar">
+      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link icon-only panel-open text-color-white" data-panel="left">
+            <i class="icon f7-icons if-not-md">menu</i>
+            <i class="icon material-icons if-md">menu</i>
+          </a>
+        </div>
+        <div class="title text-color-white">My Activity Photos</div>
+      </div>
+    </div>
+    <div class="toolbar toolbar-top status_bar">
+      <div class="toolbar-inner no-padding">
+        <div data-intro="This is how many of your photos that have been approved this reporting period." class="toolbar_approved quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #56b0a5; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
+        <div data-intro="This is how many new photos you have uploaded that have not yet been approved." class="toolbar_new quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #454545; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalNew.value} new</a></div>
+        <div data-intro="Keep an eye on how many days are left in the current reporting period." class="toolbar_days_left quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-days">${daysLeft.value} days left</a></div>
+        <div style="background: ${imagesLoading.value ? $h`${loadingStatus.color}` : $h`${currentStatus.value.color}`}" class="toolbar_status quarter_width"><a href="#" data-intro="Quickly check whether you are on track with your photo uploads for this reporting period." class="text-color-white popover-open" data-popover=".popover-status">${imagesLoading.value ? $h`<i class="material-icons">${loadingStatus.icon}</i>${loadingStatus.label}` : $h`<i class="material-icons">${currentStatus.value.icon}</i>${currentStatus.value.label}`}</a></div>
+        <div class="break"></div>
+        <div class="progress full_width">
+          <div style="width: ${percentageComplete.value}%" class="days_elapsed"></div>
+          <div style="width: ${photoProgress.value}%" class="photo_goal"></div>
+          <div style="width: ${photoCombineProgress.value}%" class="photo_combine"></div>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-approved">
+      <div class="popover-inner">
+        <div class="block">
+          <p>This is how many of your photos have been approved this reporting period.</p>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-new">
+      <div class="popover-inner">
+        <div class="block">
+          <p>This is how many new photos you have uploaded that have not yet been approved.</p>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-days">
+      <div class="popover-inner">
+        <div class="block">
+          <p>The number of days that are left in the current reporting period.</p>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-status">
+      <div class="popover-inner">
+        <div class="block">
+          <p>This status reflect whether or not you're on track with your photo uploads for this reporting period.</p>
+        </div>
+      </div>
+    </div>
+    <div class="fab-backdrop"></div>
+    <div class="fab fab-right-bottom">
+      <a href="#">
+        <i class="icon f7-icons if-not-md">plus</i>
+        <i class="icon f7-icons if-not-md">xmark</i>
+        <i class="icon material-icons md-only">add</i>
+        <i class="icon material-icons md-only">close</i>
+      </a>
+      <div class="fab-buttons fab-buttons-top">
+        <a class="fab-label-button" href="#" @click="${choosePhoto}"><span><i class="icon material-icons">photo_library</i></span><span class="fab-label">Choose Photo</span></a>
+        <a class="fab-label-button" href="#" @click="${takePhoto}"><span><i class="icon material-icons">photo_camera</i></span><span class="fab-label">Take Photo</span></a>
+      </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
+      <div class="ptr-preloader">
+        <div class="preloader"></div>
+        <div class="ptr-arrow"></div>
+      </div>
+      <!-- <a href="#" class="button button-raised button-large button-fill login-screen-open" data-login-screen=".login-screen">As Overlay</a> -->
+      <div class="list media-list no-margin-top">
+        <ul>
+          ${imagesLoading.value ? $h`
+            ${activityImagesSkeleton.map((activityImage) => $h`
+              <li class="swipeout status_${activityImage.status}">
+                <a href="#" class="item-link item-content swipeout-content">
+                  <div class="item-media">
+                    <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title skeleton-text skeleton-effect-fade">${activityImage.activity.activity_name}</div>
+                    </div>
+                    <div style="color: #555;" class="item-subtitle skeleton-text skeleton-effect-fade"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                    <div class="item-text skeleton-text skeleton-effect-fade">${activityImage.date}: ${activityImage.caption}</div>
+                  </div>
+                </a>
+                <div class="swipeout-actions-left">
+                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                </div>
+              </li>
+            `)}
+          ` : $h`
+            ${activityImages.value.map((activityImage) => $h`
+              <li key=${activityImage.id} class="swipeout status_${activityImage.status}">
+                <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
+                  <div class="item-media">
+                    <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title">${activityImage.activity.activity_name}</div>
+                    </div>
+                    <div style="color: #555;" class="item-subtitle"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                    <div class="item-text">${activityImage.date}: ${activityImage.caption}</div>
+                  </div>
+                </a>
+                <div class="swipeout-actions-left">
+                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                </div>
+              </li>
+            `)}
+          `}
+        </ul>
+      </div>
+      <input style="display: none;" id="takePhoto" type="file" accept="image/jpeg" capture @change=${() => upload("#takePhoto")} />
+      <input style="display: none;" id="choosePhoto" type="file" accept="image/jpeg" @change=${() => upload("#choosePhoto")} />
+    </div>
+  </div>
+</template>
+<script>
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+  import introJs from "intro.js";
+  import 'intro.js/introjs.css';
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    const imagesLoading = $store.getters.imagesLoading;
+    const totalApproved = $store.getters.totalApproved;
+    const totalNew = $store.getters.totalNew;
+    const daysLeft = $store.getters.daysLeft;
+    const percentageComplete = $store.getters.percentageComplete;
+    const photoProgress = $store.getters.photoProgress;
+    const photoCombineProgress = $store.getters.photoCombineProgress;
+
+    let acticityImage = {
+        "activity": {
+          "id": 874,
+          "team": {
+            "IDMinistry": 131,
+            "MinistryDisplayName": "[DGS]  Development Team"
+          },
+          "activity_name": "FCF Staff Activities"
+        },
+        "image": "",
+        "date": "2022-03-31",
+        "status": "approved",
+        "id": 12579,
+        "createdAt": "2022-04-01T02:37:50.000Z",
+        "updatedAt": "2022-09-29T19:56:09.000Z",
+        "caption": "Visiting the Public library to help clean bookshelves.",
+        "caption_govt": "Chiangmai Provincial Public Library",
+      };
+
+    let activityImagesSkeleton = [acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage];
+    const activityImages = $store.getters.activityImages;
+    const currentStatus = $store.getters.currentStatus;
+    const user = $store.getters.user;
+    let loadingStatus = $store.state.ReportingPeriodStatus.LOADING;
+    let firstLoad = true;
+
+    $on('pageInit', () => {
+      $store.dispatch('getLocations');
+      $store.dispatch('getFCFLocations');
+      $store.dispatch('getTeams');
+      $store.dispatch('getTeamMembers');
+      $store.dispatch("fetchImages");
+      if (props.showTutorial) {
+        setTimeout(() => {
+          introJs().start();
+        }, 500);
+      } else if (firstLoad && user?.value?.display_name) {
+        firstLoad = false;
+        setTimeout(() => {
+          introJs().setOption("dontShowAgain", true).start();
+        }, 3000);
+      }
+    })
+
+    $on('pageReinit', () => {
+      $("#takePhoto")[0].value = null;
+      $("#choosePhoto")[0].value = null;
+      $f7.fab.close(".fab");
+      $store.dispatch('resetDenial');
+    })
+
+    document.addEventListener('visibilitychange', (e) => {
+      if (document.visibilityState == "visible") {
+        let getVersionPath = Api.absoluteUrl(Api.urls.version);
+        $f7.request({
+          url: getVersionPath,
+          method: "GET",
+          cache: false
+        }).then((res) => {
+          if ($f7.version != res.data) {
+            // alert("out of date");
+            if ('serviceWorker' in navigator) {
+              $f7.dialog.create({
+                title: 'Update Available',
+                content: `There is an app update avaiable, tap "Update" to get the latest version.`,
+                buttons: [
+                  {
+                    text: 'Cancel',
+                  },
+                  {
+                    text: 'Update',
+                    bold: true,
+                    cssClass: "bg-color-primary text-color-white",
+                    onClick: function(dialog, e) {
+                      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                        for (let registration of registrations) {
+                          // registration.update();  does not work!
+                          registration.unregister();
+                        }
+                        window.location.reload(true);
+                      });
+                    }
+                  },
+                ],
+                verticalButtons: true,
+              }).open();
+            }
+          } else {
+            // alert("up to date");
+          }
+        });
+      }
+    });
+
+    $('.login-screen').on('loginscreen:close', function (e) {
+      $store.dispatch("fetchImages");
+      $store.dispatch('getLocations');
+      $store.dispatch('getFCFLocations');
+      $store.dispatch('getTeams');
+      $store.dispatch('getTeamMembers');
+    });
+
+    user.onUpdated((e) => {
+      if (firstLoad && user?.value?.display_name) {
+        firstLoad = false;
+        setTimeout(() => {
+          introJs().setOption("dontShowAgain", true).start();
+        }, 1000);
+      }
+    })
+
+    const takePhoto = () => {
+      $("#takePhoto").click();
+    }
+    const choosePhoto = () => {
+      $("#choosePhoto").click();
+    }
+
+    const upload = (input) => {
+      const filePicker = $(input)[0];
+      if (!filePicker || !filePicker.files || filePicker.files.length <= 0) {
+          reject('No file selected.');
+          return;
+      }
+      const myFile = filePicker.files[0];
+
+      console.log("My File");
+      console.log(myFile);
+
+      $f7.view.main.router.navigate("/activity-image/add/", {
+        props: {
+          file: myFile
+        },
+        ignoreCache: true
+      })
+    }
+
+    const editImage = (activityImage) => {
+      if (activityImage.status == "denied") {
+        $f7.view.main.router.navigate("/activity-image/edit/", {
+          props: {
+            activityImage: activityImage
+          },
+          ignoreCache: true
+        })
+      }
+    }
+
+    const reloadList = (e, done) => {
+      $store.dispatch('getLocations');
+      $store.dispatch('getFCFLocations');
+      $store.dispatch('getTeams');
+      $store.dispatch('getTeamMembers');
+      $store.dispatch("fetchImages", done);
+    }
+
+    return $render;
+  }
+</script>

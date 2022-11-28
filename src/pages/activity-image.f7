@@ -1,0 +1,529 @@
+<template>
+<div class="page" data-name="form">
+  <div class="navbar">
+    <div class="navbar-bg bg-color-primary"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back text-color-white">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Cancel</span>
+        </a>
+      </div>
+      <div class="title text-color-white">Activity Photo</div>
+    </div>
+  </div>
+  <div class="page-content">
+    ${isUpdate ? $h`
+    <div class="denial-wrapper">
+      <div innerHTML=${denial.value} class="block block-strong inset denial"></div>
+    </div>
+    ` : $h``}
+    <form id="newImage">
+      <div class="block block-strong no-padding no-margin display-flex justify-content-center bg-color-black">
+        <img id="imagePreview" style="display: block;" src=""/>
+      </div>
+      <i @click=${readFile} class="material-icons uploadFail hidden">restart_alt</i>
+      <i class="material-icons uploadSuccess hidden">check_circle</i>
+      <span style="position: absolute; margin: -5px 0 0 0;" class="progressbar-infinite"></span>
+      <div class="list no-hairlines no-margin">
+        <ul>
+          <li class="align-top">
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Caption</div>
+                <div class="item-input-wrap">
+                  <textarea id="caption" required name="caption" @input=${characterCounter} placeholder="Describe what you did and how it helps the Thai community." class="resizable charCount"></textarea>
+                  <div class="item-input-info charCountHolder">0/240 characters</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="list inline-labels no-hairlines no-margin">
+        <ul>
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Date</div>
+                <div class="item-input-wrap">
+                  <input required name="date" style="text-align: right;" type="text" placeholder="Date the photo was taken" readonly="readonly" id="photoDate" />
+                </div>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="row no-gap">
+              <div class="col-85">
+                <a id="locationSelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
+                  data-searchbar-placeholder="Search locations">
+                  <select @change="${validateOnChange}" required placeholder="Select Location" name="location">
+                    <optgroup label="My Locations">
+                      ${myLocations.value.map((location) => $h`
+                      <option value="${location}">${location}</option>
+                      `)}
+                    </optgroup>
+                    <optgroup label="FCF Locations">
+                      ${fcfLocations.value.map((location) => $h`
+                      <option value="${location.ProjectName}">${location.name}</option>
+                      `)}
+                    </optgroup>
+                  </select>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title">Location</div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-15">
+                <a href="/locations/" style="border-radius: 0;" class="button button-large button-fill"><i class="material-icons">add</i></a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a id="teamSelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
+              data-searchbar-placeholder="Search team">
+              <select required @change="${updateActivities}" name="team">
+                ${teams.value.map((team) => $h`
+                <option value="${team.IDMinistry}">${team.MinistryDisplayName}</option>
+                `)}
+              </select>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">Team</div>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li>
+            <div class="row no-gap">
+              <div class="col-85">
+                <a id="activitiySelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
+                  data-searchbar-placeholder="Search activity">
+                  <select @change="${validateOnChange}" required name="activity">
+                    ${activities.value.map((activity) => $h`
+                    <option value="${activity.id}">${activity.activity_name}</option>
+                    `)}
+                  </select>
+                  <div class="item-content">
+                    <div class="item-inner">
+                      <div class="item-title">Activity</div>
+                    </div>
+                  </div>
+                </a>
+              </div>
+              <div class="col-15">
+                <a href="#" @click="${addActivity}" style="border-radius: 0;" class="button button-large button-fill ${isUpdate ? $h`disabled` : $h``}"><i class="material-icons">add</i></a>
+              </div>
+            </div>
+          </li>
+          <li>
+            <a id="tagPeople" class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
+              data-searchbar-placeholder="Search volunteers">
+              <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
+                ${teamMembers.value.map((teamMember) => $h`
+                <option value="${teamMember.IDPerson}" data-option-image="${Api.absoluteUrl('/')}${teamMember.avatar}">${teamMember.display_name}</option>
+                `)}
+              </select>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">People</div>
+                </div>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </form>
+    <div class="block">
+      <button class="<!--disabled--> button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
+        @click=${save}>
+        <span class="preloader"></span>
+        <span>Save</span>
+      </button>
+    </div>
+  </div>
+</div>
+</template>
+<script>
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    let calendarDefault;
+    let isLoading = false;
+    let progressBarEl;
+    let teamSelect;
+    let locationSelect;
+    let tagPeople;
+    let caption;
+    let activitiySelect;
+    let imagePath;
+    let isUpdate = false;
+    const denial = $store.getters.denial;
+    const myLocations = $store.getters.myLocations;
+    const fcfLocations = $store.getters.fcfLocations;
+    const teams = $store.getters.myTeams;
+    const teamMembers = $store.getters.myTeamMembers;
+    const activities = $store.getters.activities;
+    const user = $store.getters.user;
+
+    if (props.activityImage) {
+      isUpdate = true;
+    }
+
+    $on('pageInit', () => {
+      // Calendar
+      calendarDefault = $f7.calendar.create({
+        inputEl: '#photoDate',
+        openIn: "popover",
+        closeOnSelect: true,
+        maxDate: new Date(),
+        firstDay: 0,
+        dateFormat: "yyyy-mm-dd"
+      });
+      if (props.file) {
+        // debugger;
+        calendarDefault.setValue([new Date(props.file.lastModified)]);
+        readFile();
+      }
+    })
+
+    $on('pageReinit', (e, page) => {
+      // clear props so we don't reload values
+      props.stopAfterIn = true;
+      teamSelect = $f7.smartSelect.get("#teamSelect");
+      let team = teamSelect.getValue();
+      $store.dispatch('updateActivities', {minId: team});
+      // $("#takePhoto")[0].value = null;
+      // $("#choosePhoto")[0].value = null;
+      // $f7.fab.close(".fab");
+      // $store.dispatch('resetDenial');
+    })
+
+    $on('pageAfterIn', (e, page) => {
+      teamSelect = $f7.smartSelect.get("#teamSelect");
+      let team = teamSelect.getValue();
+      teamSelect.setValue(team);
+
+      // load values if we are editing a previous entry
+      if (props.activityImage && !props.stopAfterIn) {
+        $store.dispatch('getDenial', props.activityImage.id);
+        calendarDefault.setValue([new Date(props.activityImage.date+"T00:00:00")]);
+        teamSelect.setValue(props.activityImage.activity.team.IDMinistry);
+
+        locationSelect = $f7.smartSelect.get("#locationSelect");
+        locationSelect.setValue(props.activityImage.caption_govt);
+        if (locationSelect.getValue() == "") {
+          $store.dispatch('addLocation', props.activityImage.caption_govt);
+          setTimeout(() => {
+            locationSelect.setValue(props.activityImage.caption_govt);
+          }, 500)
+        }
+
+        activitiySelect = $f7.smartSelect.get("#activitiySelect");
+        setTimeout(() => {
+          activitiySelect.setValue(props.activityImage.activity.id);
+        }, 500)
+
+        let people = [];
+        props.activityImage.tagged_people.forEach((pep) => {
+          people.push(pep.IDPerson.toString());
+        })
+        tagPeople = $f7.smartSelect.get("#tagPeople");
+        setTimeout(() => {
+          tagPeople.setValue(people);
+        }, 500)
+
+        $("#caption")[0].value = props.activityImage.caption;
+        characterCounter();
+
+        $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
+        $(".progressbar-infinite")[0].style.display = "none";
+
+        imagePath = props.activityImage.image;
+      } else if (!props.stopAfterIn) {
+        tagPeople = $f7.smartSelect.get("#tagPeople");
+        setTimeout(() => {
+          tagPeople.setValue([user.value.IDPerson.toString()]);
+        }, 500)
+      }
+    });
+
+    const save = () => {
+      let isValid = $f7.input.validateInputs("#newImage");
+
+      let people = $('select[name="people"]').value();
+      console.log(user);
+      if (people.indexOf(user.value.IDPerson.toString()) == -1) {
+        $f7.dialog.alert('You are not tagged in the photo.');
+        return false;
+      }
+
+      if (!isValid || !imagePath) return false;
+
+      isLoading = true;
+      $update();
+      $f7.dialog.create({
+        title: 'Review your submission',
+        content: `<ul style="padding-inline-start: 15px; text-align: left;">
+                <li>My caption describes how this activity is helping the Thai community.</li>
+                <li>I have tagged everyone on my team who is in the photo.</li>
+              </ul>`,
+        buttons: [
+          {
+            text: 'Go Back',
+            onClick: function(dialog, e) {
+              isLoading = false;
+              $update();
+            }
+          },
+          {
+            text: 'Submit for Review',
+            bold: true,
+            cssClass: "bg-color-primary text-color-white",
+            onClick: function(dialog, e) {
+              // isLoading = false;
+              // $update();
+              submitRequest();
+            }
+          },
+        ],
+        verticalButtons: true,
+      }).open();
+    }
+
+    const submitRequest = () => {
+      var formData = $f7.form.convertToData('#newImage');
+
+      let url = Api.urls.createActivityImage;
+      const body = new FormData();
+      body.append('activity', parseInt(formData.activity));
+      body.append('caption', formData.caption);
+      body.append('caption_govt', formData.location);
+      body.append('date', formData.date);
+      formData.people.forEach(person => {
+        body.append('taggedPeople', person);
+      });
+      // reset status if updating entry
+      if (props.activityImage) {
+        body.append('status', 'new');
+        body.append('id', props.activityImage.id);
+        url = Api.urls.updateActivityImage(props.activityImage.id);
+      }
+      body.append('image', imagePath);
+      let method = 'POST';
+      if (props.activityImage) {
+        method = 'PUT';
+      }
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          $f7.view.main.router.navigate("/", {
+            ignoreCache: true
+          })
+          // const newActivityImage = response.json.data;
+          // newActivityImage.activity = this.rootStore.projects.getActivity(newActivityImage.activity);
+          // if (!this.isNew) {
+          //   // HACK: Need to re-populate some fields as they are not correctly populated in the PUT response
+          //   newActivityImage.taggedPeople = this.taggedPeople.map(p => p.IDPerson);
+          //   newActivityImage.uploadedBy = {
+          //     IDPerson: parseInt(this.rootStore.users.me.id, 10),
+          //   };
+          //   newActivityImage.displayName = this.rootStore.users.me.displayName;
+          // }
+          // runInAction(() => {
+          //   if (newActivityImage.taggedPeople.includes(parseInt(this.rootStore.users.me.id, 10))) {
+          //     this.rootStore.activityImages.updateActivityImage(String(newActivityImage.id), newActivityImage);
+          //   } else {
+          //     Monitoring.debug(
+          //       "Authenticated user not tagged in uploaded photo so it won't be displayed in the activity feed"
+          //     );
+          //     // Handle the corner case where the authenticated user _used_ to be tagged in the activity image
+          //     // but is no longer tagged in it (after editing)
+          //     this.rootStore.activityImages.removeActivityImage(String(newActivityImage.id));
+          //   }
+          //   this.postStatus = PostStatus.succeeded;
+          // });
+          // Monitoring.event(Event.ActivityPhotoUploadSuccess);
+          // Toast.success(Copy.toast.activityPhotoUploadSuccess);
+        })
+        .catch(async error => {
+          // runInAction(() => {
+          //   this.postStatus = PostStatus.failed;
+          // });
+          // Monitoring.event(Event.ActivityPhotoUploadFail);
+          // Monitoring.exception(error, { problem: 'Failed to upload activity image', body: options.body });
+          // if (error.status === 401) {
+          //   await this.onUnauthorised();
+          // } else {
+          //   Toast.danger(Copy.toast.genericError);
+          // }
+        });
+
+    }
+
+    const readFile = () => {
+      $(".uploadFail")[0].classList.add("hidden");
+      $(".progressbar-infinite")[0].style.display = "";
+      let file = props.file;
+      let reader = new FileReader();
+
+      reader.onload = (res) => {
+        processFile(reader.result, file);
+      }
+
+      reader.onerror = function () {
+        alert('There was an error reading the file!');
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    const processFile = (dataURL, file) => {
+      let maxWidth = 1000;
+      let maxHeight = 1000;
+
+      // load a preview
+      let imagePreview = $("#imagePreview")[0];
+      imagePreview.src = dataURL;
+
+      // load original for resizing
+      let image = new Image();
+      image.src = dataURL;
+
+      image.onload = function () {
+        let width = image.width;
+        let height = image.height;
+        let shouldResize = (width > maxWidth) || (height > maxHeight);
+
+        if (!shouldResize) {
+          sendFile(file);
+          return;
+        }
+
+        let newWidth;
+        let newHeight;
+
+        if (width > height) {
+          newHeight = height * (maxWidth / width);
+          newWidth = maxWidth;
+        } else {
+          newWidth = width * (maxHeight / height);
+          newHeight = maxHeight;
+        }
+
+        let canvas = document.createElement('canvas');
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        let context = canvas.getContext('2d');
+
+        context.drawImage(this, 0, 0, newWidth, newHeight);
+
+        canvas.toBlob((blob) => {
+          const newFile = new File([blob], file.name, {
+            type: file.type,
+          });
+          sendFile(newFile);
+        });
+
+      };
+
+      image.onerror = function () {
+        alert('There was an error processing your file!');
+      };
+    }
+
+    const sendFile = (file) => {
+      const body = new FormData();
+      body.append('imageFile', file);
+
+      const url = Api.urls.activityImageUpload;
+
+      const options = {
+        method: 'POST',
+        body: body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          if (response.json.status == "success") {
+            $(".progressbar-infinite")[0].style.display = "none";
+            $(".uploadSuccess")[0].classList.remove("hidden");
+            imagePath = response.json.data.name;
+          }
+        })
+        .catch(async error => {
+          $(".progressbar-infinite")[0].style.display = "none";
+          $(".uploadFail")[0].classList.remove("hidden");
+        });
+
+    }
+
+    const updateActivities = (src) => {
+      // update the activities list
+      if (src.target.value) {
+        $store.dispatch('getActivities', {minId: src.target.value});
+      } else if (props?.activityImage?.activity?.team?.IDMinistry) {
+        $store.dispatch('getActivities', {minId: props.activityImage.activity.team.IDMinistry});
+      }
+      // get activity smart select
+      activitiySelect = $f7.smartSelect.get("#activitiySelect");
+      // get ministry team object
+      if (!src.target.value[0]) {
+        return false;
+      }
+      let temTmp = teams.value.filter(team => team.IDMinistry == src.target.value)[0];
+      // set smart select value to first activity in team's activity list
+      if (!temTmp.activities[0]) {
+        setTimeout(() => {
+          activitiySelect.unsetValue();
+          validateOnChange(src);
+        }, 500)
+      } else {
+        setTimeout(() => {
+          activitiySelect.setValue(temTmp.activities[0].id);
+          validateOnChange(src);
+        }, 500)
+      }
+    }
+
+    const characterCounter = (e) => {
+      let textArea = $('.charCount')[0];
+      $f7.input.validate(textArea);
+      let length = textArea.value.length;
+      if (length <= 240) {
+        $('.charCountHolder').html(`${length}/240 characters`);
+      } else {
+        let trimmed = textArea.value.substr(0,240);
+        textArea.value = trimmed;
+        $('.charCountHolder').html(`240/240 characters`);
+      }
+    }
+
+    const validateOnChange = (e) => {
+      $f7.input.validate(e.currentTarget);
+    }
+
+    const addActivity = (e) => {
+      teamSelect = $f7.smartSelect.get("#teamSelect");
+      let teamId = teamSelect.getValue();
+      $f7.view.main.router.navigate("/add-activity/", {
+        props: {
+          teamId: teamId,
+          // default_image: imagePath
+        },
+        ignoreCache: true
+      })
+    }
+
+    return $render;
+  };
+</script>

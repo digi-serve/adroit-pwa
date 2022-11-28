@@ -1,0 +1,30 @@
+<template>
+<div class="page" data-name="about">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title">Feedback</div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="block block-strong">
+      <p>Questions about the Adroit mobile app? Suggestions? Need to report a bug? Or just want to tell us how much you love the app??</p>
+    </div>
+    <div class="block text-align-center">
+      <p>Send us an email at:</p>
+      <a href="mailto:adroitmobile@fcfthailand.org?subject=Adroit Mobile Feedback" class="external button button-fill button-large"><i class="material-icons" style="margin-right: 5px;">mail</i>adroitmobile@fcfthailand.org</a>
+    </div>
+  </div>
+</div>
+</template>
+<script>
+export default () => {
+  return $render;
+};
+</script>
