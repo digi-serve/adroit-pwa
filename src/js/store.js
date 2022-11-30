@@ -23,6 +23,7 @@ const store = createStore({
     activityImages: [],
     teamObjectives: [],
     user: { display_name: "" },
+    username: "",
     ReportingPeriodStatus: {
       LOADING: {
         threshold: null,
@@ -113,6 +114,9 @@ const store = createStore({
     },
     user({ state }) {
       return state.user;
+    },
+    username({ state }) {
+      return state.username;
     }
   },
   actions: {
@@ -186,6 +190,17 @@ const store = createStore({
         .catch(function(err) {
           app.f7.loginScreen.open("#my-login-screen");
         });
+    },
+    getUsername({ state }) {
+      let username = localStorage.getItem("username");
+      if (username == null) {
+        username = "";
+      }
+      state.username = username;
+    },
+    setUsername({ state }, username) {
+      localStorage.setItem("username", username);
+      state.username = username;
     },
     updateActivities({ state, dispatch }, { minId }) {
       fetchJson(`${Api.urls.myProjects}`, { method: "GET" }).then(result => {

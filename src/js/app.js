@@ -21,7 +21,7 @@ var app = new Framework7({
   theme: "auto", // Automatic theme detection
   el: "#app", // App root element
   component: App, // App main component
-  version: "2.0.11",
+  version: "2.0.14",
 
   // App store
   store: store,

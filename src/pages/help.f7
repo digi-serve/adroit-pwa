@@ -54,10 +54,10 @@
       </p>
       <div class="row">
         <div class="col-12 col-md-6">
-          <img class="fullwidth screenshot" src="/assets/images/intro.png" />
+          <img class="fullwidth screenshot" src="assets/images/intro.png" />
         </div>
         <div class="col-12 col-md-6">
-          <img class="fullwidth screenshot" src="/assets/images/tutorial.png" />
+          <img class="fullwidth screenshot" src="assets/images/tutorial.png" />
         </div>
       </div>
       <p>
@@ -70,10 +70,10 @@
       <p>
         (tap each section to learn more)
       </p>
-      <a class="popup-open" href="#" data-popup=".popup-menu"><img class="fullwidth no-space" src="/assets/images/iphone_help_01.png" /></a>
-      <a class="popup-open" href="#" data-popup=".popup-status"><img class="fullwidth no-space" src="/assets/images/iphone_help_02.png" /></a>
-      <a class="popup-open" href="#" data-popup=".popup-stream"><img class="fullwidth no-space" src="/assets/images/iphone_help_03.png" /></a>
-      <a class="popup-open" href="#" data-popup=".popup-photo"><img class="fullwidth no-space" src="/assets/images/iphone_help_04.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-menu"><img class="fullwidth no-space" src="assets/images/iphone_help_01.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-status"><img class="fullwidth no-space" src="assets/images/iphone_help_02.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-stream"><img class="fullwidth no-space" src="assets/images/iphone_help_03.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-photo"><img class="fullwidth no-space" src="assets/images/iphone_help_04.png" /></a>
 
     </div>
 
@@ -87,7 +87,7 @@
             provide feedback to FCF and its developers, view the
             tutorial again, manage your locations, and log out.
           </p>
-          <img class="screenshot fullwidth" src="/assets/images/drawer.png" width="200" />
+          <img class="screenshot fullwidth" src="assets/images/drawer.png" width="200" />
         </div>
       </div>
     </div>
@@ -102,7 +102,7 @@
             of photos you have uploaded in relation to the
             reporting period.
           </p>
-          <img class="screenshot fullwidth" src="/assets/images/status_bar.png" />
+          <img class="screenshot fullwidth" src="assets/images/status_bar.png" />
           <p>The status bar shows...</p>
           <ul>
             <li>How many of your uploaded photos have been approved</li>
@@ -113,10 +113,10 @@
             <li>A quick visual on how you are doing:</li>
           </ul>
           <center>
-            <img src="/assets/images/status_ahead.png" /><br/>
-            <img src="/assets/images/status_ontrack.png" /><br/>
-            <img src="/assets/images/status_behind.png" /><br/>
-            <img src="/assets/images/status_warning.png" /><br/>
+            <img src="assets/images/status_ahead.png" /><br/>
+            <img src="assets/images/status_ontrack.png" /><br/>
+            <img src="assets/images/status_behind.png" /><br/>
+            <img src="assets/images/status_warning.png" /><br/>
           </center>
           <ul>
             <li>
@@ -253,7 +253,7 @@
 
       <h2>Updating Locations</h2>
 
-      <img class="fullwidth screenshot" src="/assets/images/locations.png" />
+      <img class="fullwidth screenshot" src="assets/images/locations.png" />
       <p>
         To add a location, type the location at the top and click the blue plus (+) sign.
       </p>

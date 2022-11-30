@@ -44,7 +44,7 @@
                   <a href="/locations/" class="item-content item-link panel-close">
                     <div class="item-media"><i class="material-icons">location_on</i></div>
                     <div class="item-inner">
-                      <div class="item-title">My Locations...</div>
+                      <div class="item-title">My Locations</div>
                     </div>
                   </a>
                  </li>
@@ -87,7 +87,7 @@
                   <div class="item-inner">
                     <div class="item-title item-label">Username</div>
                     <div class="item-input-wrap">
-                      <input autocorrect="off" autocapitalize="none" autocomplete="off" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username}" @input="${updateUsername}"/>
+                      <input autocorrect="off" autocapitalize="none" autocomplete="off" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
                       <span class="input-clear-button"></span>
                     </div>
                   </div>
@@ -148,26 +148,29 @@
     store.dispatch("getToken");
     store.dispatch("getUser");
     const user = $store.getters.user;
+    const username = $store.getters.username;
+
+    username.onUpdated(() => {
+      if (username.value.length) {
+        setTimeout(function() {
+          $('#username')[0].classList.add("input-with-value");
+        }, 1000);
+      } else {
+        setTimeout(function() {
+          $('#username')[0].classList.remove("input-with-value");
+        }, 1000);
+      }
+    })
+
     let isLoading = false;
     let versionNumber = $f7.version;
-    // request user data on page init
-
-    // fetchJson(Api.urls.whoami, { method: 'GET' })
-    //   .then((res) => {
-    //   user = res.json.data;
-    //   $update();
-    // }).catch(function (err) {
-    //   $f7.loginScreen.open("#my-login-screen");
-    // });
-    //
-    // Login screen demo data
-    let username = '';
     let password = '';
+    $store.dispatch('getUsername');
 
-    const updateUsername = (e) => {
-      username = e.target.value;
-      $update();
-    }
+    // const updateUsername = (e) => {
+    //   username = e.target.value;
+    //   $update();
+    // }
     const updatePassword = (e) => {
       password = e.target.value;
       $update();
@@ -195,15 +198,17 @@
       fetchJson(Api.urls.csrfToken, { method: 'GET' })
         .then(csrfResponse => {
           store.dispatch('addCsrfToken', csrfResponse.json._csrf);
+          let tempUser = $('#username').value();
           fetchJson(Api.urls.login, {
             method: 'POST',
             body: JSON.stringify({
-              username,
+              username: tempUser,
               password,
             })
           })
             .then(async (data) => {
               store.dispatch("getUser");
+              store.dispatch("setUsername", $('#username').value());
               $("#password")[0].value = "";
               $f7.loginScreen.close();
               isLoading = false;
