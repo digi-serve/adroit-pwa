@@ -1,15 +1,15 @@
 <template>
 <div class="page" data-name="about">
   <div class="navbar">
-    <div class="navbar-bg"></div>
+    <div class="navbar-bg bg-color-primary"></div>
     <div class="navbar-inner sliding">
       <div class="left">
-        <a href="#" class="link back">
+        <a href="#" class="link back text-color-white">
           <i class="icon icon-back"></i>
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Feedback</div>
+      <div class="title text-color-white">Feedback</div>
     </div>
   </div>
   <div class="page-content">
