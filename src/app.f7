@@ -107,14 +107,24 @@
               <button class="button color-primary button-outline button-round bg-color-white button-large login-button button-preloader ${isLoading ? 'button-loading' : ''}" @click="${authenticate}">
                 <div class="preloader">
                   <span class="preloader-inner">
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
-                    <span class="preloader-inner-line"></span>
+                    <span class="if-ios">
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                      <span class="preloader-inner-line"></span>
+                    </span>
+                    <span class="if-md">
+                      <svg viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16"></circle>
+                      </svg>
+                    </span>
+                    <span class="if-aurora">
+                      <span class="preloader-inner-circle"></span>
+                    </span>
                   </span>
                 </div>
                 <span>Sign In</span>

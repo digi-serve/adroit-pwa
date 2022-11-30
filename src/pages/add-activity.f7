@@ -227,8 +227,9 @@
       $f7.dialog.create({
         title: 'Review your submission',
         content: `<ul style="padding-inline-start: 15px; text-align: left;">
-                <li>My caption describes how this activity is helping the Thai community.</li>
-                <li>I have tagged everyone on my team who is in the photo.</li>
+                <li>Is your government name and description appropriate and clear for immigration officers?</li>
+                <li>Did you select all applicable team objectives?</li>
+                <li>Verify the start and end times of your activity.</li>
               </ul>`,
         buttons: [
           {
@@ -239,7 +240,7 @@
             }
           },
           {
-            text: 'Submit for Review',
+            text: 'Submit',
             bold: true,
             cssClass: "bg-color-primary text-color-white",
             onClick: function(dialog, e) {

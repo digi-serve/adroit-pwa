@@ -1,33 +1,289 @@
 <template>
 <div class="page" data-name="about">
   <div class="navbar">
-    <div class="navbar-bg"></div>
+    <div class="navbar-bg bg-color-primary"></div>
     <div class="navbar-inner sliding">
       <div class="left">
-        <a href="#" class="link back">
+        <a href="#" class="link back text-color-white">
           <i class="icon icon-back"></i>
           <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title">Help</div>
+      <div class="title text-color-white">Help</div>
     </div>
   </div>
   <div class="page-content">
-    <div class="block-title">About My App</div>
-    <div class="block block-strong">
-      <p>Fugiat perspiciatis excepturi, soluta quod non ullam deleniti. Nobis sint nemo consequuntur, fugiat. Eius perferendis animi autem incidunt vel quod tenetur nostrum, voluptate omnis quasi quidem illum consequuntur, a, quisquam.</p>
-      <p>Laudantium neque magnam vitae nemo quam commodi, in cum dolore obcaecati laborum, excepturi harum, optio qui, consequuntur? Obcaecati dolor sequi nesciunt culpa quia perspiciatis, reiciendis ex debitis, ut tenetur alias.</p>
+    <div class="block" id="welcome">
+      <h1>
+        Welcome to Adroit Mobile!
+      </h1>
+      <p class="lead">
+        We are very excited to have the Adroit Mobile app available for our
+        volunteers to use to capture all the
+        exciting ministry they are doing throughout Thailand. Although the app
+        is very user-friendly, we do want to
+        provide you with some brief information on using Adroit Mobile. These
+        help pages will be divided into the
+        following sections:
+      </p>
+      <div class="list inset">
+        <ul>
+          <li>
+            <a class="list-button" href="#" @click=${() => scrollTo('#interface-overview')}>Interface Overview</a>
+          </li>
+          <li>
+            <a class="list-button" href="#" @click=${() => scrollTo('#user-guide')}>Adroit Mobile User Guide</a>
+          </li>
+          <li>
+            <a class="list-button" href="#" @click=${() => scrollTo('#locations')}>Updating Locations</a>
+          </li>
+        </ul>
+      </div>
+      <p class="lead">With that said, let’s get to it!</p>
+
     </div>
-    <div class="block">
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni molestiae laudantium dignissimos est nobis delectus nemo ea alias voluptatum architecto, amet similique, saepe iste consectetur in repellat ut minus quibusdam!</p>
-      <p>Molestias et distinctio porro nesciunt ratione similique, magni doloribus, rerum nobis, aliquam quae reiciendis quasi modi. Nam a recusandae, fugiat in ea voluptates fuga eius, velit corrupti reprehenderit dignissimos consequatur!</p>
-      <p>Blanditiis, cumque quo adipisci. Molestiae, dolores dolorum quos doloremque ipsa ullam eligendi commodi deserunt doloribus inventore magni? Ea mollitia veniam nostrum nihil, iusto doloribus a at! Ea molestiae ullam delectus!</p>
+
+    <div class="block" id="interface-overview">
+
+      <h2 class="pb-2">Interface Overview</h2>
+      <p>
+        When you log in for the first time, you will be presented with the
+        a short tutorial screen shown below. Everyone is encouraged to walk through
+        this tutorial to get a basic overview of the various parts
+        of the Adroit App.
+      </p>
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <img class="fullwidth screenshot" src="/assets/images/intro.png" />
+        </div>
+        <div class="col-12 col-md-6">
+          <img class="fullwidth screenshot" src="/assets/images/tutorial.png" />
+        </div>
+      </div>
+      <p>
+        If you ever want to go back and review the tutorial again, you can do so
+        by clicking on the “hamburger” menu in
+        the upper left and selecting “Show Tutorial”.
+      </p>
+
+      <h3>Basics of the Interface</h3>
+      <p>
+        (tap each section to learn more)
+      </p>
+      <a class="popup-open" href="#" data-popup=".popup-menu"><img class="fullwidth no-space" src="/assets/images/iphone_help_01.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-status"><img class="fullwidth no-space" src="/assets/images/iphone_help_02.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-stream"><img class="fullwidth no-space" src="/assets/images/iphone_help_03.png" /></a>
+      <a class="popup-open" href="#" data-popup=".popup-photo"><img class="fullwidth no-space" src="/assets/images/iphone_help_04.png" /></a>
+
+    </div>
+
+    <div class="popup popup-menu">
+      <div class="page-content">
+        <div class="block">
+          <h1>“Hamburger” Menu</h1>
+          <p><a class="button button-fill popup-close" href="#">Close popup</a></p>
+          <p>
+            This provides access to this help information, a link to
+            provide feedback to FCF and its developers, view the
+            tutorial again, manage your locations, and log out.
+          </p>
+          <img class="screenshot fullwidth" src="/assets/images/drawer.png" width="200" />
+        </div>
+      </div>
+    </div>
+    <div class="popup popup-status">
+      <div class="page-content">
+        <div class="block">
+          <h1>Status Bar</h1>
+          <p><a class="button button-fill popup-close" href="#">Close popup</a></p>
+          <p>
+            This status bar provides you with details regarding the
+            number
+            of photos you have uploaded in relation to the
+            reporting period.
+          </p>
+          <img class="screenshot fullwidth" src="/assets/images/status_bar.png" />
+          <p>The status bar shows...</p>
+          <ul>
+            <li>How many of your uploaded photos have been approved</li>
+            <li>
+              How many of your uploaded photos are new (and yet to be
+              approved)</li>
+            <li>How many days are left in the current reporting period</li>
+            <li>A quick visual on how you are doing:</li>
+          </ul>
+          <center>
+            <img src="/assets/images/status_ahead.png" /><br/>
+            <img src="/assets/images/status_ontrack.png" /><br/>
+            <img src="/assets/images/status_behind.png" /><br/>
+            <img src="/assets/images/status_warning.png" /><br/>
+          </center>
+          <ul>
+            <li>
+              The bar graph (on the bottom) compares how far through the
+              current reporting period we are (black vertical
+              bar) with how many approved photos you have uploaded
+              (green
+              progress bar) and how many new photos you have
+              uploaded (black progress bar). A good goal is to keep the
+              green progress bar ahead of the black vertical
+              bar.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="popup popup-stream">
+      <div class="page-content">
+        <div class="block">
+          <h1>Photo Stream</h1>
+          <p><a class="button button-fill popup-close" href="#">Close popup</a></p>
+          <p>
+            This area shows the photos you have uploaded during the current
+            reporting period, as well as the Activity
+            Container, the Ministry Team, and a preview of the Caption.
+          </p>
+          <div>
+            <div class="image-box new-image"></div>
+            Grey edged pictures: new photos
+          </div>
+          <div>
+            <div class="image-box approved-image"></div>
+            Green edged pictures: approved photos
+          </div>
+          <div>
+            <div class="image-box denied-image"></div>
+            Red edged pictures: denied photos
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="popup popup-photo">
+      <div class="page-content">
+        <div class="block">
+          <h1>Add Photo</h1>
+          <p><a class="button button-fill popup-close" href="#">Close popup</a></p>
+          <p>
+            Tap on the Add Photo button to add a new activity image. You can
+            either select a photo from your camera roll
+            or take a new photo with your device's camera.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="block" >
+      <a class="button button-outline" @click="${scrollTop}" href="#">
+        Back to top
+      </a>
+
+    </div>
+
+    <div class="block" id="user-guide">
+
+      <h2>Adroit Mobile User Guide</h2>
+
+      <p>To upload a photo, complete the following steps:</p>
+
+      <ol>
+        <li>
+          Tap the Add Photo button and then either:
+          <ol>
+            <li>Tap the Pictures button to select a photo (see note 1 below) or;</li>
+            <li>Tap the Camera button to take a new photo (see note 2 below)</li>
+          </ol>
+        </li>
+        <li>
+          After selecting a photo or taking a new one, Adroit Mobile will upload
+          the photo. In the center of the photo,
+          look for a green check mark to confirm that the photo was successfully
+          uploaded.
+        </li>
+        <li>Add a Caption.</li>
+        <li>Set the Date.</li>
+        <li>
+          Pick or enter a Location. To add a new location, type the location at
+          the top and click the blue “+ Add”
+          button (see note 3 below).
+        </li>
+        <li>Select the Team.</li>
+        <li>Select the Activity. This is the “activity container” to which you
+          want the current photo connected.</li>
+        <li>Tag people. Be sure to tag team members in the photo.</li>
+        <li>Tap Save.</li>
+        <li>
+          After clicking save, you will be prompted with a confirmation pop-up:
+          <ul>
+            <li>
+              Confirm (tap the box) that your “caption” tells not only what you
+              are doing but
+              <strong>how this activity is helping local Thais</strong>.
+            </li>
+            <li>Confirm (tap the box) that you have tagged everyone on your team
+              in the photo.</li>
+            <li>If everything looks correct, click Upload. To make changes,
+              click Go Back.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <div class="block block-strong inset">
+        <strong>Note 1:</strong> The first time you tap on the Pictures icon
+        you will be asked if you’d like to let
+        Adroit to access your photos. Tap OK to do so.
+      </div>
+      <div class="block block-strong inset">
+        <strong>Note 2:</strong> The first time you tap on the Camera icon you
+        will be asked if you’d like to let Adroit
+        access your camera. Tap OK to do so.
+      </div>
+      <div class="block block-strong inset">
+        <strong>Note 3: </strong>Locations you add can be managed by clicking on
+        the hamburger menu in the upper left
+        and selecting “My Locations.”
+      </div>
+      <br/>
+      <a class="button button-outline" @click="${scrollTop}" href="#">
+        Back to top
+      </a>
+
+    </div>
+
+    <div class="block" id="locations">
+
+      <h2>Updating Locations</h2>
+
+      <img class="fullwidth screenshot" src="/assets/images/locations.png" />
+      <p>
+        To add a location, type the location at the top and click the blue plus (+) sign.
+      </p>
+      <p>
+        To remove a previously added location, click the red trash can
+        across from the location to be removed.
+      </p>
+      <div class="alert alert-info" role="alert">
+        <strong>Note:
+        </strong>Take care when removing locations as there is no
+        confirmation dialogue box upon deletion.
+      </div>
+      <br/>
+
+      <a class="button button-outline" @click="${scrollTop}" href="#">
+        Back to top
+      </a>
+
     </div>
   </div>
 </div>
 </template>
 <script>
-export default () => {
+export default (props, { $, $f7, $on, $update, $store }) => {
+  const scrollTop = () => {
+    $('.page-current .page-content').scrollTop(0, 1000);
+  }
+  const scrollTo = (item) => {
+    $('.page-current .page-content').scrollTop($(item)[0].offsetTop - 60, 1000);
+  }
   return $render;
 };
 </script>

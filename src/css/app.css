@@ -94,16 +94,16 @@
   width: calc(20% - 1px) !important;
 }
 .status_bar .warning {
-  background: #cc3333;
+  background: #cc3233;
 }
 .status_bar .ahead {
   background: #009933;
 }
 .status_bar .behind {
-  background: #ff6633;
+  background: #ff6632;
 }
 .status_bar .ontrack {
-  background: #07bb8f;
+  background: #0bbb8f;
 }
 .quarter_width {
   width: calc(25% - 1px);
@@ -222,15 +222,47 @@
   align-content: center;
 }
 /* override toolbar height */
-.ios {
+.ios,
+.md {
   --f7-toolbar-height: 72px;
 }
-/* turn off text selection */
-body {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+/* change smart select background color */
+.smart-select-page .navbar-inner {
+  background-color: var(--f7-theme-color) !important;
+  color: white !important;
+}
+.smart-select-page .link {
+  color: white !important;
+}
+.smart-select-page .subnavbar {
+  background-color: var(--f7-theme-color) !important;
+}
+.ios .smart-select-page .searchbar-disable-button {
+  color: white !important;
+}
+/* Help Page */
+.fullwidth {
+  width: 100%;
+}
+.screenshot {
+  padding: 10px 0;
+}
+.no-space {
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+.image-box {
+  width: 8px;
+  height: 80px;
+  vertical-align: middle;
+  background: #454545;
+  display: inline-block;
+  margin-right: 10px;
+}
+.denied-image {
+  background: #cc3333;
+}
+.approved-image {
+  background: #56b0a5;
 }

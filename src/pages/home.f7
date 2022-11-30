@@ -15,9 +15,9 @@
     </div>
     <div class="toolbar toolbar-top status_bar">
       <div class="toolbar-inner no-padding">
-        <div data-intro="This is how many of your photos that have been approved this reporting period." class="toolbar_approved quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #56b0a5; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
-        <div data-intro="This is how many new photos you have uploaded that have not yet been approved." class="toolbar_new quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #454545; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalNew.value} new</a></div>
-        <div data-intro="Keep an eye on how many days are left in the current reporting period." class="toolbar_days_left quarter_width"><a href="#" class="text-color-white popover-open" data-popover=".popover-days">${daysLeft.value} days left</a></div>
+        <div class="toolbar_approved quarter_width"><a href="#" data-intro="This is how many of your photos that have been approved this reporting period." class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #56b0a5; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
+        <div class="toolbar_new quarter_width"><a href="#" data-intro="This is how many new photos you have uploaded that have not yet been approved." class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #454545; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalNew.value} new</a></div>
+        <div class="toolbar_days_left quarter_width"><a data-intro="Keep an eye on how many days are left in the current reporting period." href="#" class="text-color-white popover-open" data-popover=".popover-days">${daysLeft.value} days left</a></div>
         <div style="background: ${imagesLoading.value ? $h`${loadingStatus.color}` : $h`${currentStatus.value.color}`}" class="toolbar_status quarter_width"><a href="#" data-intro="Quickly check whether you are on track with your photo uploads for this reporting period." class="text-color-white popover-open" data-popover=".popover-status">${imagesLoading.value ? $h`<i class="material-icons">${loadingStatus.icon}</i>${loadingStatus.label}` : $h`<i class="material-icons">${currentStatus.value.icon}</i>${currentStatus.value.label}`}</a></div>
         <div class="break"></div>
         <div class="progress full_width">
@@ -56,7 +56,7 @@
       </div>
     </div>
     <div class="fab-backdrop"></div>
-    <div class="fab fab-right-bottom">
+    <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
       <a href="#">
         <i class="icon f7-icons if-not-md">plus</i>
         <i class="icon f7-icons if-not-md">xmark</i>
@@ -120,8 +120,8 @@
           `}
         </ul>
       </div>
-      <input style="display: none;" id="takePhoto" type="file" accept="image/jpeg" capture @change=${() => upload("#takePhoto")} />
-      <input style="display: none;" id="choosePhoto" type="file" accept="image/jpeg" @change=${() => upload("#choosePhoto")} />
+      <input style="display: none;" id="takePhoto" type="file" accept="image/*" capture @change=${() => upload("#takePhoto")} />
+      <input style="display: none;" id="choosePhoto" type="file" accept="image/*" @change=${() => upload("#choosePhoto")} />
     </div>
   </div>
 </template>
