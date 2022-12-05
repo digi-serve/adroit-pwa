@@ -123,6 +123,28 @@
       <input style="display: none;" id="takePhoto" type="file" accept="image/*" capture @change=${() => upload("#takePhoto")} />
       <input style="display: none;" id="choosePhoto" type="file" accept="image/*" @change=${() => upload("#choosePhoto")} />
     </div>
+    <div class="popup ios-popup" data-swipe-to-close="to-bottom">
+      <div class="view">
+        <div class="page bg-color-primary dark">
+          <div class="page-content">
+            <div class="middle">
+              <div>
+                <img style="margin-top: -100px;" src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
+                <h2 class="text-align-center">Welcome to Adroit</h2>
+                <p class="text-align-center">
+                Please install this web app on your device:
+                </p>
+                <ol style="width: 240px; margin: 0 auto; padding: 0 0 0 20px;">
+                  <li>Tap <i style="vertical-align: bottom;" class="icon material-icons">ios_share</i> at the bottom of your screen</li>
+                  <li>Tap <strong>Add to Home Screen</strong></li>
+                </ol>
+                <small style="text-align: center; display: block; position: absolute; bottom: 10px; width: 100%; left: 0;">Swipe page down to dismiss this tip.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -139,6 +161,8 @@
     const percentageComplete = $store.getters.percentageComplete;
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
+
+    let showingUpdate = false;
 
     let acticityImage = {
         "activity": {
@@ -167,6 +191,7 @@
     let firstLoad = true;
 
     $on('pageInit', () => {
+      checkForUpdate();
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeams');
@@ -182,6 +207,12 @@
           introJs().setOption("dontShowAgain", true).start();
         }, 3000);
       }
+
+      // Checks if should display install popup notification:
+      if (isIos() && !isInStandaloneMode() && process.env.NODE_ENV === "production") {
+        // debugger;
+        $f7.popup.open('.ios-popup', true);
+      }
     })
 
     $on('pageReinit', () => {
@@ -193,46 +224,27 @@
 
     document.addEventListener('visibilitychange', (e) => {
       if (document.visibilityState == "visible") {
-        let getVersionPath = Api.absoluteUrl(Api.urls.version);
-        $f7.request({
-          url: getVersionPath,
-          method: "GET",
-          cache: false
-        }).then((res) => {
-          if ($f7.version != res.data) {
-            // alert("out of date");
-            if ('serviceWorker' in navigator) {
-              $f7.dialog.create({
-                title: 'Update Available',
-                content: `There is an app update avaiable, tap "Update" to get the latest version.`,
-                buttons: [
-                  {
-                    text: 'Cancel',
-                  },
-                  {
-                    text: 'Update',
-                    bold: true,
-                    cssClass: "bg-color-primary text-color-white",
-                    onClick: function(dialog, e) {
-                      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                        for (let registration of registrations) {
-                          // registration.update();  does not work!
-                          registration.unregister();
-                        }
-                        window.location.reload(true);
-                      });
-                    }
-                  },
-                ],
-                verticalButtons: true,
-              }).open();
-            }
-          } else {
-            // alert("up to date");
-          }
-        });
+        checkForUpdate();
       }
     });
+
+    const getPWADisplayMode = () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+      if (document.referrer.startsWith('android-app://')) {
+        return 'twa';
+      } else if (navigator.standalone || isStandalone) {
+        return 'standalone';
+      }
+      return 'browser';
+    }
+
+    // Detects if device is on iOS
+    const isIos = () => {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      return /iphone|ipad|ipod/.test( userAgent );
+    }
+    // Detects if device is in standalone mode
+    const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
     $('.login-screen').on('loginscreen:close', function (e) {
       $store.dispatch("fetchImages");
@@ -294,6 +306,63 @@
       $store.dispatch('getTeams');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
+    }
+
+    const checkForUpdate = () => {
+      if (!showingUpdate) {
+        let getVersionPath = Api.absoluteUrl(Api.urls.version);
+        $f7.request({
+          url: getVersionPath,
+          method: "GET",
+          cache: false
+        }).then((res) => {
+          if ($f7.version != res.data) {
+            showingUpdate = true;
+            if ('serviceWorker' in navigator) {
+              $f7.dialog.create({
+                title: `Update Available`,
+                content: `There is an app update avaiable, tap "Update" to get the latest version.`,
+                buttons: [
+                  {
+                    text: 'Cancel',
+                    onClick: function(dialog, e) {
+                      showingUpdate = false;
+                    }
+                  },
+                  {
+                    text: `Update to version ${res.data}`,
+                    bold: true,
+                    cssClass: "bg-color-primary text-color-white",
+                    onClick: function(dialog, e) {
+                      $f7.progressbar.show();
+                      navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                        let complete = registrations.length;
+                        let index = 0;
+                        for (let registration of registrations) {
+                          registration.unregister().then((boolean) => {
+                            index++;
+                            if (index == complete) {
+                              showingUpdate = false;
+                              window.location.reload(true);
+                            }
+                          });
+                        }
+                        if (complete == 0) {
+                          showingUpdate = false;
+                          window.location.reload(true);
+                        }
+                      });
+                    }
+                  },
+                ],
+                verticalButtons: true,
+              }).open();
+            }
+          } else {
+            // alert("up to date");
+          }
+        });
+      }
     }
 
     return $render;

@@ -266,3 +266,15 @@
 .approved-image {
   background: #56b0a5;
 }
+.popover.ios-install {
+  width: 90%;
+}
+.middle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.middle div {
+  width: 80%;
+}

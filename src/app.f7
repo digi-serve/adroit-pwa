@@ -142,6 +142,7 @@
   import Api from "/js/api.js";
   import store from "/js/store.js";
   import fetchJson from "/js/fetch.js";
+  import * as Sentry from "@sentry/browser";
 
   export default (props, { $, $f7, $update, $store }) => {
 
@@ -149,6 +150,10 @@
     store.dispatch("getUser");
     const user = $store.getters.user;
     const username = $store.getters.username;
+
+    user.onUpdated(() => {
+      Sentry.setUser({id: user.value.IDPerson, username: user.value.display_name});
+    })
 
     username.onUpdated(() => {
       if (username.value.length) {

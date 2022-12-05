@@ -134,36 +134,50 @@ const store = createStore({
       state.denial = "<div class='preloader' style='margin: 0 auto;'></div>";
     },
     getDenial({ state }, activityId) {
-      fetchJson(`${Api.urls.getDenial(activityId)}`, { method: "GET" }).then(
-        result => {
+      fetchJson(`${Api.urls.getDenial(activityId)}`, { method: "GET" })
+        .then(result => {
           let warningIcon = "<i class='large-icon material-icons'>warning</i>";
           state.denial = warningIcon + result.json.data;
-        }
-      );
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     getFCFLocations({ state }) {
-      fetchJson(`${Api.urls.locations}`, { method: "GET" }).then(result => {
-        state.fcfLocations = result.json.data;
-      });
+      fetchJson(`${Api.urls.locations}`, { method: "GET" })
+        .then(result => {
+          state.fcfLocations = result.json.data;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     getTeams({ state }) {
-      fetchJson(`${Api.urls.myProjects}`, { method: "GET" }).then(result => {
-        state.teams = result.json.data[0].teams;
-      });
+      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
+        .then(result => {
+          state.teams = result.json.data[0].teams;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     getTeamMembers({ state }) {
-      fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" }).then(
-        result => {
+      fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
+        .then(result => {
           state.teamMembers = result.json.data.members;
-        }
-      );
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     getTeamObjectives({ state }, teamId) {
-      fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" }).then(
-        result => {
+      fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" })
+        .then(result => {
           state.teamObjectives = result.json.data;
-        }
-      );
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     getActivities({ state }, { minId }) {
       let currentActivities = [];
@@ -203,10 +217,14 @@ const store = createStore({
       state.username = username;
     },
     updateActivities({ state, dispatch }, { minId }) {
-      fetchJson(`${Api.urls.myProjects}`, { method: "GET" }).then(result => {
-        state.teams = result.json.data[0].teams;
-        dispatch("getActivities", { minId: minId });
-      });
+      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
+        .then(result => {
+          state.teams = result.json.data[0].teams;
+          dispatch("getActivities", { minId: minId });
+        })
+        .catch(e => {
+          // console.log(e);
+        });
     },
     addLocation({ state }, location) {
       let locations = state.locations;
@@ -339,7 +357,7 @@ const store = createStore({
           }
         })
         .catch(err => {
-          console.error("fetchJson failed");
+          // console.error("fetchJson failed");
         });
     }
   }

@@ -33,7 +33,7 @@ const fetchJson = async (url, options = {}) => {
 
   const absoluteUrl = Api.urls.base + url;
   // debugger;
-  console.warn("fetchJson", url, options, requestHeaders);
+  // console.warn("fetchJson", url, options, requestHeaders);
   return fetch(absoluteUrl, {
     ...options,
     credentials: "include",
@@ -51,14 +51,14 @@ const fetchJson = async (url, options = {}) => {
     )
     .then(async response => {
       const { status, statusText, headers, body } = response;
-      console.warn(
-        `${url} returned`,
-        response,
-        status,
-        statusText,
-        headers,
-        body
-      );
+      // console.warn(
+      //   `${url} returned`,
+      //   response,
+      //   status,
+      //   statusText,
+      //   headers,
+      //   body
+      // );
       // debugger;
       let json;
       try {

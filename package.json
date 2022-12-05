@@ -19,6 +19,8 @@
     "Samsung >= 12"
   ],
   "dependencies": {
+    "@sentry/browser": "^7.22.0",
+    "@sentry/tracing": "^7.22.0",
     "atomicjs": "^4.4.1",
     "dom7": "^4.0.4",
     "framework7": "^7.0.8",
