@@ -5,25 +5,18 @@ import fetchJson from "/js/fetch.js";
 const store = createStore({
   state: {
     activities: [],
+    activityImages: [],
     csrftoken: "",
     currentStatus: {},
+    daysLeft: 0,
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
     hasLocations: false,
-    locations: [],
-    teamMembers: [],
-    teams: [],
-    totalApproved: 0,
-    daysLeft: 0,
-    totalNew: 0,
     imagesLoading: true,
-    photoProgress: 0,
-    photoCombineProgress: 0,
+    locations: [],
     percentageComplete: 0,
-    activityImages: [],
-    teamObjectives: [],
-    user: { display_name: "" },
-    username: "",
+    photoCombineProgress: 0,
+    photoProgress: 0,
     ReportingPeriodStatus: {
       LOADING: {
         threshold: null,
@@ -55,7 +48,14 @@ const store = createStore({
         label: "warning",
         icon: "sentiment_very_dissatisfied"
       }
-    }
+    },
+    teamMembers: [],
+    teamObjectives: [],
+    teams: [],
+    totalApproved: 0,
+    totalNew: 0,
+    user: { display_name: "" },
+    username: ""
   },
   getters: {
     activities({ state }) {
@@ -64,11 +64,26 @@ const store = createStore({
     activityImages({ state }) {
       return state.activityImages;
     },
+    csrfToken({ state }) {
+      return state.csrftoken;
+    },
     currentStatus({ state }) {
       return state.currentStatus;
     },
+    daysLeft({ state }) {
+      return state.daysLeft;
+    },
     denial({ state }) {
       return state.denial;
+    },
+    fcfLocations({ state }) {
+      return state.fcfLocations;
+    },
+    hasLocations({ state }) {
+      return state.hasLocations;
+    },
+    imagesLoading({ state }) {
+      return state.imagesLoading;
     },
     myLocations({ state }) {
       return state.locations;
@@ -79,26 +94,14 @@ const store = createStore({
     myTeamMembers({ state }) {
       return state.teamMembers;
     },
-    fcfLocations({ state }) {
-      return state.fcfLocations;
-    },
-    csrfToken({ state }) {
-      return state.csrftoken;
-    },
-    hasLocations({ state }) {
-      return state.hasLocations;
-    },
-    daysLeft({ state }) {
-      return state.daysLeft;
-    },
-    imagesLoading({ state }) {
-      return state.imagesLoading;
-    },
-    photoProgress({ state }) {
-      return state.photoProgress;
+    percentageComplete({ state }) {
+      return state.percentageComplete;
     },
     photoCombineProgress({ state }) {
       return state.photoCombineProgress;
+    },
+    photoProgress({ state }) {
+      return state.photoProgress;
     },
     teamObjectives({ state }) {
       return state.teamObjectives;
@@ -109,9 +112,6 @@ const store = createStore({
     totalNew({ state }) {
       return state.totalNew;
     },
-    percentageComplete({ state }) {
-      return state.percentageComplete;
-    },
     user({ state }) {
       return state.user;
     },
@@ -120,111 +120,9 @@ const store = createStore({
     }
   },
   actions: {
-    getLocations({ state }) {
-      let locations = localStorage.getItem("locations");
-      if (locations == null) {
-        locations = [];
-      } else {
-        state.hasLocations = true;
-        locations = JSON.parse(locations);
-      }
-      state.locations = locations;
-    },
-    resetDenial({ state }, activityId) {
-      state.denial = "<div class='preloader' style='margin: 0 auto;'></div>";
-    },
-    getDenial({ state }, activityId) {
-      fetchJson(`${Api.urls.getDenial(activityId)}`, { method: "GET" })
-        .then(result => {
-          let warningIcon = "<i class='large-icon material-icons'>warning</i>";
-          state.denial = warningIcon + result.json.data;
-        })
-        .catch(e => {
-          // console.log(e);
-        });
-    },
-    getFCFLocations({ state }) {
-      fetchJson(`${Api.urls.locations}`, { method: "GET" })
-        .then(result => {
-          state.fcfLocations = result.json.data;
-        })
-        .catch(e => {
-          // console.log(e);
-        });
-    },
-    getTeams({ state }) {
-      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
-        .then(result => {
-          state.teams = result.json.data[0].teams;
-        })
-        .catch(e => {
-          // console.log(e);
-        });
-    },
-    getTeamMembers({ state }) {
-      fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
-        .then(result => {
-          state.teamMembers = result.json.data.members;
-        })
-        .catch(e => {
-          // console.log(e);
-        });
-    },
-    getTeamObjectives({ state }, teamId) {
-      fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" })
-        .then(result => {
-          state.teamObjectives = result.json.data;
-        })
-        .catch(e => {
-          // console.log(e);
-        });
-    },
-    getActivities({ state }, { minId }) {
-      let currentActivities = [];
-      let today = new Date();
-      let allActivities = state.teams.filter(
-        team => team.IDMinistry == minId
-      )[0].activities;
-      allActivities.forEach((item, i) => {
-        let dateStart = new Date(item.date_start);
-        let dateEnd = new Date(item.date_end);
-        if (dateStart <= today) {
-          if (dateEnd >= today || item.date_end == null) {
-            currentActivities.push(item);
-          }
-        }
-      });
-      state.activities = currentActivities;
-    },
-    getUser({ state }) {
-      fetchJson(Api.urls.whoami, { method: "GET" })
-        .then(res => {
-          state.user = res.json.data;
-        })
-        .catch(function(err) {
-          app.f7.loginScreen.open("#my-login-screen");
-        });
-    },
-    getUsername({ state }) {
-      let username = localStorage.getItem("username");
-      if (username == null) {
-        username = "";
-      }
-      state.username = username;
-    },
-    setUsername({ state }, username) {
-      localStorage.setItem("username", username);
-      state.username = username;
-    },
-    updateActivities({ state, dispatch }, { minId }) {
-      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
-        .then(result => {
-          state.teams = result.json.data[0].teams;
-          dispatch("getActivities", { minId: minId });
-        })
-        .catch(e => {
-          // console.log(e);
-        });
+    addCsrfToken({ state }, token) {
+      localStorage.setItem("csrftoken", token);
+      state.csrftoken = token;
     },
     addLocation({ state }, location) {
       let locations = state.locations;
@@ -240,21 +138,6 @@ const store = createStore({
       }
       localStorage.setItem("locations", JSON.stringify(locations));
       state.locations = locations;
-    },
-    hasLocations({ state }) {
-      if (state.locations.length) {
-        state.hasLocations = true;
-      } else {
-        state.hasLocations = false;
-      }
-    },
-    getToken({ state }) {
-      let csrftoken = localStorage.getItem("csrftoken");
-      state.csrftoken = csrftoken;
-    },
-    addCsrfToken({ state }, token) {
-      localStorage.setItem("csrftoken", token);
-      state.csrftoken = token;
     },
     fetchImages({ state }, done) {
       if (!navigator.onLine) {
@@ -358,6 +241,123 @@ const store = createStore({
         })
         .catch(err => {
           // console.error("fetchJson failed");
+        });
+    },
+    getActivities({ state }, { minId }) {
+      let currentActivities = [];
+      let today = new Date();
+      let allActivities = state.teams.filter(
+        team => team.IDMinistry == minId
+      )[0].activities;
+      allActivities.forEach((item, i) => {
+        let dateStart = new Date(item.date_start);
+        let dateEnd = new Date(item.date_end);
+        if (dateStart <= today) {
+          if (dateEnd >= today || item.date_end == null) {
+            currentActivities.push(item);
+          }
+        }
+      });
+      state.activities = currentActivities;
+    },
+    getDenial({ state }, activityId) {
+      fetchJson(`${Api.urls.getDenial(activityId)}`, { method: "GET" })
+        .then(result => {
+          let warningIcon = "<i class='large-icon material-icons'>warning</i>";
+          state.denial = warningIcon + result.json.data;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
+    },
+    getFCFLocations({ state }) {
+      fetchJson(`${Api.urls.locations}`, { method: "GET" })
+        .then(result => {
+          state.fcfLocations = result.json.data;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
+    },
+    getLocations({ state }) {
+      let locations = localStorage.getItem("locations");
+      if (locations == null) {
+        locations = [];
+      } else {
+        state.hasLocations = true;
+        locations = JSON.parse(locations);
+      }
+      state.locations = locations;
+    },
+    getTeams({ state }) {
+      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
+        .then(result => {
+          state.teams = result.json.data[0].teams;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
+    },
+    getTeamMembers({ state }) {
+      fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
+        .then(result => {
+          state.teamMembers = result.json.data.members;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
+    },
+    getTeamObjectives({ state }, teamId) {
+      fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" })
+        .then(result => {
+          state.teamObjectives = result.json.data;
+        })
+        .catch(e => {
+          // console.log(e);
+        });
+    },
+    getToken({ state }) {
+      let csrftoken = localStorage.getItem("csrftoken");
+      state.csrftoken = csrftoken;
+    },
+    getUser({ state }) {
+      fetchJson(Api.urls.whoami, { method: "GET" })
+        .then(res => {
+          state.user = res.json.data;
+        })
+        .catch(function(err) {
+          app.f7.loginScreen.open("#my-login-screen");
+        });
+    },
+    getUsername({ state }) {
+      let username = localStorage.getItem("username");
+      if (username == null) {
+        username = "";
+      }
+      state.username = username;
+    },
+    hasLocations({ state }) {
+      if (state.locations.length) {
+        state.hasLocations = true;
+      } else {
+        state.hasLocations = false;
+      }
+    },
+    resetDenial({ state }, activityId) {
+      state.denial = "<div class='preloader' style='margin: 0 auto;'></div>";
+    },
+    setUsername({ state }, username) {
+      localStorage.setItem("username", username);
+      state.username = username;
+    },
+    updateActivities({ state, dispatch }, { minId }) {
+      fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
+        .then(result => {
+          state.teams = result.json.data[0].teams;
+          dispatch("getActivities", { minId: minId });
+        })
+        .catch(e => {
+          // console.log(e);
         });
     }
   }
