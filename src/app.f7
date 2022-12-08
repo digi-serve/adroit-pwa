@@ -87,7 +87,7 @@
                   <div class="item-inner">
                     <div class="item-title item-label">Username</div>
                     <div class="item-input-wrap">
-                      <input autocorrect="off" autocapitalize="none" autocomplete="off" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
+                      <input autocorrect="off" autocomplete="username" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
                       <span class="input-clear-button"></span>
                     </div>
                   </div>
@@ -96,7 +96,7 @@
                   <div class="item-inner">
                     <div class="item-title item-label">Password</div>
                     <div class="item-input-wrap">
-                      <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}"/>
+                      <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password"/>
                       <span class="input-clear-button"></span>
                     </div>
                   </div>
@@ -129,7 +129,6 @@
                 </div>
                 <span>Sign In</span>
               </button>
-              <!-- <div class="block-footer">Some text about login information.<br/>Click "Sign In" to close Login Screen</div> -->
             </div>
           </div>
         </div>
