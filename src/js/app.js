@@ -20,7 +20,7 @@ import App from "../app.f7";
 import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
-let version = "2.1.15";
+let version = "2.1.19";
 
 Sentry.init({
   dsn:
@@ -41,6 +41,7 @@ var app = new Framework7({
   el: "#app", // App root element
   component: App, // App main component
   version: version,
+  disableContextMenu: true,
 
   // App store
   store: store,
@@ -52,5 +53,8 @@ var app = new Framework7({
       ? {
           path: "/pwa/www/service-worker.js"
         }
-      : {}
+      : {},
+  panel: {
+    swipe: true,
+  },
 });
