@@ -1,5 +1,7 @@
-const BASE_URL = "https://adroit.fcfthailand.org";
-// const BASE_URL = "http://localhost:8010/proxy";
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://adroit.fcfthailand.org"
+    : "http://localhost:8010/proxy";
 
 const Api = {
   urls: {
