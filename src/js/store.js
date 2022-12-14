@@ -55,7 +55,8 @@ const store = createStore({
     totalApproved: 0,
     totalNew: 0,
     user: { display_name: "" },
-    username: ""
+    username: "",
+    version: "",
   },
   getters: {
     activities({ state }) {
@@ -117,6 +118,9 @@ const store = createStore({
     },
     username({ state }) {
       return state.username;
+    },
+    version({ state }) {
+      return state.version;
     }
   },
   actions: {
@@ -335,6 +339,9 @@ const store = createStore({
         username = "";
       }
       state.username = username;
+    },
+    getVersion({ state }) {
+      state.version = app.f7.version;
     },
     hasLocations({ state }) {
       if (state.locations.length) {

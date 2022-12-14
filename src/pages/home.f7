@@ -259,6 +259,9 @@
         firstLoad = false;
         setTimeout(() => {
           introJs().setOption("dontShowAgain", true).start();
+          OneSignal.push(function() {
+            OneSignal.setExternalUserId(`${user?.value?.IDPerson}:${user?.value?.display_name.replace(" ", "-")}`);
+          });
         }, 1000);
       }
     })
@@ -316,7 +319,7 @@
           method: "GET",
           cache: false
         }).then((res) => {
-          if ($f7.version != res.data) {
+          if ($f7.version.trim() != res.data.trim()) {
             showingUpdate = true;
             if ('serviceWorker' in navigator) {
               $f7.dialog.create({

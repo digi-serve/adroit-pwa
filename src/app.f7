@@ -60,7 +60,7 @@
             </div>
             <div class="block text-align-center" style="position: absolute; width: 100%; bottom: 0px;">
               <p>
-                ${versionNumber}
+                ${versionNumber.value}
               </p>
             </div>
           </div>
@@ -167,9 +167,10 @@
     })
 
     let isLoading = false;
-    let versionNumber = $f7.version;
+    let versionNumber = $store.getters.version;
     let password = '';
     $store.dispatch('getUsername');
+    $store.dispatch('getVersion');
 
     // const updateUsername = (e) => {
     //   username = e.target.value;
