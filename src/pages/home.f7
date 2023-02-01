@@ -55,19 +55,31 @@
         </div>
       </div>
     </div>
-    <div class="fab-backdrop"></div>
-    <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
-      <a href="#">
-        <i class="icon f7-icons if-not-md">plus</i>
-        <i class="icon f7-icons if-not-md">xmark</i>
-        <i class="icon material-icons md-only">add</i>
-        <i class="icon material-icons md-only">close</i>
-      </a>
-      <div class="fab-buttons fab-buttons-top">
-        <a class="fab-label-button" href="#" @click="${choosePhoto}"><span><i class="icon material-icons">photo_library</i></span><span class="fab-label">Choose Photo</span></a>
-        <a class="fab-label-button" href="#" @click="${takePhoto}"><span><i class="icon material-icons">photo_camera</i></span><span class="fab-label">Take Photo</span></a>
+    ${isDesktop ? $h`
+      <div class="fab-backdrop"></div>
+      <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
+        <a @click="${choosePhoto}" href="#">
+          <i class="icon f7-icons if-not-md">plus</i>
+          <i class="icon f7-icons if-not-md">xmark</i>
+          <i class="icon material-icons md-only">add</i>
+          <i class="icon material-icons md-only">close</i>
+        </a>
       </div>
-    </div>
+    ` : $h`
+      <div class="fab-backdrop"></div>
+      <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
+        <a href="#">
+          <i class="icon f7-icons if-not-md">plus</i>
+          <i class="icon f7-icons if-not-md">xmark</i>
+          <i class="icon material-icons md-only">add</i>
+          <i class="icon material-icons md-only">close</i>
+        </a>
+        <div class="fab-buttons fab-buttons-top">
+          <a class="fab-label-button" href="#" @click="${choosePhoto}"><span><i class="icon material-icons">photo_library</i></span><span class="fab-label">Choose Photo</span></a>
+          <a class="fab-label-button" href="#" @click="${takePhoto}"><span><i class="icon material-icons">photo_camera</i></span><span class="fab-label">Take Photo</span></a>
+        </div>
+      </div>
+    `}
     <!-- Scrollable page content-->
     <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
       <div class="ptr-preloader">
@@ -76,8 +88,8 @@
       </div>
       <!-- <a href="#" class="button button-raised button-large button-fill login-screen-open" data-login-screen=".login-screen">As Overlay</a> -->
       <div class="list media-list no-margin-top">
-        <ul>
-          ${imagesLoading.value ? $h`
+        ${imagesLoading.value ? $h`
+          <ul>
             ${activityImagesSkeleton.map((activityImage) => $h`
               <li class="swipeout status_${activityImage.status}">
                 <a href="#" class="item-link item-content swipeout-content">
@@ -97,28 +109,39 @@
                 </div>
               </li>
             `)}
+          </ul>
+        ` : $h`
+          ${activityImages.value.length == 0 ? $h`
+            <div style="display: block; font-size: 180px; background-color: #666; color: transparent; text-shadow: 0px 1px 1px rgba(255,255,255,0.5); -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">add_photo_alternate</div>
+            <div class="block no-margin-top text-align-center">
+              <p style="color: gray;">
+                <small>Tap the <i class="icon f7-icons if-not-md">plus</i><i class="icon material-icons md-only">add</i> below to add an activity photo.</small>
+              </p>
+            </div>
           ` : $h`
-            ${activityImages.value.map((activityImage) => $h`
-              <li key=${activityImage.id} class="swipeout status_${activityImage.status}">
-                <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
-                  <div class="item-media">
-                    <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
-                  </div>
-                  <div class="item-inner">
-                    <div class="item-title-row">
-                      <div class="item-title">${activityImage.activity.activity_name}</div>
+            <ul>
+              ${activityImages.value.map((activityImage) => $h`
+                <li key=${activityImage.id} class="swipeout status_${activityImage.status}">
+                  <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
+                    <div class="item-media">
+                      <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
                     </div>
-                    <div style="color: #555;" class="item-subtitle"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
-                    <div class="item-text">${activityImage.date}: ${activityImage.caption}</div>
+                    <div class="item-inner">
+                      <div class="item-title-row">
+                        <div class="item-title">${activityImage.activity.activity_name}</div>
+                      </div>
+                      <div style="color: #555;" class="item-subtitle"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                      <div class="item-text">${activityImage.date}: ${activityImage.caption}</div>
+                    </div>
+                  </a>
+                  <div class="swipeout-actions-left">
+                    <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
                   </div>
-                </a>
-                <div class="swipeout-actions-left">
-                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
-                </div>
-              </li>
-            `)}
+                </li>
+              `)}
+            </ul>
           `}
-        </ul>
+        `}
       </div>
       <input style="display: none;" id="takePhoto" type="file" accept="image/*" capture @change=${() => upload("#takePhoto")} />
       <input style="display: none;" id="choosePhoto" type="file" accept="image/*" @change=${() => upload("#choosePhoto")} />
@@ -161,6 +184,7 @@
     const percentageComplete = $store.getters.percentageComplete;
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
+    let isDesktop = app.f7.device.desktop;
 
     let showingUpdate = false;
 

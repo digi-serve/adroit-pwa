@@ -278,3 +278,7 @@
 .middle div {
   width: 80%;
 }
+/* login */
+.md .item-input-focused .item-label, .md .item-input-focused .item-floating-label {
+  color: inherit;
+}

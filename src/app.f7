@@ -58,9 +58,10 @@
                 </li>
               </ul>
             </div>
-            <div class="block text-align-center" style="position: absolute; width: 100%; bottom: 0px;">
+            <div class="block text-align-center" style="position: absolute; width: 100%; margin-bottom: 15px; bottom: 0px;">
               <p>
-                ${versionNumber.value}
+                <img src="assets/images/digiServe_logo.png" width="30%"/><br/>
+                ${versionNumber}
               </p>
             </div>
           </div>
@@ -92,15 +93,25 @@
                     </div>
                   </div>
                 </li>
-                <li class="item-content item-input">
+                <li id="passwordHolder" class="item-content item-input">
                   <div class="item-inner">
                     <div class="item-title item-label">Password</div>
                     <div class="item-input-wrap">
-                      <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password"/>
-                      <span class="input-clear-button"></span>
+                      <a @click="${showPasswordPreview}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility_off</i></a>
+                      <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
                     </div>
                   </div>
                 </li>
+                <li id="passwordPreviewHolder" style="display: none;" class="item-content item-input">
+                  <div class="item-inner">
+                    <div class="item-title item-label">Password</div>
+                    <div class="item-input-wrap">
+                      <a @click="${showPassword}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility</i></a>
+                      <input type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                    </div>
+                  </div>
+                </li>
+                <li class="item-content item-input"></li>
               </ul>
             </div>
             <div class="block">
@@ -167,7 +178,8 @@
     })
 
     let isLoading = false;
-    let versionNumber = $store.getters.version;
+    let versionNumber = $f7.version;
+    // let versionNumber = $store.getters.version;
     let password = '';
     $store.dispatch('getUsername');
     $store.dispatch('getVersion');
@@ -183,6 +195,8 @@
 
     const logout = () => {
       $f7.preloader.show();
+      password = "";
+      $update();
       fetchJson(Api.urls.logout, { method: 'GET' })
         .then(data => {
           store.dispatch('addCsrfToken', "");
@@ -250,6 +264,18 @@
         },
         reloadCurrent: true
       })
+    }
+
+    const showPasswordPreview = (e) => {
+      $("#passwordPreviewHolder").show();
+      $("#passwordHolder").hide();
+      $("#passwordPreview").focus();
+    }
+
+    const showPassword = (e) => {
+      $("#passwordHolder").show();
+      $("#passwordPreviewHolder").hide();
+      $("#password").focus();
     }
 
     return $render;
