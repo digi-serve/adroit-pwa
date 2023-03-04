@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="page-content">
-    ${isUpdate ? $h`
+    ${isDenial ? $h`
     <div class="denial-wrapper">
       <div innerHTML=${denial.value} class="block block-strong inset denial"></div>
     </div>
@@ -161,6 +161,7 @@
     let activitiySelect;
     let imagePath;
     let isUpdate = false;
+    let isDenial = false;
     const denial = $store.getters.denial;
     const myLocations = $store.getters.myLocations;
     const fcfLocations = $store.getters.fcfLocations;
@@ -171,6 +172,9 @@
 
     if (props.activityImage) {
       isUpdate = true;
+      if (props.activityImage.status == "denied") {
+        isDenial = true;
+      }
     }
 
     $on('pageInit', () => {

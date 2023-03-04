@@ -20,11 +20,10 @@ import App from "../app.f7";
 import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
-let version = "2.0.11";
+let version = "2.0.15";
 
 Sentry.init({
-  dsn:
-    "https://19734818cf6847f3ae9891d1f8faee7e@o204562.ingest.sentry.io/4504251695628288",
+  dsn: "https://19734818cf6847f3ae9891d1f8faee7e@o204562.ingest.sentry.io/4504251695628288",
   integrations: [new BrowserTracing()],
   environment:
     process.env.NODE_ENV === "production" ? "production" : "development",
@@ -32,7 +31,7 @@ Sentry.init({
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.2 : 1.0,
-  release: `adroit-pwa@${version}`
+  release: `adroit-pwa@${version}`,
 });
 
 var app = new Framework7({
@@ -51,7 +50,7 @@ var app = new Framework7({
   serviceWorker:
     process.env.NODE_ENV === "production"
       ? {
-          path: "/pwa/www/service-worker.js"
+          path: "/pwa/www/service-worker.js",
         }
       : {},
   panel: {

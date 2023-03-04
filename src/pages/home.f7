@@ -121,7 +121,7 @@
           ` : $h`
             <ul>
               ${activityImages.value.map((activityImage) => $h`
-                <li key=${activityImage.id} class="swipeout status_${activityImage.status}">
+                <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.status}" @swipeout:deleted=${onDeleted}>
                   <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                     <div class="item-media">
                       <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
@@ -137,6 +137,11 @@
                   <div class="swipeout-actions-left">
                     <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
                   </div>
+                  ${activityImage.status === "denied" && $h`
+                  <div class="swipeout-actions-right">
+                    <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
+                  </div>
+                  `}
                 </li>
               `)}
             </ul>
@@ -185,6 +190,7 @@
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
     let isDesktop = app.f7.device.desktop;
+    let toastDelete;
 
     let showingUpdate = false;
 
@@ -317,7 +323,7 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.status == "denied") {
+      if (activityImage.status == "denied" || activityImage.status == "new" || activityImage.status == "updated") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage
@@ -333,6 +339,38 @@
       $store.dispatch('getTeams');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
+    }
+
+    const onDeleted = (evt) => {
+      let activityImageId = evt.currentTarget.dataset.activityImageId;
+      let url = Api.urls.updateActivityImage(activityImageId);
+      const body = new FormData();
+      body.append('status', 'archived');
+      body.append('id', activityImageId);
+      let method = 'PUT';
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          if (!toastDelete) {
+            toastDelete = $f7.toast.create({
+              icon: '<i class="icon material-icons">delete</i>',
+              text: 'Item Deleted',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+          // Open it
+          toastDelete.open();
+        })
+        .catch(async error => {
+          // console.log(error);
+          // $f7.dialog.alert(error);
+        });
+
     }
 
     const checkForUpdate = () => {

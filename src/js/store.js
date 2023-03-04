@@ -22,32 +22,32 @@ const store = createStore({
         threshold: null,
         color: "#044366",
         label: "loading",
-        icon: "downloading"
+        icon: "downloading",
       },
       AHEAD: {
         threshold: 2,
         color: "#009933",
         label: "ahead",
-        icon: "sentiment_very_satisfied"
+        icon: "sentiment_very_satisfied",
       },
       ONTRACK: {
         threshold: -1,
         color: "#07bb8f",
         label: "on track",
-        icon: "sentiment_satisfied"
+        icon: "sentiment_satisfied",
       },
       BEHIND: {
         threshold: -3,
         color: "#ff6633",
         label: "behind",
-        icon: "sentiment_dissatisfied"
+        icon: "sentiment_dissatisfied",
       },
       WARNING: {
         threshold: -5,
         color: "#cc3333",
         label: "warning",
-        icon: "sentiment_very_dissatisfied"
-      }
+        icon: "sentiment_very_dissatisfied",
+      },
     },
     teamMembers: [],
     teamObjectives: [],
@@ -121,7 +121,7 @@ const store = createStore({
     },
     version({ state }) {
       return state.version;
-    }
+    },
   },
   actions: {
     addCsrfToken({ state }, token) {
@@ -151,7 +151,7 @@ const store = createStore({
             icon: '<i class="material-icons">wifi_off</i>',
             text: "No connection",
             position: "center",
-            closeTimeout: 3000
+            closeTimeout: 3000,
           })
           .open();
         return false;
@@ -194,15 +194,15 @@ const store = createStore({
 
       let queryDate = [year, month, day].join("/");
 
-      let query = `?date[>=]=${queryDate}&sort=date DESC`;
+      let query = `?date[>=]=${queryDate}&status[!]=archived&sort=date DESC`;
       fetchJson(`${Api.urls.myActivityImages}${query}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.activityImages = result.json.data;
           state.percentageComplete = (100 * daysElapsed) / startToEnd;
           state.activityImages.forEach((item, i) => {
             if (item.status == "approved" || item.status == "ready") {
               totalApproved++;
-            } else if (item.status == "new") {
+            } else if (item.status == "new" || item.status == "updated") {
               totalNew++;
             }
             state.photoCombineProgress =
@@ -243,7 +243,7 @@ const store = createStore({
             done();
           }
         })
-        .catch(err => {
+        .catch((err) => {
           // console.error("fetchJson failed");
         });
     },
@@ -251,7 +251,7 @@ const store = createStore({
       let currentActivities = [];
       let today = new Date();
       let allActivities = state.teams.filter(
-        team => team.IDMinistry == minId
+        (team) => team.IDMinistry == minId
       )[0].activities;
       allActivities.forEach((item, i) => {
         let dateStart = new Date(item.date_start);
@@ -266,20 +266,20 @@ const store = createStore({
     },
     getDenial({ state }, activityId) {
       fetchJson(`${Api.urls.getDenial(activityId)}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           let warningIcon = "<i class='large-icon material-icons'>warning</i>";
           state.denial = warningIcon + result.json.data;
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
     },
     getFCFLocations({ state }) {
       fetchJson(`${Api.urls.locations}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.fcfLocations = result.json.data;
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
     },
@@ -295,28 +295,28 @@ const store = createStore({
     },
     getTeams({ state }) {
       fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.teams = result.json.data[0].teams;
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
     },
     getTeamMembers({ state }) {
       fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.teamMembers = result.json.data.members;
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
     },
     getTeamObjectives({ state }, teamId) {
       fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.teamObjectives = result.json.data;
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
     },
@@ -326,10 +326,10 @@ const store = createStore({
     },
     getUser({ state }) {
       fetchJson(Api.urls.whoami, { method: "GET" })
-        .then(res => {
+        .then((res) => {
           state.user = res.json.data;
         })
-        .catch(function(err) {
+        .catch(function (err) {
           app.f7.loginScreen.open("#my-login-screen");
         });
     },
@@ -359,14 +359,14 @@ const store = createStore({
     },
     updateActivities({ state, dispatch }, { minId }) {
       fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
-        .then(result => {
+        .then((result) => {
           state.teams = result.json.data[0].teams;
           dispatch("getActivities", { minId: minId });
         })
-        .catch(e => {
+        .catch((e) => {
           // console.log(e);
         });
-    }
-  }
+    },
+  },
 });
 export default store;
