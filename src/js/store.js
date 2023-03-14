@@ -296,7 +296,11 @@ const store = createStore({
     getTeams({ state }) {
       fetchJson(`${Api.urls.myProjects}`, { method: "GET" })
         .then((result) => {
-          state.teams = result.json.data[0].teams;
+          let teams = [];
+          result.json.data.forEach((project) => {
+            teams = teams.concat(project.teams);
+          });
+          state.teams = teams;
         })
         .catch((e) => {
           // console.log(e);
@@ -305,7 +309,19 @@ const store = createStore({
     getTeamMembers({ state }) {
       fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
         .then((result) => {
-          state.teamMembers = result.json.data.members;
+          let membersIds = [];
+          result.json.data.projects.forEach((project) => {
+            membersIds = membersIds.concat(project.memberIDs);
+          });
+          let uniqueMemberIds = [...new Set(membersIds)];
+          let members = [];
+          result.json.data.members.forEach((member) => {
+            if (uniqueMemberIds.includes(member.IDPerson)) {
+              members.push(member);
+            }
+          });
+          state.teamMembers = members;
+          // state.teamMembers = result.json.data.members;
         })
         .catch((e) => {
           // console.log(e);
