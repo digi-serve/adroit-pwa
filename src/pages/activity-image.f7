@@ -391,8 +391,8 @@
     }
 
     const processFile = (dataURL, file) => {
-      let maxWidth = 1000;
-      let maxHeight = 1000;
+      let maxWidth = 2000;
+      let maxHeight = 2000;
 
       // load a preview
       let imagePreview = $("#imagePreview")[0];
