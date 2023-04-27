@@ -242,6 +242,7 @@
 
         $("#caption")[0].value = props.activityImage.caption;
         characterCounter();
+        $f7.input.resizeTextarea("#caption");
 
         $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
         $(".progressbar-infinite")[0].style.display = "none";
