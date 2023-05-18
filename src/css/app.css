@@ -147,8 +147,20 @@
 }
 /* Image Preview */
 #imagePreview {
-  max-height: 175px;
+  height: 175px;
   object-fit: contain;
+  position: relative;
+  z-index: 100;
+  transition: 1s all;
+  filter: "blur(2px)";
+}
+#imageLarge {
+  height: 175px;
+  object-fit: contain;
+  opacity: 0;
+  transition: 1s all;
+  position: absolute;
+  z-index: 200;
 }
 .uploadSuccess,
 .uploadFail {
@@ -279,6 +291,7 @@
   width: 80%;
 }
 /* login */
-.md .item-input-focused .item-label, .md .item-input-focused .item-floating-label {
+.md .item-input-focused .item-label,
+.md .item-input-focused .item-floating-label {
   color: inherit;
 }

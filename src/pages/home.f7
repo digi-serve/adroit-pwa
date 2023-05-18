@@ -380,6 +380,8 @@
           method: "GET",
           cache: false
         }).then((res) => {
+          console.log("getVersionPath: ", res.data);
+          console.log("getCurrVersion: ", $f7.version);
           if ($f7.version.trim() != res.data.trim()) {
             showingUpdate = true;
             if ('serviceWorker' in navigator) {

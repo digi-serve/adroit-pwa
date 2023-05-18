@@ -21,6 +21,7 @@
     <form id="newImage">
       <div class="block block-strong no-padding no-margin display-flex justify-content-center bg-color-black">
         <img id="imagePreview" style="display: block;" src=""/>
+        <img id="imageLarge" style="display: block;" src=""/>
       </div>
       <i @click=${readFile} class="material-icons uploadFail hidden">restart_alt</i>
       <i class="material-icons uploadSuccess hidden">check_circle</i>
@@ -244,10 +245,34 @@
         characterCounter();
         $f7.input.resizeTextarea("#caption");
 
+        $("#imageLarge")[0].addEventListener("load", function() {
+          $("#imageLarge")[0].style.opacity = "1"
+          $("#imagePreview")[0].style.filter =  "blur(0px)";
+          $(".progressbar-infinite")[0].style.display = "none";
+          var photoBrowser = $f7.photoBrowser.create({
+            photos: [
+              `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`
+            ],
+            theme: 'dark',
+            type: 'standalone',
+            toolbar: false,
+          });
+          $("#imageLarge").on('click', function () {
+            photoBrowser.open();
+          });
+        });
+        $("#imageLarge")[0].addEventListener("error", function() {
+          $("#imageLarge")[0].style.opacity = "0"
+          $(".progressbar-infinite")[0].style.display = "none";
+          $("#imagePreview")[0].style.filter =  "blur(0px)";
+        });
         $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
-        $(".progressbar-infinite")[0].style.display = "none";
+        // $("#imagePreview")[0].style.filter =  "blur(2px)";
+        $("#imageLarge")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`;
 
         imagePath = props.activityImage.image;
+
+
       } else if (!props.stopAfterIn) {
         tagPeople = $f7.smartSelect.get("#tagPeople");
         setTimeout(() => {
