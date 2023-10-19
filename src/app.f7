@@ -82,65 +82,67 @@
               <!-- block content -->
               <img src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
             </div>
-            <div class="list">
-              <ul>
-                <li class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Username</div>
-                    <div class="item-input-wrap">
-                      <input autocorrect="off" autocomplete="username" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
-                      <span class="input-clear-button"></span>
+            <form action="javascript: return false;" onSubmit="${authenticate}">
+              <div class="list">
+                <ul>
+                  <li class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Username</div>
+                      <div class="item-input-wrap">
+                        <input autocorrect="off" autocomplete="username" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
+                        <span class="input-clear-button"></span>
+                      </div>
                     </div>
-                  </div>
-                </li>
-                <li id="passwordHolder" class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Password</div>
-                    <div class="item-input-wrap">
-                      <a @click="${showPasswordPreview}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility_off</i></a>
-                      <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                  </li>
+                  <li id="passwordHolder" class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Password</div>
+                      <div class="item-input-wrap">
+                        <a @click="${showPasswordPreview}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility_off</i></a>
+                        <input required type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                      </div>
                     </div>
-                  </div>
-                </li>
-                <li id="passwordPreviewHolder" style="display: none;" class="item-content item-input">
-                  <div class="item-inner">
-                    <div class="item-title item-label">Password</div>
-                    <div class="item-input-wrap">
-                      <a @click="${showPassword}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility</i></a>
-                      <input type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                  </li>
+                  <li id="passwordPreviewHolder" style="display: none;" class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Password</div>
+                      <div class="item-input-wrap">
+                        <a @click="${showPassword}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility</i></a>
+                        <input required type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                      </div>
                     </div>
+                  </li>
+                  <li class="item-content item-input"></li>
+                </ul>
+              </div>
+              <div class="block">
+                <button type="submit" class="button color-primary button-outline button-round bg-color-white button-large login-button button-preloader ${isLoading ? 'button-loading' : ''}">
+                  <div class="preloader">
+                    <span class="preloader-inner">
+                      <span class="if-ios">
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                        <span class="preloader-inner-line"></span>
+                      </span>
+                      <span class="if-md">
+                        <svg viewBox="0 0 36 36">
+                          <circle cx="18" cy="18" r="16"></circle>
+                        </svg>
+                      </span>
+                      <span class="if-aurora">
+                        <span class="preloader-inner-circle"></span>
+                      </span>
+                    </span>
                   </div>
-                </li>
-                <li class="item-content item-input"></li>
-              </ul>
-            </div>
-            <div class="block">
-              <button class="button color-primary button-outline button-round bg-color-white button-large login-button button-preloader ${isLoading ? 'button-loading' : ''}" @click="${authenticate}">
-                <div class="preloader">
-                  <span class="preloader-inner">
-                    <span class="if-ios">
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                      <span class="preloader-inner-line"></span>
-                    </span>
-                    <span class="if-md">
-                      <svg viewBox="0 0 36 36">
-                        <circle cx="18" cy="18" r="16"></circle>
-                      </svg>
-                    </span>
-                    <span class="if-aurora">
-                      <span class="preloader-inner-circle"></span>
-                    </span>
-                  </span>
-                </div>
-                <span>Sign In</span>
-              </button>
-            </div>
+                  <span>Sign In</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

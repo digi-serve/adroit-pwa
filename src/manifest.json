@@ -1,6 +1,6 @@
 {
-  "name": "Adroit",
-  "short_name": "Adroit",
+  "name": "Adroit PWA",
+  "short_name": "Adroit PWA",
   "description": "The Adroit app allows the uploading of photos into Adroit for use in reports.",
   "lang": "en-US",
   "start_url": "/pwa/www/",
