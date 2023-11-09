@@ -90,7 +90,7 @@
         ${imagesLoading.value ? $h`
           <ul>
             ${activityImagesSkeleton.map((activityImage) => $h`
-              <li class="swipeout status_${activityImage.status}">
+              <li class="swipeout status_${activityImage.Status}">
                 <a href="#" class="item-link item-content swipeout-content">
                   <div class="item-media">
                     <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
@@ -104,7 +104,7 @@
                   </div>
                 </a>
                 <div class="swipeout-actions-left">
-                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                  <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${activityImage.Status}</a>
                 </div>
               </li>
             `)}
@@ -120,23 +120,23 @@
           ` : $h`
             <ul>
               ${activityImages.value.map((activityImage) => $h`
-                <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.status}" @swipeout:deleted=${onDeleted}>
+                <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                   <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                     <div class="item-media">
-                      <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
+                      <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                     </div>
                     <div class="item-inner">
                       <div class="item-title-row">
-                        <div class="item-title">${activityImage.activity.activity_name}</div>
+                        <div class="item-title">${activityImage.ActivityDate__relation.Activities}</div>
                       </div>
-                      <div style="color: #555;" class="item-subtitle"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
-                      <div class="item-text">${activityImage.date}: ${activityImage.caption}</div>
+                      <div style="color: #555;" class="item-subtitle"><strong>${activityImage.ActivityPhoto__relation.Name}</strong></div>
+                      <div class="item-text">${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}</div>
                     </div>
                   </a>
                   <div class="swipeout-actions-left">
-                    <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                    <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${activityImage.Status}</a>
                   </div>
-                  ${activityImage.status === "denied" && $h`
+                  ${activityImage.status === "Denied" && $h`
                   <div class="swipeout-actions-right">
                     <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
                   </div>
@@ -204,7 +204,7 @@
         },
         "image": "",
         "date": "2022-03-31",
-        "status": "approved",
+        "status": "Approved",
         "id": 12579,
         "createdAt": "2022-04-01T02:37:50.000Z",
         "updatedAt": "2022-09-29T19:56:09.000Z",
@@ -220,12 +220,12 @@
     let firstLoad = true;
 
     $on('pageInit', () => {
-      checkForUpdate();
-      $store.dispatch('getLocations');
-      $store.dispatch('getFCFLocations');
-      $store.dispatch('getTeams');
-      $store.dispatch('getTeamMembers');
-      $store.dispatch("fetchImages");
+      // checkForUpdate();
+      // $store.dispatch('getLocations');
+      // $store.dispatch('getFCFLocations');
+      // $store.dispatch('getTeams');
+      // $store.dispatch('getTeamMembers');
+      // $store.dispatch("fetchImages");
       if (props.showTutorial) {
         setTimeout(() => {
           introJs().start();
@@ -280,7 +280,8 @@
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeams');
-      $store.dispatch('getTeamMembers');
+      // $store.dispatch('getTeamMembers');
+      $store.dispatch('getActivities');
     });
 
     user.onUpdated((e) => {
@@ -322,7 +323,7 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.status == "denied" || activityImage.status == "new" || activityImage.status == "updated") {
+      if (activityImage.status == "Denied" || activityImage.status == "New" || activityImage.status == "Updated") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage
@@ -336,15 +337,16 @@
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeams');
-      $store.dispatch('getTeamMembers');
+      // $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
+      $store.dispatch('getActivities');
     }
 
     const onDeleted = (evt) => {
       let activityImageId = evt.currentTarget.dataset.activityImageId;
       let url = Api.urls.updateActivityImage(activityImageId);
       const body = new FormData();
-      body.append('status', 'archived');
+      body.append('status', 'Archived');
       body.append('id', activityImageId);
       let method = 'PUT';
       const options = {

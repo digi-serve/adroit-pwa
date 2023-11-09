@@ -117,24 +117,24 @@
   text-align: center;
 }
 /*  Status pullouts  */
-.status_approved,
-.status_ready {
+.status_Approved,
+.status_Ready {
   border-left: 8px solid #56b0a5;
 }
-.status_approved_pullout,
-.status_ready_pullout {
+.status_Approved_pullout,
+.status_Ready_pullout {
   background: #56b0a5 !important;
 }
-.status_new {
+.status_New {
   border-left: 8px solid #454545;
 }
-.status_new_pullout {
+.status_New_pullout {
   background: #454545 !important;
 }
-.status_denied {
+.status_Denied {
   border-left: 8px solid #cc3333;
 }
-.status_denied_pullout {
+.status_Denied_pullout {
   background: #cc3333 !important;
 }
 /* Override the resizeable textarea height */

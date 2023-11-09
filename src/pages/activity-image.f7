@@ -66,7 +66,7 @@
                     </optgroup>
                     <optgroup label="FCF Locations">
                       ${fcfLocations.value.map((location) => $h`
-                      <option value="${location.ProjectName}">${location.name}</option>
+                      <option value="${location.uuid}">${location.Name}</option>
                       `)}
                     </optgroup>
                   </select>
@@ -85,9 +85,9 @@
           <li>
             <a id="teamSelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
               data-searchbar-placeholder="Search team">
-              <select required @change="${updateActivities}" name="team">
+              <select required name="team">
                 ${teams.value.map((team) => $h`
-                <option value="${team.IDMinistry}">${team.MinistryDisplayName}</option>
+                <option value="${team.uuid}">${team["Team Name"]}</option>
                 `)}
               </select>
               <div class="item-content">
@@ -104,7 +104,7 @@
                   data-searchbar-placeholder="Search activity">
                   <select @change="${validateOnChange}" required name="activity">
                     ${activities.value.map((activity) => $h`
-                    <option value="${activity.id}">${activity.activity_name}</option>
+                    <option value="${activity.uuid}">${activity.Activities}</option>
                     `)}
                   </select>
                   <div class="item-content">
@@ -124,7 +124,7 @@
               data-searchbar-placeholder="Search volunteers">
               <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
                 ${teamMembers.value.map((teamMember) => $h`
-                <option value="${teamMember.IDPerson}" data-option-image="${Api.absoluteUrl('/')}${teamMember.avatar}">${teamMember.display_name}</option>
+                <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo}">${teamMember["Full Name"]}</option>
                 `)}
               </select>
               <div class="item-content">
@@ -200,7 +200,7 @@
       props.stopAfterIn = true;
       teamSelect = $f7.smartSelect.get("#teamSelect");
       let team = teamSelect.getValue();
-      $store.dispatch('updateActivities', {minId: team});
+      // $store.dispatch('updateActivities', {minId: team});
       // $("#takePhoto")[0].value = null;
       // $("#choosePhoto")[0].value = null;
       // $f7.fab.close(".fab");
@@ -274,10 +274,10 @@
 
 
       } else if (!props.stopAfterIn) {
-        tagPeople = $f7.smartSelect.get("#tagPeople");
-        setTimeout(() => {
-          tagPeople.setValue([user.value.IDPerson.toString()]);
-        }, 500)
+        // tagPeople = $f7.smartSelect.get("#tagPeople");
+        // setTimeout(() => {
+        //   tagPeople.setValue([user.value.IDPerson.toString()]);
+        // }, 500)
       }
     });
 
@@ -286,7 +286,8 @@
 
       let people = $('select[name="people"]').value();
       console.log(user);
-      if (people.indexOf(user.value.IDPerson.toString()) == -1) {
+      debugger;
+      if (people.indexOf(user.value.uuid.toString()) == -1) {
         $f7.dialog.alert('You are not tagged in the photo.');
         return false;
       }
@@ -329,20 +330,21 @@
 
       let url = Api.urls.createActivityImage;
       const body = new FormData();
-      body.append('activity', parseInt(formData.activity));
-      body.append('caption', formData.caption);
-      body.append('caption_govt', formData.location);
-      body.append('date', formData.date);
+      body.append('Activity Date', formData.activity);
+      body.append('Description EN', formData.caption);
+      body.append('Activity Photo', formData.location);
+      body.append('Date of Activity', formData.date);
+      body.append("User", user.value["Owner User"].toString());
       formData.people.forEach(person => {
-        body.append('taggedPeople', person);
+        body.append('Person', person);
       });
       // reset status if updating entry
       if (props.activityImage) {
-        body.append('status', 'new');
+        body.append('Status', 'New');
         body.append('id', props.activityImage.id);
         url = Api.urls.updateActivityImage(props.activityImage.id);
       }
-      body.append('image', imagePath);
+      body.append('Photo', imagePath);
       let method = 'POST';
       if (props.activityImage) {
         method = 'PUT';
@@ -473,7 +475,8 @@
 
     const sendFile = (file) => {
       const body = new FormData();
-      body.append('imageFile', file);
+      body.append('file', file);
+      body.append('file_fullpath', file.name);
 
       const url = Api.urls.activityImageUpload;
 
@@ -484,10 +487,10 @@
 
       fetchJson(url, options)
         .then(response => {
-          if (response.json.status == "success") {
+          if (response.json.status == "server") {
             $(".progressbar-infinite")[0].style.display = "none";
             $(".uploadSuccess")[0].classList.remove("hidden");
-            imagePath = response.json.data.name;
+            imagePath = response.json.data.uuid;
           }
         })
         .catch(async error => {
@@ -497,33 +500,30 @@
 
     }
 
-    const updateActivities = (src) => {
-      // update the activities list
-      if (src.target.value) {
-        $store.dispatch('getActivities', {minId: src.target.value});
-      } else if (props?.activityImage?.activity?.team?.IDMinistry) {
-        $store.dispatch('getActivities', {minId: props.activityImage.activity.team.IDMinistry});
-      }
-      // get activity smart select
-      activitiySelect = $f7.smartSelect.get("#activitiySelect");
-      // get ministry team object
-      if (!src.target.value[0]) {
-        return false;
-      }
-      let temTmp = teams.value.filter(team => team.IDMinistry == src.target.value)[0];
-      // set smart select value to first activity in team's activity list
-      if (!temTmp.activities[0]) {
-        setTimeout(() => {
-          activitiySelect.unsetValue();
-          validateOnChange(src);
-        }, 500)
-      } else {
-        setTimeout(() => {
-          activitiySelect.setValue(temTmp.activities[0].id);
-          validateOnChange(src);
-        }, 500)
-      }
-    }
+    // const updateActivities = (src) => {
+    //   // update the activities list
+    //   debugger;
+    //   $store.dispatch('getActivities');
+    //   // get activity smart select
+    //   activitiySelect = $f7.smartSelect.get("#activitiySelect");
+    //   // get ministry team object
+    //   if (!src.target.value[0]) {
+    //     return false;
+    //   }
+    //   let temTmp = teams.value.filter(team => team.IDMinistry == src.target.value)[0];
+    //   // set smart select value to first activity in team's activity list
+    //   if (!temTmp.activities[0]) {
+    //     setTimeout(() => {
+    //       activitiySelect.unsetValue();
+    //       validateOnChange(src);
+    //     }, 500)
+    //   } else {
+    //     setTimeout(() => {
+    //       activitiySelect.setValue(temTmp.activities[0].id);
+    //       validateOnChange(src);
+    //     }, 500)
+    //   }
+    // }
 
     const characterCounter = (e) => {
       let textArea = $('.charCount')[0];

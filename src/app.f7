@@ -11,7 +11,7 @@
               <!-- block content -->
               <img src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
               <p>
-                ${user.value.display_name}
+                ${user.value["Full Name"]}
               </p>
             </div>
             <div class="list bg_transparent">
@@ -158,13 +158,19 @@
 
   export default (props, { $, $f7, $update, $store }) => {
 
-    store.dispatch("getToken");
+    // store.dispatch("getToken");
     store.dispatch("getUser");
     const user = $store.getters.user;
     const username = $store.getters.username;
 
     user.onUpdated(() => {
-      Sentry.setUser({id: user.value.IDPerson, username: user.value.display_name});
+      $store.dispatch('getLocations');
+      $store.dispatch('getFCFLocations');
+      $store.dispatch('getTeams');
+      // $store.dispatch('getTeamMembers');
+      $store.dispatch("fetchImages");
+      $store.dispatch('getActivities');
+      Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
     })
 
     username.onUpdated(() => {
@@ -216,25 +222,35 @@
     const authenticate = () => {
       isLoading = true;
       $update();
-      fetchJson(Api.urls.csrfToken, { method: 'GET' })
-        .then(csrfResponse => {
-          store.dispatch('addCsrfToken', csrfResponse.json._csrf);
+      // fetchJson(Api.urls.csrfToken, { method: 'GET' })
+      //  .then(csrfResponse => {
+      //     store.dispatch('addCsrfToken', csrfResponse.json._csrf);
           let tempUser = $('#username').value();
           fetchJson(Api.urls.login, {
             method: 'POST',
             body: JSON.stringify({
-              username: tempUser,
+              email: tempUser,
               password,
+              tenant: "admin"
             })
           })
-            .then(async (data) => {
-              store.dispatch("getUser");
-              store.dispatch("setUsername", $('#username').value());
+            .then((data) => {
+              // $store.dispatch("setUser", data.json.data.user);
+              $store.dispatch("setUsername", $("#username").value());
               $("#password")[0].value = "";
               $f7.loginScreen.close();
+              $(".button-preloader").removeClass("button-loading");
               isLoading = false;
               $update();
             })
+            // .then(async (data) => {
+            //   store.dispatch("getUser");
+            //   store.dispatch("setUsername", $('#username').value());
+            //   $("#password")[0].value = "";
+            //   $f7.loginScreen.close();
+            //   isLoading = false;
+            //   $update();
+            // })
             .catch(err => {
               $f7.toast.create({
                 icon: '<i class="material-icons">error</i>',
@@ -245,21 +261,20 @@
               isLoading = false;
               $update();
             });
-        })
-        .catch(err => {
-          $f7.toast.create({
-            icon: '<i class="material-icons">error</i>',
-            text: `Login Failed`,
-            position: 'center',
-            closeTimeout: 2000,
-          }).open();
-          isLoading = false;
-          $update();
-        });
+      // }
+      //  .catch(err => {
+      //    $f7.toast.create({
+      //      icon: '<i class="material-icons">error</i>',
+      //      text: `Login Failed`,
+      //      position: 'center',
+      //      closeTimeout: 2000,
+      //    }).open();
+      //    isLoading = false;
+      //    $update();
+      //  });
     }
 
     const showTutorial = (e) => {
-      // debugger;
       $f7.view.main.router.navigate("/", {
         props: {
           showTutorial: true

@@ -8,7 +8,7 @@ const fetchJson = async (url, options = {}) => {
         icon: '<i class="material-icons">wifi_off</i>',
         text: "No connection",
         position: "center",
-        closeTimeout: 3000
+        closeTimeout: 3000,
       })
       .open();
     return false;
@@ -16,20 +16,20 @@ const fetchJson = async (url, options = {}) => {
   const requestHeaders =
     options.headers ||
     new Headers({
-      Accept: "application/json"
+      Accept: "application/json",
     });
   // debugger;
   if (!(options && options.body && options.body instanceof FormData)) {
     requestHeaders.set("Content-Type", "application/json");
   }
 
-  let csrfToken = store.getters.csrfToken;
+  //let csrfToken = store.getters.csrfToken;
 
-  if (csrfToken) {
-    requestHeaders.set("X-CSRF-Token", csrfToken.value);
-  } else {
-    console.warn("CSRF token in AsyncStorage was empty");
-  }
+  // if (csrfToken) {
+  //   requestHeaders.set("X-CSRF-Token", csrfToken.value);
+  // } else {
+  //   console.warn("CSRF token in AsyncStorage was empty");
+  // }
 
   const absoluteUrl = Api.urls.base + url;
   // debugger;
@@ -39,17 +39,17 @@ const fetchJson = async (url, options = {}) => {
     credentials: "include",
     mode: "cors",
     redirect: "follow",
-    headers: requestHeaders
+    headers: requestHeaders,
   })
-    .then(response =>
-      response.text().then(text => ({
+    .then((response) =>
+      response.text().then((text) => ({
         status: response.status,
         statusText: response.statusText,
         headers: response.headers,
-        body: text
+        body: text,
       }))
     )
-    .then(async response => {
+    .then(async (response) => {
       const { status, statusText, headers, body } = response;
       // console.warn(
       //   `${url} returned`,
