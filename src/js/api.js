@@ -118,7 +118,7 @@ const Api = {
     createActivityImage:
       "/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14",
     updateActivityImage: (activityImageId) =>
-      `/fcf_activities/activityimage/update/${activityImageId}`,
+      `/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14/${activityImageId}`,
     locations: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
     teamObjectives: (teamId) => `/fcf_activities/teamobjectives?team=${teamId}`,
     createActivity: "/fcfactivities/teamactivities",

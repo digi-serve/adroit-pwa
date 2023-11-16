@@ -83,21 +83,6 @@
             </div>
           </li>
           <li>
-            <a id="teamSelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
-              data-searchbar-placeholder="Search team">
-              <select required name="team">
-                ${teams.value.map((team) => $h`
-                <option value="${team.uuid}">${team["Team Name"]}</option>
-                `)}
-              </select>
-              <div class="item-content">
-                <div class="item-inner">
-                  <div class="item-title">Team</div>
-                </div>
-              </div>
-            </a>
-          </li>
-          <li>
             <div class="row no-gap">
               <div class="col-85">
                 <a id="activitiySelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
@@ -124,7 +109,7 @@
               data-searchbar-placeholder="Search volunteers">
               <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
                 ${teamMembers.value.map((teamMember) => $h`
-                <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo}">${teamMember["Full Name"]}</option>
+                <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${teamMember["Full Name"]}</option>
                 `)}
               </select>
               <div class="item-content">
@@ -155,7 +140,7 @@
     let calendarDefault;
     let isLoading = false;
     let progressBarEl;
-    let teamSelect;
+    // let teamSelect;
     let locationSelect;
     let tagPeople;
     let caption;
@@ -166,7 +151,7 @@
     const denial = $store.getters.denial;
     const myLocations = $store.getters.myLocations;
     const fcfLocations = $store.getters.fcfLocations;
-    const teams = $store.getters.myTeams;
+    // const teams = $store.getters.myTeams;
     const teamMembers = $store.getters.myTeamMembers;
     const activities = $store.getters.activities;
     const user = $store.getters.user;
@@ -198,8 +183,8 @@
     $on('pageReinit', (e, page) => {
       // clear props so we don't reload values
       props.stopAfterIn = true;
-      teamSelect = $f7.smartSelect.get("#teamSelect");
-      let team = teamSelect.getValue();
+      // teamSelect = $f7.smartSelect.get("#teamSelect");
+      // let team = teamSelect.getValue();
       // $store.dispatch('updateActivities', {minId: team});
       // $("#takePhoto")[0].value = null;
       // $("#choosePhoto")[0].value = null;
@@ -208,40 +193,40 @@
     })
 
     $on('pageAfterIn', (e, page) => {
-      teamSelect = $f7.smartSelect.get("#teamSelect");
-      let team = teamSelect.getValue();
-      teamSelect.setValue(team);
+      // teamSelect = $f7.smartSelect.get("#teamSelect");
+      // let team = teamSelect.getValue();
+      // teamSelect.setValue(team);
 
       // load values if we are editing a previous entry
       if (props.activityImage && !props.stopAfterIn) {
         $store.dispatch('getDenial', props.activityImage.id);
-        calendarDefault.setValue([new Date(props.activityImage.date+"T00:00:00")]);
-        teamSelect.setValue(props.activityImage.activity.team.IDMinistry);
+        calendarDefault.setValue([new Date(props.activityImage["Date of Activity"])]);
+        // teamSelect.setValue(props.activityImage.ActivityDate__relation.id);
 
         locationSelect = $f7.smartSelect.get("#locationSelect");
-        locationSelect.setValue(props.activityImage.caption_govt);
-        if (locationSelect.getValue() == "") {
-          $store.dispatch('addLocation', props.activityImage.caption_govt);
-          setTimeout(() => {
-            locationSelect.setValue(props.activityImage.caption_govt);
-          }, 500)
-        }
+        locationSelect.setValue(props.activityImage.ActivityPhoto__relation.id);
+        // if (locationSelect.getValue() == "") {
+        //   $store.dispatch('addLocation', props.activityImage.ActivityPhoto__relation.Name);
+        //   setTimeout(() => {
+        //     locationSelect.setValue(props.activityImage.caption_govt);
+        //   }, 500)
+        // }
 
-        activitiySelect = $f7.smartSelect.get("#activitiySelect");
-        setTimeout(() => {
-          activitiySelect.setValue(props.activityImage.activity.id);
-        }, 500)
+        // activitiySelect = $f7.smartSelect.get("#activitiySelect");
+        // setTimeout(() => {
+        //   activitiySelect.setValue(props.activityImage.activity.id);
+        // }, 500)
 
         let people = [];
-        props.activityImage.tagged_people.forEach((pep) => {
-          people.push(pep.IDPerson.toString());
+        props.activityImage.Person__relation.forEach((pep) => {
+          people.push(pep.id.toString());
         })
         tagPeople = $f7.smartSelect.get("#tagPeople");
         setTimeout(() => {
           tagPeople.setValue(people);
         }, 500)
 
-        $("#caption")[0].value = props.activityImage.caption;
+        $("#caption")[0].value = props.activityImage["Description EN"];
         characterCounter();
         $f7.input.resizeTextarea("#caption");
 
@@ -251,7 +236,7 @@
           $(".progressbar-infinite")[0].style.display = "none";
           var photoBrowser = $f7.photoBrowser.create({
             photos: [
-              `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`
+              `${Api.absoluteUrl('/file/')}${props.activityImage.Photo}`
             ],
             theme: 'dark',
             type: 'standalone',
@@ -266,11 +251,11 @@
           $(".progressbar-infinite")[0].style.display = "none";
           $("#imagePreview")[0].style.filter =  "blur(0px)";
         });
-        $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
+        $("#imagePreview")[0].src = `${Api.absoluteUrl('/file/')}${props.activityImage.Photo}`;
         // $("#imagePreview")[0].style.filter =  "blur(2px)";
-        $("#imageLarge")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`;
+        $("#imageLarge")[0].src = `${Api.absoluteUrl('/file/')}${props.activityImage.Photo}`;
 
-        imagePath = props.activityImage.image;
+        imagePath = props.activityImage.Photo;
 
 
       } else if (!props.stopAfterIn) {
@@ -285,12 +270,12 @@
       let isValid = $f7.input.validateInputs("#newImage");
 
       let people = $('select[name="people"]').value();
-      console.log(user);
-      debugger;
+
       if (people.indexOf(user.value.uuid.toString()) == -1) {
         $f7.dialog.alert('You are not tagged in the photo.');
         return false;
       }
+      debugger;
 
       if (!isValid || !imagePath) return false;
 
@@ -543,11 +528,11 @@
     }
 
     const addActivity = (e) => {
-      teamSelect = $f7.smartSelect.get("#teamSelect");
-      let teamId = teamSelect.getValue();
+      // teamSelect = $f7.smartSelect.get("#teamSelect");
+      // let teamId = teamSelect.getValue();
       $f7.view.main.router.navigate("/add-activity/", {
         props: {
-          teamId: teamId,
+          // teamId: teamId,
           // default_image: imagePath
         },
         ignoreCache: true

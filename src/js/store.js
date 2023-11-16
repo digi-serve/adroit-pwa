@@ -25,7 +25,7 @@ function parse(records) {
       }
     }
   }
-  console.log(theseRecords);
+  // console.log(theseRecords);
   return theseRecords;
 }
 
@@ -446,7 +446,11 @@ const store = createStore({
                         { method: "GET" }
                       )
                         .then((result) => {
-                          state.teamMembers = result.json.data.data;
+                          // debugger;
+                          let members = result.json.data.data.filter(
+                            (person) => person.Status == "Active"
+                          );
+                          state.teamMembers = members;
                         })
                         .catch((e) => {
                           // console.log(e);

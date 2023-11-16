@@ -90,10 +90,10 @@
         ${imagesLoading.value ? $h`
           <ul>
             ${activityImagesSkeleton.map((activityImage) => $h`
-              <li class="swipeout status_${activityImage.Status}">
+              <li class="swipeout status_New">
                 <a href="#" class="item-link item-content swipeout-content">
                   <div class="item-media">
-                    <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
+                    <div class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; border-radius: 3px;"></div>
                   </div>
                   <div class="item-inner">
                     <div class="item-title-row">
@@ -136,7 +136,7 @@
                   <div class="swipeout-actions-left">
                     <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${activityImage.Status}</a>
                   </div>
-                  ${activityImage.status === "Denied" && $h`
+                  ${activityImage.Status === "Denied" && $h`
                   <div class="swipeout-actions-right">
                     <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
                   </div>
@@ -323,7 +323,7 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.status == "Denied" || activityImage.status == "New" || activityImage.status == "Updated") {
+      if (activityImage.Status == "Denied" || activityImage.Status == "New" || activityImage.Status == "Updated") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage
@@ -346,7 +346,7 @@
       let activityImageId = evt.currentTarget.dataset.activityImageId;
       let url = Api.urls.updateActivityImage(activityImageId);
       const body = new FormData();
-      body.append('status', 'Archived');
+      body.append('Status', 'Archived');
       body.append('id', activityImageId);
       let method = 'PUT';
       const options = {
@@ -359,7 +359,7 @@
           if (!toastDelete) {
             toastDelete = $f7.toast.create({
               icon: '<i class="icon material-icons">delete</i>',
-              text: 'Item Deleted',
+              text: 'Photo Archived',
               position: 'center',
               closeTimeout: 2000,
             });
