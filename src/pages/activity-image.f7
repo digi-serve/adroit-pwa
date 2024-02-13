@@ -210,7 +210,12 @@
     $on('pageAfterIn', (e, page) => {
       teamSelect = $f7.smartSelect.get("#teamSelect");
       let team = teamSelect.getValue();
-      teamSelect.setValue(team);
+      let teamID = localStorage.getItem("teamID");
+      if (teamID) {
+        teamSelect.setValue(teamID);
+      } else {
+        teamSelect.setValue(team);
+      }
 
       // load values if we are editing a previous entry
       if (props.activityImage && !props.stopAfterIn) {
@@ -325,6 +330,10 @@
     }
 
     const submitRequest = () => {
+      // set default teamID to use on next activity
+      let teamID = teamSelect.getValue();
+      localStorage.setItem("teamID", teamID);
+
       var formData = $f7.form.convertToData('#newImage');
 
       let url = Api.urls.createActivityImage;
