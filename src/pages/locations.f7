@@ -11,10 +11,13 @@
         </div>
         <div class="title text-color-white">My Locations</div>
         <div class="right">
+          <a class="link sortable-toggle text-color-white" data-sortable=".sortable">Reorder</a>
+        </div>
+        <!-- <div class="right">
           <a href="#" class="link open-dialog text-color-white">
             <i class="material-icons">help</i>
           </a>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="page-content">
@@ -33,16 +36,17 @@
         </ul>
       </div>
       ${hasLocations.value ? $h`
-        <div class="list">
+        <div class="list sortable sortable-opposite">
           <ul>
             ${locations.value.map((location) => $h`
-              <li key=${location.id}>
+              <li key=${location}>
                 <div class="item-content">
                   <div class="item-inner">
                     <div class="item-title">${location}</div>
                     <div class="item-after"><a href="#" class="button" @click="${() => deleteLocation(location)}"><i class="material-icons text-color-red">delete</i></a></div>
                   </div>
                 </div>
+                <div class="sortable-handler"></div>
               </li>
             `)}
           </ul>
@@ -100,6 +104,10 @@
         closeTimeout: 2000,
       }).open();
     }
+
+    $f7.on('sortableSort', function (listEl, indexes) {
+      $store.dispatch('reorderLocations', indexes);
+    })
 
     const deleteLocation = (location) => {
       $store.dispatch('deleteLocation', location);

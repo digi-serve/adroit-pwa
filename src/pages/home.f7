@@ -54,31 +54,15 @@
         </div>
       </div>
     </div>
-    ${isDesktop ? $h`
-      <div class="fab-backdrop"></div>
-      <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
-        <a @click="${choosePhoto}" href="#">
-          <i class="icon f7-icons if-not-md">plus</i>
-          <i class="icon f7-icons if-not-md">xmark</i>
-          <i class="icon material-icons md-only">add</i>
-          <i class="icon material-icons md-only">close</i>
-        </a>
-      </div>
-    ` : $h`
-      <div class="fab-backdrop"></div>
-      <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
-        <a href="#">
-          <i class="icon f7-icons if-not-md">plus</i>
-          <i class="icon f7-icons if-not-md">xmark</i>
-          <i class="icon material-icons md-only">add</i>
-          <i class="icon material-icons md-only">close</i>
-        </a>
-        <div class="fab-buttons fab-buttons-top">
-          <a class="fab-label-button" href="#" @click="${choosePhoto}"><span><i class="icon material-icons">photo_library</i></span><span class="fab-label">Choose Photo</span></a>
-          <a class="fab-label-button" href="#" @click="${takePhoto}"><span><i class="icon material-icons">photo_camera</i></span><span class="fab-label">Take Photo</span></a>
-        </div>
-      </div>
-    `}
+    <div class="fab-backdrop"></div>
+    <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
+      <a @click="${choosePhoto}" href="#">
+        <i class="icon f7-icons if-not-md">plus</i>
+        <i class="icon f7-icons if-not-md">xmark</i>
+        <i class="icon material-icons md-only">add</i>
+        <i class="icon material-icons md-only">close</i>
+      </a>
+    </div>
     <!-- Scrollable page content-->
     <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
       <div class="ptr-preloader">

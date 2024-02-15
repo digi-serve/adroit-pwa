@@ -134,6 +134,15 @@ const store = createStore({
       localStorage.setItem("locations", JSON.stringify(locations));
       state.locations = locations;
     },
+    reorderLocations({ state }, indexes) {
+      let locations = state.locations;
+      let itemMoved = locations[indexes.from];
+      locations.splice(indexes.from, 1);
+      locations.splice(indexes.to, 0, itemMoved);
+      // debugger;
+      localStorage.setItem("locations", JSON.stringify(locations));
+      state.locations = locations;
+    },
     deleteLocation({ state }, location) {
       let locations = state.locations;
       const index = locations.indexOf(location);
