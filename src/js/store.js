@@ -248,11 +248,15 @@ const store = createStore({
         });
     },
     getActivities({ state }, { minId }) {
+      if (typeof minId == "string") {
+        minId = parseInt(minId);
+      }
       let currentActivities = [];
       let today = new Date();
-      let allActivities = state.teams.filter(
+      let ministry = state.teams.filter(
         (team) => team.IDMinistry == minId
-      )[0].activities;
+      )[0];
+      let allActivities = ministry?.activities || [];
       allActivities.forEach((item, i) => {
         let dateStart = new Date(item.date_start);
         let dateEnd = new Date(item.date_end);

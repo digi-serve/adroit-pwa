@@ -189,7 +189,6 @@
         dateFormat: "yyyy-mm-dd"
       });
       if (props.file) {
-        // debugger;
         calendarDefault.setValue([new Date(props.file.lastModified)]);
         readFile();
       }
@@ -198,27 +197,31 @@
     $on('pageReinit', (e, page) => {
       // clear props so we don't reload values
       props.stopAfterIn = true;
-      teamSelect = $f7.smartSelect.get("#teamSelect");
-      let team = teamSelect.getValue();
-      $store.dispatch('updateActivities', {minId: team});
+      // let team = teamSelect.getValue();
+      // $store.dispatch('updateActivities', {minId: team});
       // $("#takePhoto")[0].value = null;
       // $("#choosePhoto")[0].value = null;
       // $f7.fab.close(".fab");
       // $store.dispatch('resetDenial');
+      if (page.router.previousRoute.path == "/locations/") {
+        props.updateLocation = true;
+      }
     })
 
     $on('pageAfterIn', (e, page) => {
-      teamSelect = $f7.smartSelect.get("#teamSelect");
-      let team = teamSelect.getValue();
-      let teamID = localStorage.getItem("teamID");
-      if (teamID) {
-        teamSelect.setValue(teamID);
-      } else {
-        teamSelect.setValue(team);
+      if (props.updateLocation) {
+        locationSelect = $f7.smartSelect.get("#locationSelect");
+        locationSelect.setValue(locationSelect.getValue());
+        // if (locationSelect.getValue() == "") {
+        //   $store.dispatch('addLocation', props.activityImage.caption_govt);
+        //   setTimeout(() => {
+        //     locationSelect.setValue(props.activityImage.caption_govt);
+        //   }, 500)
+        // }
       }
-
       // load values if we are editing a previous entry
       if (props.activityImage && !props.stopAfterIn) {
+        teamSelect = $f7.smartSelect.get("#teamSelect");
         $store.dispatch('getDenial', props.activityImage.id);
         calendarDefault.setValue([new Date(props.activityImage.date+"T00:00:00")]);
         teamSelect.setValue(props.activityImage.activity.team.IDMinistry);
@@ -280,8 +283,16 @@
 
       } else if (!props.stopAfterIn) {
         tagPeople = $f7.smartSelect.get("#tagPeople");
+        teamSelect = $f7.smartSelect.get("#teamSelect");
+        let team = teamSelect.getValue();
+        let teamID = localStorage.getItem("teamID");
         setTimeout(() => {
           tagPeople.setValue([user.value.IDPerson.toString()]);
+          if (teamID) {
+            teamSelect.setValue(teamID);
+          } else {
+            teamSelect.setValue(team);
+          }
         }, 500)
       }
     });
@@ -528,7 +539,25 @@
         }, 500)
       } else {
         setTimeout(() => {
-          activitiySelect.setValue(temTmp.activities[0].id);
+          // if (typeof minId == "string") {
+          //   minId = parseInt(minId);
+          // }
+          let currentActivities = [];
+          let today = new Date();
+          // let ministry = state.teams.filter(
+          //   (team) => team.IDMinistry == minId
+          // )[0];
+          let allActivities = temTmp.activities || [];
+          allActivities.forEach((item, i) => {
+            let dateStart = new Date(item.date_start);
+            let dateEnd = new Date(item.date_end);
+            if (dateStart <= today) {
+              if (dateEnd >= today || item.date_end == null) {
+                currentActivities.push(item);
+              }
+            }
+          });
+          activitiySelect.setValue(currentActivities[0].id);
           validateOnChange(src);
         }, 500)
       }
