@@ -284,14 +284,19 @@
       } else if (!props.stopAfterIn) {
         tagPeople = $f7.smartSelect.get("#tagPeople");
         teamSelect = $f7.smartSelect.get("#teamSelect");
+        locationSelect = $f7.smartSelect.get("#locationSelect");
         let team = teamSelect.getValue();
         let teamID = localStorage.getItem("teamID");
+        let location = localStorage.getItem("location");
         setTimeout(() => {
           tagPeople.setValue([user.value.IDPerson.toString()]);
           if (teamID) {
             teamSelect.setValue(teamID);
           } else {
             teamSelect.setValue(team);
+          }
+          if (location) {
+            locationSelect.setValue(location);            
           }
         }, 500)
       }
@@ -346,6 +351,8 @@
       localStorage.setItem("teamID", teamID);
 
       var formData = $f7.form.convertToData('#newImage');
+
+      localStorage.setItem("location", formData.location);
 
       let url = Api.urls.createActivityImage;
       const body = new FormData();
