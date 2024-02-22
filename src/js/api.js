@@ -119,7 +119,33 @@ const Api = {
       "/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14",
     updateActivityImage: (activityImageId) =>
       `/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14/${activityImageId}`,
-    locations: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
+    createLocation: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
+    locations: {
+      url: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "Creator",
+            rule: "is_null",
+            value: "",
+          },
+        ],
+      },
+    },
+    myLocations: {
+      url: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "Creator",
+            rule: "is_current_user",
+            value: "",
+          },
+        ],
+      },
+    },
     teamObjectives: (teamId) => `/fcf_activities/teamobjectives?team=${teamId}`,
     createActivity: "/fcfactivities/teamactivities",
     getDenial: (activityImageId) =>

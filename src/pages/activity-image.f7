@@ -61,7 +61,7 @@
                   <select @change="${validateOnChange}" required placeholder="Select Location" name="location">
                     <optgroup label="My Locations">
                       ${myLocations.value.map((location) => $h`
-                      <option value="${location}">${location}</option>
+                      <option value="${location}">${location.Name}</option>
                       `)}
                     </optgroup>
                     <optgroup label="FCF Locations">

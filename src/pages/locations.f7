@@ -39,8 +39,8 @@
               <li key=${location.id}>
                 <div class="item-content">
                   <div class="item-inner">
-                    <div class="item-title">${location}</div>
-                    <div class="item-after"><a href="#" class="button" @click="${() => deleteLocation(location)}"><i class="material-icons text-color-red">delete</i></a></div>
+                    <div class="item-title">${location.Name}</div>
+                    <!-- <div class="item-after"><a href="#" class="button" @click="${() => deleteLocation(location)}"><i class="material-icons text-color-red">delete</i></a></div> -->
                   </div>
                 </div>
               </li>
@@ -58,9 +58,13 @@
   </div>
 </template>
 <script>
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+
   export default (props, { $, $f7, $on, $update, $store }) => {
     const locations = $store.getters.myLocations;
     const hasLocations = $store.getters.hasLocations;
+    const user = $store.getters.user;
     let toastIcon;
 
     $on('pageInit', () => {
@@ -90,15 +94,31 @@
 
     const addLocation = () => {
       let newLocation = $('.addLocation')[0].value.trim();
-      $store.dispatch('addLocation', newLocation);
-      $store.dispatch('hasLocations');
-      $('.addLocation')[0].value = "";
-      $f7.toast.create({
-        icon: '<i class="material-icons">thumb_up</i>',
-        text: `${newLocation} added!`,
-        position: 'center',
-        closeTimeout: 2000,
-      }).open();
+
+      let url = Api.urls.createLocation;
+      const body = new FormData();
+      body.append('Name', newLocation);
+      body.append("Creator", user.value["Owner User"].toString());
+      let method = 'POST';
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          $store.dispatch('getLocations');
+          $store.dispatch('hasLocations');
+          $('.addLocation')[0].value = "";
+          $f7.toast.create({
+            icon: '<i class="material-icons">thumb_up</i>',
+            text: `${newLocation} added!`,
+            position: 'center',
+            closeTimeout: 2000,
+          }).open();
+        })
+        .catch(async error => {
+        });
     }
 
     const deleteLocation = (location) => {

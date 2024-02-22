@@ -19,7 +19,9 @@ function parse(records) {
           theseRecords[propt] != null &&
           theseRecords[propt].forEach)
       ) {
-        theseRecords[propt] = parse(theseRecords[propt]);
+        if (theseRecords[propt] != null) {
+          theseRecords[propt] = parse(theseRecords[propt]);
+        }
       } else if (propt == "translations") {
         theseRecords = translate(theseRecords);
       }
@@ -237,11 +239,10 @@ const store = createStore({
 
       let queryDate = [year, month, day].join("/");
 
-      let query = `&date[>=]=${queryDate}&status[!]=Archived&sort=Date of Activity DESC`;
       fetchJson(
-        `${Api.urls.myActivityImages.url}&where=${JSON.stringify(
-          Api.urls.myActivityImages.where
-        )}`,
+        `${Api.urls.myActivityImages.url}
+          &sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          ${JSON.stringify(Api.urls.myActivityImages.where)}`,
         { method: "GET" }
       )
         .then((result) => {
@@ -350,7 +351,11 @@ const store = createStore({
         });
     },
     getFCFLocations({ state }) {
-      fetchJson(`${Api.urls.locations}`, { method: "GET" })
+      fetchJson(
+        `${Api.urls.locations.url}?where=${JSON.stringify(
+          Api.urls.locations.where
+        )}`
+      )
         .then((result) => {
           state.fcfLocations = result.json.data.data;
         })
@@ -359,14 +364,18 @@ const store = createStore({
         });
     },
     getLocations({ state }) {
-      let locations = localStorage.getItem("locations");
-      if (locations == null) {
-        locations = [];
-      } else {
-        state.hasLocations = true;
-        locations = JSON.parse(locations);
-      }
-      state.locations = locations;
+      fetchJson(
+        `${Api.urls.myLocations.url}?where=${JSON.stringify(
+          Api.urls.myLocations.where
+        )}`
+      )
+        .then((result) => {
+          state.hasLocations = true;
+          state.locations = result.json.data.data;
+        })
+        .catch((e) => {
+          // console.log(e);
+        });
     },
     getTeams({ state }) {
       if (!state?.user?.uuid) return false;
