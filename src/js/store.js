@@ -15,6 +15,7 @@ const store = createStore({
     hasLocations: false,
     imagesLoading: true,
     prevImagesLoading: true,
+    prevImagesLoaded: false,
     locations: [],
     percentageComplete: 0,
     photoCombineProgress: 0,
@@ -92,7 +93,10 @@ const store = createStore({
       return state.imagesLoading;
     },
     prevImagesLoading({ state }) {
-      return state.imagesLoading;
+      return state.prevImagesLoading;
+    },
+    prevImagesLoaded({ state }) {
+      return state.prevImagesLoaded;
     },
     myLocations({ state }) {
       return state.locations;
@@ -387,6 +391,9 @@ const store = createStore({
           //   state.currentStatus = state.ReportingPeriodStatus.WARNING;
           // }
           state.prevImagesLoading = false;
+          state.prevImagesLoaded = true;
+          console.log("state.prevImagesLoaded");
+          console.log(state.prevImagesLoaded);
           if (done) {
             done();
           }
