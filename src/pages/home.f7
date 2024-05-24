@@ -130,6 +130,62 @@
             </ul>
           `}
         `}
+        ${prevImagesLoading.value ? $h`
+          <ul>
+            ${activityImagesSkeleton.map((activityImage) => $h`
+              <li class="swipeout status_${activityImage.status}">
+                <a href="#" class="item-link item-content swipeout-content">
+                  <div class="item-media">
+                    <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title skeleton-text skeleton-effect-fade">${activityImage.activity.activity_name}</div>
+                    </div>
+                    <div style="color: #555;" class="item-subtitle skeleton-text skeleton-effect-fade"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                    <div class="item-text skeleton-text skeleton-effect-fade">${activityImage.date}: ${activityImage.caption}</div>
+                  </div>
+                </a>
+                <div class="swipeout-actions-left">
+                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                </div>
+              </li>
+            `)}
+          </ul>
+        ` : $h`
+          ${activityImagesPrevious.value.length == 0 ? $h`
+            <p class="row">
+              <a href="#" @click=${fetchPrevious} class="col button button-large">Load More Images</a>
+            </p>
+          ` : $h`
+            <ul>
+              ${activityImagesPrevious.value.map((activityImage) => $h`
+                <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.status}" @swipeout:deleted=${onDeleted}>
+                  <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
+                    <div class="item-media">
+                      <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.image}" />
+                    </div>
+                    <div class="item-inner">
+                      <div class="item-title-row">
+                        <div class="item-title">${activityImage.activity.activity_name}</div>
+                      </div>
+                      <div style="color: #555;" class="item-subtitle"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                      <div class="item-text">${activityImage.date}: ${activityImage.caption}</div>
+                    </div>
+                  </a>
+                  <div class="swipeout-actions-left">
+                    <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                  </div>
+                  ${activityImage.status === "denied" && $h`
+                  <div class="swipeout-actions-right">
+                    <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
+                  </div>
+                  `}
+                </li>
+              `)}
+            </ul>
+          `}
+        `}
       </div>
       <input style="display: none;" id="takePhoto" type="file" accept="image/*" capture @change=${() => upload("#takePhoto")} />
       <input style="display: none;" id="choosePhoto" type="file" accept="image/*" @change=${() => upload("#choosePhoto")} />
@@ -166,6 +222,7 @@
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const imagesLoading = $store.getters.imagesLoading;
+    const prevImagesLoading = $store.getters.prevImagesLoading;
     const totalApproved = $store.getters.totalApproved;
     const totalNew = $store.getters.totalNew;
     const daysLeft = $store.getters.daysLeft;
@@ -198,6 +255,7 @@
 
     let activityImagesSkeleton = [acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage];
     const activityImages = $store.getters.activityImages;
+    const activityImagesPrevious = $store.getters.activityImagesPrevious;
     const currentStatus = $store.getters.currentStatus;
     const user = $store.getters.user;
     let loadingStatus = $store.state.ReportingPeriodStatus.LOADING;
@@ -354,6 +412,11 @@
           // $f7.dialog.alert(error);
         });
 
+    }
+
+    const fetchPrevious = () => {
+      $update();
+      $store.dispatch("fetchPreviousQuarterImages");
     }
 
     const checkForUpdate = () => {
