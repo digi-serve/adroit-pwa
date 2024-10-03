@@ -20,7 +20,7 @@ import App from "../app.f7";
 import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
-let version = "2.1.2";
+let version = "2.1.3";
 
 Sentry.init({
   dsn: "https://19734818cf6847f3ae9891d1f8faee7e@o204562.ingest.sentry.io/4504251695628288",

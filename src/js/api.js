@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://adroit.fcfthailand.org"
+    ? "https://fcfhr.childatrisk.in.th"
     : "http://localhost:8010/proxy";
 
 const Api = {
@@ -67,6 +67,19 @@ const Api = {
         },
       };
     },
+    myTeamMembers: {
+      url: "/app_builder/model/82df020c-695d-4360-8112-567a2f664569",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "c95e2352-9289-4187-aec3-3c41660aba5e",
+            rule: "in_query",
+            value: "966d11df-18ca-4b88-84ff-634f64dd92ab",
+          },
+        ],
+      },
+    },
     myProjectsWithMembers: (profileId) => {
       return {
         url: "/app_builder/model/82df020c-695d-4360-8112-567a2f664569",
@@ -127,8 +140,8 @@ const Api = {
         rules: [
           {
             key: "Creator",
-            rule: "is_null",
-            value: "",
+            rule: "equals",
+            value: "admin",
           },
         ],
       },

@@ -263,8 +263,8 @@
       $store.dispatch("fetchImages");
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
-      $store.dispatch('getTeams');
-      // $store.dispatch('getTeamMembers');
+      // $store.dispatch('getTeams');
+      $store.dispatch('getTeamMembers');
       $store.dispatch('getActivities');
     });
 
@@ -320,8 +320,8 @@
     const reloadList = (e, done) => {
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
-      $store.dispatch('getTeams');
-      // $store.dispatch('getTeamMembers');
+      // $store.dispatch('getTeams');
+      $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
       $store.dispatch('getActivities');
     }

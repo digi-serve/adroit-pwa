@@ -239,10 +239,20 @@ const store = createStore({
 
       let queryDate = [year, month, day].join("/");
 
+      let datesRule = {
+        key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+        rule: "greater_or_equal",
+        value: queryDate,
+      };
+
+      let wheres = { ...Api.urls.myActivityImages.where } ;
+
+      wheres.rules = wheres.rules.concat(datesRule);
+
       fetchJson(
         `${Api.urls.myActivityImages.url}
           &sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
-          ${JSON.stringify(Api.urls.myActivityImages.where)}`,
+          ${JSON.stringify(wheres)}`,
         { method: "GET" }
       )
         .then((result) => {
@@ -377,6 +387,28 @@ const store = createStore({
           // console.log(e);
         });
     },
+    getTeamMembers({ state }) {
+      fetchJson(
+        `${Api.urls.myTeamMembers.url}?where=${JSON.stringify(
+          Api.urls.myTeamMembers.where
+        )}`,
+        {
+          method: "GET",
+        }
+      )
+        .then((res) => {
+          let volunteers = [];
+          res.json.data.data.forEach((res) => {
+            if (res['Person Type'] == "Volunteer") {
+              volunteers.push(res);
+            }
+          })
+          state.teamMembers = volunteers;
+        })
+        .catch(function (err) {
+          app.f7.loginScreen.open("#my-login-screen");
+        });
+    },
     getTeams({ state }) {
       if (!state?.user?.uuid) return false;
 
@@ -481,29 +513,6 @@ const store = createStore({
           // console.log(e);
         });
     },
-    // getTeamMembers({ state }) {
-    //   if (!state?.teams) return false;
-
-    //   fetchJson(`${Api.urls.myProjectsWithMembers}`, { method: "GET" })
-    //     .then((result) => {
-    //       let membersIds = [];
-    //       result.json.data.projects.forEach((project) => {
-    //         membersIds = membersIds.concat(project.memberIDs);
-    //       });
-    //       let uniqueMemberIds = [...new Set(membersIds)];
-    //       let members = [];
-    //       result.json.data.members.forEach((member) => {
-    //         if (uniqueMemberIds.includes(member.IDPerson)) {
-    //           members.push(member);
-    //         }
-    //       });
-    //       state.teamMembers = members;
-    //       // state.teamMembers = result.json.data.members;
-    //     })
-    //     .catch((e) => {
-    //       // console.log(e);
-    //     });
-    // },
     getTeamObjectives({ state }, teamId) {
       fetchJson(`${Api.urls.teamObjectives(teamId)}`, { method: "GET" })
         .then((result) => {

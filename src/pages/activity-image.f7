@@ -15,7 +15,7 @@
   <div class="page-content">
     ${isDenial ? $h`
     <div class="denial-wrapper">
-      <div innerHTML=${denial.value} class="block block-strong inset denial"></div>
+      <div innerHTML=${denial} class="block block-strong inset denial"></div>
     </div>
     ` : $h``}
     <form id="newImage">
@@ -61,7 +61,7 @@
                   <select @change="${validateOnChange}" required placeholder="Select Location" name="location">
                     <optgroup label="My Locations">
                       ${myLocations.value.map((location) => $h`
-                      <option value="${location}">${location.Name}</option>
+                      <option value="${location.uuid}">${location.Name}</option>
                       `)}
                     </optgroup>
                     <optgroup label="FCF Locations">
@@ -148,7 +148,8 @@
     let imagePath;
     let isUpdate = false;
     let isDenial = false;
-    const denial = $store.getters.denial;
+    // const denial = $store.getters.denial;
+    let denial = "Reason for denial";
     const myLocations = $store.getters.myLocations;
     const fcfLocations = $store.getters.fcfLocations;
     // const teams = $store.getters.myTeams;
@@ -158,8 +159,9 @@
 
     if (props.activityImage) {
       isUpdate = true;
-      if (props.activityImage.status == "denied") {
+      if (props.activityImage.Status == "Denied" && props.activityImage['Reason for Denial'] != null) {
         isDenial = true;
+        denial = props.activityImage['Reason for Denial'];
       }
     }
 
@@ -199,7 +201,7 @@
 
       // load values if we are editing a previous entry
       if (props.activityImage && !props.stopAfterIn) {
-        $store.dispatch('getDenial', props.activityImage.id);
+        // $store.dispatch('getDenial', props.activityImage.id);
         calendarDefault.setValue([new Date(props.activityImage["Date of Activity"])]);
         // teamSelect.setValue(props.activityImage.ActivityDate__relation.id);
 
@@ -275,7 +277,6 @@
         $f7.dialog.alert('You are not tagged in the photo.');
         return false;
       }
-      debugger;
 
       if (!isValid || !imagePath) return false;
 
