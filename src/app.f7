@@ -82,7 +82,7 @@
               <!-- block content -->
               <img src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
             </div>
-            <form action="javascript: return false;" onSubmit="${authenticate}">
+            <form action="javascript: console.log('logging in...');" onSubmit="${authenticate}">
               <div class="list">
                 <ul>
                   <li class="item-content item-input">
