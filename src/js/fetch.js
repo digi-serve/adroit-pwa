@@ -23,6 +23,16 @@ const fetchJson = async (url, options = {}) => {
     requestHeaders.set("Content-Type", "application/json");
   }
 
+  // if we send params we are not using formData due to issues 
+  // with passing translations for multilingual fields
+  // so we need to submit this differently
+  if (options.params) {
+    options = {
+      method: options.method,
+      body: JSON.stringify(options.params)
+    }
+  }
+
   //let csrfToken = store.getters.csrfToken;
 
   // if (csrfToken) {
@@ -33,7 +43,7 @@ const fetchJson = async (url, options = {}) => {
 
   const absoluteUrl = Api.urls.base + url;
   // debugger;
-  // console.warn("fetchJson", url, options, requestHeaders);
+  console.warn("fetchJson", url, options, requestHeaders);
   return fetch(absoluteUrl, {
     ...options,
     credentials: "include",

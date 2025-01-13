@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NODE_ENV === "production"
-    ? "https://fcfhr.childatrisk.in.th"
+    ? "https://apps.fcfthailand.org"
     : "http://localhost:8010/proxy";
 
 const Api = {
@@ -76,6 +76,19 @@ const Api = {
             key: "c95e2352-9289-4187-aec3-3c41660aba5e",
             rule: "in_query",
             value: "966d11df-18ca-4b88-84ff-634f64dd92ab",
+          },
+        ],
+      },
+    },
+    myProjects: {
+      url: "/app_builder/model/55530a46-3b77-4b22-8221-bf52a68c6cbc",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "this_object",
+            rule: "in_query",
+            value: "4bb0ecb5-e326-49b1-bb44-25c63dccf01d",
           },
         ],
       },
@@ -160,7 +173,7 @@ const Api = {
       },
     },
     teamObjectives: (teamId) => `/fcf_activities/teamobjectives?team=${teamId}`,
-    createActivity: "/fcfactivities/teamactivities",
+    createActivity: "/app_builder/model/3ad8d8ad-c06a-46b5-bd7d-c643818a864d",
     getDenial: (activityImageId) =>
       `/fcf_activities/getdenial?id=${activityImageId}`,
     version: "/pwa/version.txt",

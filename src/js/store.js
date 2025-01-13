@@ -59,6 +59,7 @@ const store = createStore({
     hasLocations: false,
     imagesLoading: true,
     locations: [],
+    myProjects: [],
     percentageComplete: 0,
     photoCombineProgress: 0,
     photoProgress: 0,
@@ -139,6 +140,9 @@ const store = createStore({
     },
     myTeamMembers({ state }) {
       return state.teamMembers;
+    },
+    myProjects({ state }) {
+      return state.myProjects;
     },
     percentageComplete({ state }) {
       return state.percentageComplete;
@@ -408,6 +412,22 @@ const store = createStore({
         .catch(function (err) {
           app.f7.loginScreen.open("#my-login-screen");
         });
+    },
+    getMyProjects({ state }) {
+      if (!state?.user?.uuid) return false;
+      fetchJson(
+        `${Api.urls.myProjects.url}?where=${JSON.stringify(
+          Api.urls.myProjects.where
+        )}`,
+        { method: "GET" }
+      )
+      .then((result) => {
+        state.myProjects = parse(result.json.data.data);
+        console.log(state.myProjects);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
     },
     getTeams({ state }) {
       if (!state?.user?.uuid) return false;

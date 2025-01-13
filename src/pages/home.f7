@@ -204,12 +204,12 @@
     let firstLoad = true;
 
     $on('pageInit', () => {
-      // checkForUpdate();
-      // $store.dispatch('getLocations');
-      // $store.dispatch('getFCFLocations');
+      checkForUpdate();
+      $store.dispatch('getLocations');
+      $store.dispatch('getFCFLocations');
       // $store.dispatch('getTeams');
-      // $store.dispatch('getTeamMembers');
-      // $store.dispatch("fetchImages");
+      $store.dispatch('getTeamMembers');
+      $store.dispatch("fetchImages");
       if (props.showTutorial) {
         setTimeout(() => {
           introJs().start();
