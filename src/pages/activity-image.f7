@@ -289,7 +289,7 @@
 
       let people = $('select[name="people"]').value();
 
-      if (people.indexOf(user.value.uuid.toString()) == -1) {
+      if (people.indexOf(user.value.uuid) == -1) {
         $f7.dialog.alert('You are not tagged in the photo.');
         return false;
       }

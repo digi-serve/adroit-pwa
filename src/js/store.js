@@ -51,6 +51,7 @@ const store = createStore({
   state: {
     activities: [],
     activityImages: [],
+    activityImagesPrevious: [],
     csrftoken: "",
     currentStatus: {},
     daysLeft: 0,
@@ -58,6 +59,7 @@ const store = createStore({
     fcfLocations: [],
     hasLocations: false,
     imagesLoading: true,
+    prevImagesLoading: true,
     locations: [],
     myProjects: [],
     percentageComplete: 0,
@@ -111,6 +113,9 @@ const store = createStore({
     activityImages({ state }) {
       return state.activityImages;
     },
+    activityImagesPrevious({ state }) {
+      return state.activityImagesPrevious;
+    },
     csrfToken({ state }) {
       return state.csrftoken;
     },
@@ -130,6 +135,9 @@ const store = createStore({
       return state.hasLocations;
     },
     imagesLoading({ state }) {
+      return state.imagesLoading;
+    },
+    prevImagesLoading({ state }) {
       return state.imagesLoading;
     },
     myLocations({ state }) {
@@ -303,6 +311,158 @@ const store = createStore({
             state.currentStatus = state.ReportingPeriodStatus.WARNING;
           }
           state.imagesLoading = false;
+          if (done) {
+            done();
+          }
+        })
+        .catch((err) => {
+          // console.error("fetchJson failed");
+        });
+    },
+    fetchPreviousQuarterImages({ state }, done) {
+      // state.prevImagesLoading = true;
+      if (!navigator.onLine) {
+        done();
+        let toastWithButton = app.f7.toast
+          .create({
+            icon: '<i class="material-icons">wifi_off</i>',
+            text: "No connection",
+            position: "center",
+            closeTimeout: 3000,
+          })
+          .open();
+        return false;
+      }
+      // let totalApproved = 0;
+      // let totalNew = 0;
+      let today = new Date();
+      // let targetImageCount = 16;
+
+      let currentMonth = today.getMonth(today);
+      let currentYear = today.getFullYear(today);
+      let period = Math.floor(currentMonth / 4);
+
+      if (period == 0) {
+        period = 2;
+        currentYear = currentYear - 1;
+      } else {
+        period = period - 1;
+      }
+
+      const start = new Date(currentYear, period * 4, 1);
+      const end = new Date(currentYear, period * 4 + 4, 1);
+
+      console.log("start; ", start);
+      console.log("end; ", end);
+
+      // const daysElapsed = Math.ceil(
+      //   today.getTime() / (1000 * 3600 * 24) -
+      //     Math.ceil(start.getTime()) / (1000 * 3600 * 24)
+      // );
+      // const startToEnd = Math.ceil(
+      //   end.getTime() / (1000 * 3600 * 24) -
+      //     Math.ceil(start.getTime()) / (1000 * 3600 * 24)
+      // );
+      // state.daysLeft = Math.ceil(
+      //   end.getTime() / (1000 * 3600 * 24) -
+      //     Math.ceil(today.getTime()) / (1000 * 3600 * 24)
+      // );
+      // const proRataTargetImageCount = Math.floor(
+      //   targetImageCount * (daysElapsed / startToEnd)
+      // );
+
+      // get activity images in this reporting period
+      var d = new Date(start),
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      let queryDate = [year, month, day].join("/");
+
+      var d2 = new Date(end),
+        month2 = "" + (d2.getMonth() + 1),
+        day2 = "" + d2.getDate(),
+        year2 = d2.getFullYear();
+
+      if (month2.length < 2) month2 = "0" + month2;
+      if (day2.length < 2) day2 = "0" + day2;
+
+      let queryDate2 = [year2, month2, day2].join("/");
+
+
+      // get activity images in this reporting period
+      let datesRule1 = {
+        key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+        rule: "greater_or_equal",
+        value: queryDate,
+      };
+      let datesRule2 = {
+        key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+        rule: "less",
+        value: queryDate2,
+      };
+      let wheres = { ...Api.urls.myActivityImages.where } ;
+
+      wheres.rules = wheres.rules.concat(datesRule1);
+      wheres.rules = wheres.rules.concat(datesRule2);
+
+      console.log("queryDate: ", queryDate);
+      console.log("queryDate2: ", queryDate2);
+
+      fetchJson(
+        `${Api.urls.myActivityImages.url}
+          &sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          ${JSON.stringify(wheres)}`,
+        { method: "GET" }
+      )
+        .then((result) => {
+          let data = parse(result.json.data.data);
+          state.activityImagesPrevious = data;
+          console.log(result.json.data);
+          // state.percentageComplete = (100 * daysElapsed) / startToEnd;
+          // state.activityImages.forEach((item, i) => {
+          //   if (item.status == "approved" || item.status == "ready") {
+          //     totalApproved++;
+          //   } else if (item.status == "new" || item.status == "updated") {
+          //     totalNew++;
+          //   }
+          //   state.photoCombineProgress =
+          //     ((totalApproved + totalNew) / targetImageCount) * 100;
+          //   if (state.photoCombineProgress > 100) {
+          //     state.photoCombineProgress = 100;
+          //   }
+          //   state.photoProgress = (totalApproved / targetImageCount) * 100;
+          //   if (state.photoProgress > 100) {
+          //     state.photoProgress = 100;
+          //   }
+          // });
+          // state.totalApproved = totalApproved;
+          // state.totalNew = totalNew;
+
+          // const diff = totalApproved - proRataTargetImageCount;
+
+          // if (diff >= state.ReportingPeriodStatus.AHEAD.threshold) {
+          //   state.currentStatus = state.ReportingPeriodStatus.AHEAD;
+          // }
+          // if (
+          //   diff < state.ReportingPeriodStatus.AHEAD.threshold &&
+          //   diff >= state.ReportingPeriodStatus.ONTRACK.threshold
+          // ) {
+          //   state.currentStatus = state.ReportingPeriodStatus.ONTRACK;
+          // }
+          // if (
+          //   diff < state.ReportingPeriodStatus.ONTRACK.threshold &&
+          //   diff >= state.ReportingPeriodStatus.BEHIND.threshold
+          // ) {
+          //   state.currentStatus = state.ReportingPeriodStatus.BEHIND;
+          // }
+          // if (diff < state.ReportingPeriodStatus.BEHIND.threshold) {
+          //   state.currentStatus = state.ReportingPeriodStatus.WARNING;
+          // }
+          state.prevImagesLoading = false;
           if (done) {
             done();
           }
