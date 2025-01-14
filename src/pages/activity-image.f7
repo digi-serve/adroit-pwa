@@ -213,10 +213,10 @@
         //   }, 500)
         // }
 
-        // activitiySelect = $f7.smartSelect.get("#activitiySelect");
-        // setTimeout(() => {
-        //   activitiySelect.setValue(props.activityImage.activity.id);
-        // }, 500)
+        activitySelect = $f7.smartSelect.get("#activitySelect");
+        setTimeout(() => {
+          activitySelect.setValue(props.activityImage.ActivityDate__relation.id);
+        }, 500)
 
         let people = [];
         props.activityImage.Person__relation.forEach((pep) => {

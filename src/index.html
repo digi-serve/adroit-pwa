@@ -202,14 +202,11 @@
       href="splash_screens/8.3__iPad_Mini_portrait.png"
     />
     <link rel="manifest" href="/manifest.json" />
-    <script
-      src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
-      async=""
-    ></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
-      window.OneSignal = window.OneSignal || [];
-      OneSignal.push(function () {
-        OneSignal.init({
+      window.OneSignalDeferred = window.OneSignalDeferred || [];
+      OneSignalDeferred.push(async function(OneSignal) {
+        await OneSignal.init({
           appId: "2c8fb487-4601-4b6b-a381-0f0b536b4c17",
         });
       });

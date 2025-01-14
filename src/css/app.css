@@ -38,10 +38,10 @@
   border: 1px solid white;
 }
 .status_bar i {
-  vertical-align: text-top;
   font-size: 12pt;
-  margin-right: 2px;
+  margin-right: 4px;
   margin-top: -1px;
+  vertical-align: text-bottom;
 }
 .status_bar .progress {
   border-top: 1px solid white;
