@@ -119,9 +119,19 @@ const Api = {
             value: "Archived",
           },
           {
-            key: "User",
-            rule: "is_current_user",
-            value: "",
+            glue: "or",
+            rules: [
+              {
+                key: "User",
+                rule: "is_current_user",
+                value: "",
+              },
+              {
+                key: "cb896557-033b-4a7c-b6d8-744bb0c422f3",
+                rule: "in_query",
+                value: "4bb0ecb5-e326-49b1-bb44-25c63dccf01d",
+              },
+            ],
           },
         ],
       },

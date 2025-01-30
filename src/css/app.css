@@ -1,10 +1,11 @@
 /* Custom color theme properties */
 :root {
-  --f7-theme-color: #366989;
-  --f7-theme-color-rgb: 54, 105, 137;
-  --f7-theme-color-shade: #224f6b;
-  --f7-theme-color-tint: #4185b1;
+  --f7-theme-color: #255CC3;
+  --f7-theme-color-rgb: 37, 92, 195;
+  --f7-theme-color-shade: #183F87;
+  --f7-theme-color-tint: #4685FA;
 }
+/*
 .menu_sidebar {
   background: linear-gradient(
     90deg,
@@ -12,17 +13,23 @@
     rgba(33, 89, 125, 1) 100%
   );
 }
-
+*/
 /* Your app custom styles here */
 .sidebar_logo {
-  margin: 30px auto;
+  margin: 10px auto;
   display: block;
+  border-radius: 20%;
+  box-shadow: rgba(0,0,0,0.6) 0px 0px 20px;
 }
 .bg_transparent {
   background: rgba(0, 0, 0, 0.5);
 }
 .bg_transparent ul {
   background: none;
+}
+.navbar-bg {
+  background: linear-gradient(var(--f7-theme-color-bg-color), #00000000), url(../assets/images/fcf_background.png);
+  background-size: 512px auto;
 }
 /* Status Bar */
 .break {
@@ -119,11 +126,11 @@
 /*  Status pullouts  */
 .status_Approved,
 .status_Ready {
-  border-left: 8px solid #56b0a5;
+  border-left: 8px solid #4caf50;
 }
 .status_Approved_pullout,
 .status_Ready_pullout {
-  background: #56b0a5 !important;
+  background: #4caf50 !important;
 }
 .status_New {
   border-left: 8px solid #454545;
@@ -132,10 +139,10 @@
   background: #454545 !important;
 }
 .status_Denied {
-  border-left: 8px solid #cc3333;
+  border-left: 8px solid #f44336;
 }
 .status_Denied_pullout {
-  background: #cc3333 !important;
+  background: #f44336 !important;
 }
 /* Override the resizeable textarea height */
 .list textarea.resizable {
@@ -310,8 +317,14 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   border: 0;
-  -webkit-text-fill-color: #f0582b;
-  -webkit-box-shadow: 0 0 0px 1000px #366889 inset;
+  -webkit-text-fill-color: #ef64c3;
+  -webkit-box-shadow: 0 0 0px 1000px #255cc3 inset;
   -webkit-transition: background-color 5000s ease-in-out 0s;
   transition: background-color 5000s ease-in-out 0s;
+}
+.monthGroupTitle {
+  height: 30px !important;
+  background: rgb(19 46 97) !important;
+  color: #FFF !important;
+  font-size: 14px !important;
 }

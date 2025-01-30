@@ -9,13 +9,18 @@
           <div class="page-content">
             <div class="block text-align-center no-margin-bottom">
               <!-- block content -->
-              <img src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
+              <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
               <p>
-                ${user.value["Full Name"]}
+                ${gotUser.value ? $h`
+                  Welcome, ${user.value["Full Name"]}
+                ` : $h`
+                  
+                `}
               </p>
             </div>
             <div class="list bg_transparent">
                <ul>
+                <!--
                  <li>
                   <a href="/help/" class="item-content item-link panel-close">
                     <div class="item-media"><i class="material-icons">help</i></div>
@@ -24,6 +29,7 @@
                     </div>
                   </a>
                  </li>
+                -->
                  <li>
                   <a href="/feedback/" class="item-content item-link panel-close">
                     <div class="item-media"><i class="material-icons">mode_comment</i></div>
@@ -80,7 +86,8 @@
             <!-- <div class="login-screen-title">Login</div> -->
             <div class="block text-align-center no-margin-bottom">
               <!-- block content -->
-              <img src="assets/images/AdroitLogoNew.png" width="90%" class="sidebar_logo" />
+              <h2>FCF Volunteer Activity Reporting</h2>
+              <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
             </div>
             <form action="javascript: console.log('logging in...')" onSubmit="${authenticate}">
               <div class="list">
@@ -162,6 +169,7 @@
     store.dispatch("getUser");
     const user = $store.getters.user;
     const username = $store.getters.username;
+    const gotUser = $store.getters.gotUser;
 
     user.onUpdated(() => {
       $store.dispatch('getLocations');
@@ -235,6 +243,8 @@
             })
           })
             .then((data) => {
+              // debugger;
+              store.dispatch("getUser");
               // $store.dispatch("setUser", data.json.data.user);
               $store.dispatch("setUsername", $("#username").value());
               $("#password")[0].value = "";

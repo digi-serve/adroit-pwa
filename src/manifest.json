@@ -1,6 +1,6 @@
 {
   "name": "FCF Activities",
-  "short_name": "Activities",
+  "short_name": "FCF Activities",
   "description": "The FCF Activities app allows the uploading of photos to FCF for use in immigration reports.",
   "lang": "en-US",
   "start_url": "/pwa/www/",
