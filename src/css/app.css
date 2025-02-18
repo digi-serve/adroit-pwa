@@ -315,3 +315,10 @@ select:-webkit-autofill:focus {
   -webkit-transition: background-color 5000s ease-in-out 0s;
   transition: background-color 5000s ease-in-out 0s;
 }
+.monthGroupTitle {
+  height: 30px !important;
+  background: #3a7190 !important;
+  color: #FFF !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
+}

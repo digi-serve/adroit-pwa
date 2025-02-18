@@ -254,9 +254,15 @@
         $f7.input.resizeTextarea("#caption");
 
         $("#imageLarge")[0].addEventListener("load", function() {
-          $("#imageLarge")[0].style.opacity = "1"
-          $("#imagePreview")[0].style.filter =  "blur(0px)";
-          $(".progressbar-infinite")[0].style.display = "none";
+          if ($("#imageLarge")[0]) {
+            $("#imageLarge")[0].style.opacity = "1"
+          }
+          if ($("#imagePreview")[0]) {
+            $("#imagePreview")[0].style.filter =  "blur(0px)";
+          }
+          if ($(".progressbar-infinite")[0]) {
+            $(".progressbar-infinite")[0].style.display = "none";
+          }
           var photoBrowser = $f7.photoBrowser.create({
             photos: [
               `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`
@@ -270,13 +276,22 @@
           });
         });
         $("#imageLarge")[0].addEventListener("error", function() {
-          $("#imageLarge")[0].style.opacity = "0"
-          $(".progressbar-infinite")[0].style.display = "none";
-          $("#imagePreview")[0].style.filter =  "blur(0px)";
+          if ($("#imageLarge")[0]) {
+            $("#imageLarge")[0].style.opacity = "0"
+          }
+          if ($(".progressbar-infinite")[0]) {
+            $(".progressbar-infinite")[0].style.display = "none";
+          }
+          if ($("#imagePreview")[0]) {
+            $("#imagePreview")[0].style.filter =  "blur(0px)";
+          }
         });
-        $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
-        // $("#imagePreview")[0].style.filter =  "blur(2px)";
-        $("#imageLarge")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`;
+        if ($("#imagePreview")[0]) {
+          $("#imagePreview")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image}`;
+        }
+        if ($("#imageLarge")[0]) {
+          $("#imageLarge")[0].src = `https://adroit.fcfthailand.org${props.activityImage.image.replace("_scaled", "")}`;
+        }
 
         imagePath = props.activityImage.image;
 
@@ -421,13 +436,24 @@
           // } else {
           //   Toast.danger(Copy.toast.genericError);
           // }
+          alert('There was an error saving this activity, please try again.');
+          setTimeout(() => {
+            $f7.view.main.router.navigate("/", {
+              ignoreCache: true
+            })
+          }, 10);
+
         });
 
     }
 
     const readFile = () => {
-      $(".uploadFail")[0].classList.add("hidden");
-      $(".progressbar-infinite")[0].style.display = "";
+      if ($(".uploadFail")[0]) {
+        $(".uploadFail")[0].classList.add("hidden");
+      }
+      if ($(".progressbar-infinite")[0]) {
+        $(".progressbar-infinite")[0].style.display = "";
+      }
       let file = props.file;
       let reader = new FileReader();
 
@@ -437,6 +463,11 @@
 
       reader.onerror = function () {
         alert('There was an error reading the file!');
+        setTimeout(() => {
+          $f7.view.main.router.navigate("/", {
+            ignoreCache: true
+          })
+        }, 10);
       }
 
       reader.readAsDataURL(file);
@@ -495,6 +526,11 @@
 
       image.onerror = function () {
         alert('There was an error processing your file!');
+        setTimeout(() => {
+          $f7.view.main.router.navigate("/", {
+            ignoreCache: true
+          })
+        }, 10);
       };
     }
 
@@ -512,14 +548,22 @@
       fetchJson(url, options)
         .then(response => {
           if (response.json.status == "success") {
-            $(".progressbar-infinite")[0].style.display = "none";
-            $(".uploadSuccess")[0].classList.remove("hidden");
+            if ($(".progressbar-infinite")[0]) {
+              $(".progressbar-infinite")[0].style.display = "none";
+            }
+            if ($(".uploadSuccess")[0]) {
+              $(".uploadSuccess")[0].classList.remove("hidden");
+            }
             imagePath = response.json.data.name;
           }
         })
         .catch(async error => {
-          $(".progressbar-infinite")[0].style.display = "none";
-          $(".uploadFail")[0].classList.remove("hidden");
+          if ($(".progressbar-infinite")[0]) {
+            $(".progressbar-infinite")[0].style.display = "none";
+          }
+          if ($(".uploadFail")[0]) {
+            $(".uploadFail")[0].classList.remove("hidden");
+          }
         });
 
     }

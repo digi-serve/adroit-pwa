@@ -180,13 +180,13 @@ const store = createStore({
       let totalApproved = 0;
       let totalNew = 0;
       let today = new Date();
-      let targetImageCount = 16;
+      let targetImageCount = 12;
 
       const currentMonth = today.getMonth(today);
       const currentYear = today.getFullYear(today);
-      const period = Math.floor(currentMonth / 4);
-      const start = new Date(currentYear, period * 4, 1);
-      const end = new Date(currentYear, period * 4 + 4, 1);
+      const period = currentMonth;
+      const start = new Date(currentYear, period, 1);
+      const end = new Date(currentYear, period + 1, 1);
 
       const daysElapsed = Math.ceil(
         today.getTime() / (1000 * 3600 * 24) -
@@ -204,11 +204,27 @@ const store = createStore({
         targetImageCount * (daysElapsed / startToEnd)
       );
 
-      // get activity images in this reporting period
-      var d = new Date(start),
-        month = "" + (d.getMonth() + 1),
-        day = "" + d.getDate(),
-        year = d.getFullYear();
+      // // get activity images in this reporting period
+      // var d = new Date(start),
+      //   month = "" + (d.getMonth() + 1),
+      //   day = "" + d.getDate(),
+      //   year = d.getFullYear();
+
+      // if (month.length < 2) month = "0" + month;
+      // if (day.length < 2) day = "0" + day;
+
+      // let queryDate = [year, month, day].join("/");
+
+      let groupedByMonths = [];
+
+      let threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2);
+      threeMonthsAgo.setDate(1);
+
+      // get activity images in last three months
+      var month = "" + (threeMonthsAgo.getMonth() + 1),
+        day = "" + threeMonthsAgo.getDate(),
+        year = threeMonthsAgo.getFullYear();
 
       if (month.length < 2) month = "0" + month;
       if (day.length < 2) day = "0" + day;
@@ -221,20 +237,24 @@ const store = createStore({
           state.activityImages = result.json.data;
           state.percentageComplete = (100 * daysElapsed) / startToEnd;
           state.activityImages.forEach((item, i) => {
-            if (item.status == "approved" || item.status == "ready") {
-              totalApproved++;
-            } else if (item.status == "new" || item.status == "updated") {
-              totalNew++;
-            }
-            state.photoCombineProgress =
-              ((totalApproved + totalNew) / targetImageCount) * 100;
-            if (state.photoCombineProgress > 100) {
-              state.photoCombineProgress = 100;
-            }
-            state.photoProgress = (totalApproved / targetImageCount) * 100;
-            if (state.photoProgress > 100) {
-              state.photoProgress = 100;
-            }
+            let itemMonth = new Date(item.date).getMonth();
+            if (itemMonth == currentMonth) {
+              if (item.status == "approved" || item.status == "ready") {
+                totalApproved++;
+              } else if (item.status == "new" || item.status == "updated") {
+                totalNew++;
+              }
+              state.photoCombineProgress =
+                ((totalApproved + totalNew) / targetImageCount) * 100;
+              if (state.photoCombineProgress > 100) {
+                state.photoCombineProgress = 100;
+              }
+              state.photoProgress = (totalApproved / targetImageCount) * 100;
+              if (state.photoProgress > 100) {
+                state.photoProgress = 100;
+              }              
+            }            
+
           });
           state.totalApproved = totalApproved;
           state.totalNew = totalNew;
@@ -259,6 +279,71 @@ const store = createStore({
           if (diff < state.ReportingPeriodStatus.BEHIND.threshold) {
             state.currentStatus = state.ReportingPeriodStatus.WARNING;
           }
+          let monthSlot = 0;
+          state.activityImages.forEach((item, i) => {
+            let itemDate = new Date(item.date);
+            let itemMonth = itemDate.toLocaleString("default", {
+              month: "short",
+            });
+            let itemMonthLong = itemDate.toLocaleString("default", {
+              month: "long",
+            });
+            let itemMonthIndex = itemDate.toLocaleString("default", {
+              month: "2-digit",
+            });
+            let itemYear = itemDate.toLocaleString("default", {
+              year: "numeric",
+            });
+            if (!groupedByMonths[monthSlot]) {
+              groupedByMonths[monthSlot] = {
+                label: itemMonth + " " + itemYear,
+                long: itemMonthLong,
+                year: itemYear,
+                firstDate: itemYear + "-" + itemMonthIndex + "-01",
+                new: 0,
+                approved: 0,
+                reportDates: [], // we need to count how many approved photos are on separate dates
+                items: [],
+              };
+              groupedByMonths[monthSlot].items.push(item);
+            } else {
+              if (
+                groupedByMonths[monthSlot].label ==
+                itemMonth + " " + itemYear
+              ) {
+                groupedByMonths[monthSlot].items.push(item);
+              } else {
+                monthSlot++;
+                groupedByMonths[monthSlot] = {
+                  label: itemMonth + " " + itemYear,
+                  long: itemMonthLong,
+                  year: itemYear,
+                  firstDate: itemYear + "-" + itemMonthIndex + "-01",
+                  new: 0,
+                  approved: 0,
+                  reportDates: [], // we need to count how many approved photos are on separate dates
+                  items: [],
+                };
+                groupedByMonths[monthSlot].items.push(item);
+              }
+            }
+            if (item.status == "approved" || item.status == "ready") {
+              groupedByMonths[monthSlot].approved++;
+              if (
+                groupedByMonths[monthSlot].reportDates.includes(
+                  itemDate.toDateString().replace(/\s/g, "")
+                ) == false
+              ) {
+                groupedByMonths[monthSlot].reportDates.push(
+                  itemDate.toDateString().replace(/\s/g, "")
+                );
+              }
+            } else if (item.status == "new" || item.status == "updated") {
+              groupedByMonths[monthSlot].new++;
+            }
+          });
+          state.activityImages = groupedByMonths;
+
           state.imagesLoading = false;
           if (done) {
             done();
@@ -284,25 +369,25 @@ const store = createStore({
       }
       // let totalApproved = 0;
       // let totalNew = 0;
-      let today = new Date();
+      // let today = new Date();
       // let targetImageCount = 16;
 
-      let currentMonth = today.getMonth(today);
-      let currentYear = today.getFullYear(today);
-      let period = Math.floor(currentMonth / 4);
+      // let currentMonth = today.getMonth(today);
+      // let currentYear = today.getFullYear(today);
+      // let period = Math.floor(currentMonth / 4);
 
-      if (period == 0) {
-        period = 3;
-        currentYear = currentYear - 1;
-      } else {
-        period = period - 1;
-      }
+      // if (period == 0) {
+      //   period = 3;
+      //   currentYear = currentYear - 1;
+      // } else {
+      //   period = period - 1;
+      // }
 
-      const start = new Date(currentYear, period * 4, 1);
-      const end = new Date(currentYear, period * 4 + 4, 1);
+      // const start = new Date(currentYear, period * 4, 1);
+      // const end = new Date(currentYear, period * 4 + 4, 1);
 
-      console.log("start; ", start);
-      console.log("end; ", end);
+      // console.log("start; ", start);
+      // console.log("end; ", end);
 
       // const daysElapsed = Math.ceil(
       //   today.getTime() / (1000 * 3600 * 24) -
@@ -321,35 +406,152 @@ const store = createStore({
       // );
 
       // get activity images in this reporting period
-      var d = new Date(start),
-        month = "" + (d.getMonth() + 1),
-        day = "" + d.getDate(),
-        year = d.getFullYear();
+      // var d = new Date(start),
+      //   month = "" + (d.getMonth() + 1),
+      //   day = "" + d.getDate(),
+      //   year = d.getFullYear();
+
+      // if (month.length < 2) month = "0" + month;
+      // if (day.length < 2) day = "0" + day;
+
+      // let queryDate = [year, month, day].join("/");
+
+      // var d2 = new Date(end),
+      //   month2 = "" + (d2.getMonth() + 1),
+      //   day2 = "" + d2.getDate(),
+      //   year2 = d2.getFullYear();
+
+      // if (month2.length < 2) month2 = "0" + month2;
+      // if (day2.length < 2) day2 = "0" + day2;
+
+      // let queryDate2 = [year2, month2, day2].join("/");
+
+
+      // console.log("queryDate: ", queryDate);
+      // console.log("queryDate2: ", queryDate2);
+
+      let groupedByMonthsPrevious = [];
+
+      let threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2);
+      threeMonthsAgo.setDate(1);
+
+      console.log(threeMonthsAgo);
+
+      // get activity images in last three months
+      var month = "" + (threeMonthsAgo.getMonth() + 1),
+        day = "" + threeMonthsAgo.getDate(),
+        year = threeMonthsAgo.getFullYear();
 
       if (month.length < 2) month = "0" + month;
       if (day.length < 2) day = "0" + day;
 
       let queryDate = [year, month, day].join("/");
 
-      var d2 = new Date(end),
-        month2 = "" + (d2.getMonth() + 1),
-        day2 = "" + d2.getDate(),
-        year2 = d2.getFullYear();
+      let oneYearAgo = new Date();
+      oneYearAgo.setYear(oneYearAgo.getFullYear() - 1);
+      oneYearAgo.setDate(1);
+
+      // get activity images in last three months
+      var month2 = "" + (oneYearAgo.getMonth() + 1),
+        day2 = "" + oneYearAgo.getDate(),
+        year2 = oneYearAgo.getFullYear();
 
       if (month2.length < 2) month2 = "0" + month2;
       if (day2.length < 2) day2 = "0" + day2;
 
       let queryDate2 = [year2, month2, day2].join("/");
 
+      // get activity images in this reporting period
+      // let datesRule1 = {
+      //   key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+      //   rule: "greater_or_equal",
+      //   value: queryDate2,
+      // };
+      // let datesRule2 = {
+      //   key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+      //   rule: "less",
+      //   value: queryDate,
+      // };
+      // let wheres = { ...Api.urls.myActivityImages.where };
+
+      // wheres.rules = wheres.rules.concat(datesRule1);
+      // wheres.rules = wheres.rules.concat(datesRule2);
 
       console.log("queryDate: ", queryDate);
       console.log("queryDate2: ", queryDate2);
 
-      let query = `?date[>=]=${queryDate}&date[<]=${queryDate2}&status[!]=archived&sort=date DESC`;
+
+      let query = `?date[>=]=${queryDate2}&date[<]=${queryDate}&status[!]=archived&sort=date DESC`;
       fetchJson(`${Api.urls.myActivityImages}${query}`, { method: "GET" })
         .then((result) => {
-          state.activityImagesPrevious = result.json.data;
+          // state.activityImagesPrevious = result.json.data;
           console.log(result.json.data);
+
+          let monthSlot = 0;
+          result.json.data.forEach((item, i) => {
+            let itemDate = new Date(item.date);
+            let itemMonth = itemDate.toLocaleString("default", {
+              month: "short",
+            });
+            let itemMonthLong = itemDate.toLocaleString("default", {
+              month: "long",
+            });
+            let itemMonthIndex = itemDate.toLocaleString("default", {
+              month: "2-digit",
+            });
+            let itemYear = itemDate.toLocaleString("default", {
+              year: "numeric",
+            });
+            if (!groupedByMonthsPrevious[monthSlot]) {
+              groupedByMonthsPrevious[monthSlot] = {
+                label: itemMonth + " " + itemYear,
+                long: itemMonthLong,
+                year: itemYear,
+                firstDate: itemYear + "-" + itemMonthIndex + "-01",
+                new: 0,
+                approved: 0,
+                reportDates: [], // we need to count how many approved photos are on separate dates
+                items: [],
+              };
+              groupedByMonthsPrevious[monthSlot].items.push(item);
+            } else {
+              if (
+                groupedByMonthsPrevious[monthSlot].label ==
+                itemMonth + " " + itemYear
+              ) {
+                groupedByMonthsPrevious[monthSlot].items.push(item);
+              } else {
+                monthSlot++;
+                groupedByMonthsPrevious[monthSlot] = {
+                  label: itemMonth + " " + itemYear,
+                  long: itemMonthLong,
+                  year: itemYear,
+                  firstDate: itemYear + "-" + itemMonthIndex + "-01",
+                  new: 0,
+                  approved: 0,
+                  reportDates: [], // we need to count how many approved photos are on separate dates
+                  items: [],
+                };
+                groupedByMonthsPrevious[monthSlot].items.push(item);
+              }
+            }
+            if (item.status == "approved" || item.status == "ready") {
+              groupedByMonthsPrevious[monthSlot].approved++;
+              if (
+                groupedByMonthsPrevious[monthSlot].reportDates.includes(
+                  itemDate.toDateString().replace(/\s/g, "")
+                ) == false
+              ) {
+                groupedByMonthsPrevious[monthSlot].reportDates.push(
+                  itemDate.toDateString().replace(/\s/g, "")
+                );
+              }
+            } else if (item.status == "new" || item.status == "updated") {
+              groupedByMonthsPrevious[monthSlot].new++;
+            }
+          });
+          state.activityImagesPrevious = groupedByMonthsPrevious;
           // state.percentageComplete = (100 * daysElapsed) / startToEnd;
           // state.activityImages.forEach((item, i) => {
           //   if (item.status == "approved" || item.status == "ready") {

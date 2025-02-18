@@ -1,0 +1,255 @@
+<template>
+  <div class="page dark" data-name="calendar">
+    <div class="navbar no-shadow dark">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner sliding">
+        <div class="left">
+          <a class="link back">
+            <i class="icon icon-back"></i>
+            <span class="if-not-md">Back</span>
+          </a>
+        </div>
+        <div class="title navbar-calendar-title"></div>
+      </div>
+    </div>
+    <div class="monthSwipe">Swipe left/right to navigate between months.</div>    
+    <div id="calendar" class="block block-strong no-padding no-margin no-hairline-top"></div>
+    <div id="calendar-events" class="list no-margin no-hairlines no-safe-area-left">
+      <ul>
+        ${eventItems.length > 0 && eventItems.map((item) => $h`
+        <li class="item-content">
+          <div class="event-color" style="background-color: ${item.color}"></div>
+          <div class="item-media">
+            <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${item.image}" />
+          </div>
+          <div class="item-inner" style="display: block;">
+            <div class="item-title-row">
+              <div class="item-title">${item.activity.activity_name}</div>
+            </div>
+            <div style="color: #555;" class="item-subtitle"><strong>${item.activity.team.MinistryDisplayName}</strong></div>
+            <div class="item-text">${item.caption}</div>
+          </div>
+        </li>
+        `)}
+        ${eventItems.length === 0 && $h`
+        <li class="item-content">
+          <div class="item-inner">
+            <div class="item-title text-color-gray">No photos submitted this day</div>
+          </div>
+        </li>
+        `}
+      </ul>
+    </div>
+  </div>
+</template>
+<style>
+  #calendar {
+    height: calc(70% - 35px - var(--f7-navbar-height) - var(--f7-safe-area-top));
+    box-sizing: border-box;
+  }
+
+  #calendar-events {
+    height: calc(30% - var(--f7-safe-area-top));
+    box-sizing: border-box;
+  }
+
+  #calendar .calendar {
+    height: 100%;
+  }
+
+  #calendar-events ul {
+    height: 100%;
+    overflow: auto;
+  }
+
+  #calendar-events .event-color {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 8px;
+    height: 100%;
+  }
+  .calendarView {
+    text-align: center;
+    font-size: 15px;
+    background: #333;
+    line-height: 50px;
+  }
+  .calendarView a {
+    color: lightgray;
+  }
+  .calendar-day {
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    border: 1px solid #1c1c1d;
+    text-shadow: 0px 1px 1px black;
+  }
+  [data-date] {
+    transition: opacity 2s;
+  }
+  .monthSwipe {
+    margin-top: calc(var(--f7-navbar-height) + var(--f7-safe-area-top));
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    background: #3a7190;
+    color: white;
+  }
+  .calendar-day-next, .calendar-day-prev {
+    opacity: 0.3;
+    color: white;
+  }
+
+  @media (orientation: landscape) {
+    #calendar {
+      float: left;
+    }
+
+    #calendar,
+    #calendar-events {
+      height: calc(100% - 35px - var(--f7-navbar-height) - var(--f7-safe-area-top));
+    }
+
+    #calendar,
+    #calendar-events {
+      width: 50%;
+    }
+
+    #calendar-events {
+      margin-left: 50% !important;
+      border-left: 1px solid #eee;
+    }
+
+    .dark #calendar-events {
+      border-left-color: #282828;
+    }
+  }
+</style>
+<script>
+  export default (props, { $f7, $, $el, $update, $on }) => {
+    console.log("props:", props.data);
+    const date = new Date(props.data.firstDate);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    let today = new Date();
+    var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    let calendar;
+    let eventItems = [];
+    const events = [];
+
+    // Each item needs to fit this format
+    /*
+    {
+      date: new Date(year, month, day),
+      hours: 12,
+      minutes: 30,
+      title: 'Title',
+      color: '#2196f3',
+    }
+    */
+    props.data.forEach((data) => {
+      data.items.forEach((item) => {
+        events.push(
+          {
+            date: new Date(item.date),
+            image: item.image,
+            caption:  item.caption,
+            activity: item.activity,
+            color: (item.status == "approved" || item.status == "ready") ? '#56b0a5' : (item.status == "denied") ? '#cc3333' : '#454545',
+          }
+        )        
+      })
+    });
+
+    const renderEvents = (calendar) => {
+      var currentDate = calendar.value[0];
+      var currentEvents = events
+        .filter(function (event) {
+          return (
+            event.date.getTime() >= currentDate.getTime() &&
+            event.date.getTime() < currentDate.getTime() + 24 * 60 * 60 * 1000
+          );
+        });
+      eventItems = [];
+      if (currentEvents.length) {
+        currentEvents.forEach(function (item) {
+          eventItems.push(item);
+        });
+      }
+      $update();
+    }
+
+    const renderImages = (calendar) => {
+      const dates = document.querySelectorAll('[data-date]');
+      dates.forEach((date) => {
+        date.setAttribute("style", "background-image: none;");
+      });
+      props.data.forEach((month) => {
+        // if (month.long == monthNames[calendar.currentMonth]) {
+          month.items.forEach((image) => {
+            let formatDate = image.date.split("-");   // ["2025","01","15]
+            let newDate = [];
+            formatDate.forEach((n, index) => {
+              if (index == 1) {
+                newDate.push(n.replace(/^0+/, "") - 1); // removed 0 if it is the first number and subtract 1 for month index
+            } else {
+                newDate.push(n.replace(/^0+/, "")); // removed 0 if it is the first number
+            }
+            });
+            let newDateFormat = newDate.join("-");   // "2025-1-15"
+            const dates = document.querySelectorAll('[data-date="'+newDateFormat+'"]');
+            dates.forEach((date) => {
+              date.setAttribute("style", "background-image: url('https://adroit.fcfthailand.org" + image.image + "');");
+            });
+          })
+        // }
+      })
+    }
+
+    $on('pageInit', () => {
+      let date = new Date();
+      console.log(props);
+      var minDate = new Date(date.getFullYear(), date.getMonth() - 2, 1);
+      if (props.fullYear) {
+        var minDate = new Date(date.getFullYear(), date.getMonth() - 12, 1);
+      }
+      var maxDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      calendar = $f7.calendar.create({
+        containerEl: '#calendar',
+        toolbar: false,
+        value: [today],
+        events: events,
+        firstDay: 0,
+        minDate: minDate,
+        maxDate: maxDate,
+        on: {
+          init: function (calendar) {
+            $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
+            $f7.navbar.size($f7.navbar.getElByPage($el.value));
+            calendar.$el.addClass('no-safe-area-right');
+            renderEvents(calendar);
+            renderImages(calendar);
+          },
+          monthYearChangeStart: function (calendar) {
+            $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
+            $f7.navbar.size($f7.navbar.getElByPage($el.value));
+            renderImages(calendar);
+          },
+          change: function (calendar) {
+            renderEvents(calendar);
+          },
+        }
+      });
+    })
+
+    $on('pageBeforeRemove', () => {
+      calendar.destroy();
+
+    })
+
+    return $render;
+  };
+</script>

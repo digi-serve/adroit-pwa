@@ -34,6 +34,8 @@
   "devDependencies": {
     "cpy-cli": "^4.2.0",
     "cross-env": "^7.0.3",
+    "eslint": "^9.19.0",
+    "eslint-config-google": "^0.14.0",
     "local-cors-proxy": "^1.1.0",
     "postcss-preset-env": "^7.8.2",
     "rollup-plugin-framework7": "^1.2.1",
