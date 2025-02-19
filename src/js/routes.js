@@ -1,3 +1,4 @@
+import CalendarPage from "../pages/calendar.f7";
 import HomePage from "../pages/home.f7";
 import HelpPage from "../pages/help.f7";
 import FeedbackPage from "../pages/feedback.f7";
@@ -11,6 +12,10 @@ import AddActivityPage from "../pages/add-activity.f7";
 import NotFoundPage from "../pages/404.f7";
 
 var routes = [
+  {
+    path: "/calendar/",
+    component: CalendarPage
+  },
   {
     path: "/",
     component: HomePage,

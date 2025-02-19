@@ -10,33 +10,59 @@
           </a>
         </div>
         <div class="title text-color-white">My Activity Photos</div>
+        <div class="right">
+          <a data-popover=".popover-approved" data-position="right" data-intro="Look at your photos with a new calendar view to help you see where you may need to upload missing photos." href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only text-color-white">
+            <i class="icon material-icons">calendar_month</i>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar toolbar-top status_bar popover-open" data-title="Welcome to the new status bar!" data-position="right" data-intro="Immigration has updated their requirements so we have updated our status bar to help you meet their new criteria.">
+      <div class="toolbar-inner no-padding">
+        <div class="toolbar_approved quarter_width"><a href="#" data-intro="This is the number of your photos that have been approved this month." class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #4caf50; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
+        <div class="toolbar_new quarter_width"><a href="#" data-intro="This is how many new photos you have uploaded this month that have not yet been approved." class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #333333; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block; vertical-align: text-bottom;"></i>${totalNew.value} new</a></div>
+        <div class="toolbar_days_left quarter_width"><a data-intro="Keep an eye on how many days are left in the current month." href="#" class="text-color-white popover-open" data-popover=".popover-days">${daysLeft.value} days left</a></div>
+        <div style="background: ${imagesLoading.value ? $h`${loadingStatus.color}` : $h`${currentStatus.value.color}`}" class="toolbar_status quarter_width"><a href="#" data-intro="Quickly check whether you are on track with your photo uploads for this month." class="text-color-white popover-open" data-popover=".popover-status">${imagesLoading.value ? $h`<i class="material-icons" style="vertical-align: text-top;">${loadingStatus.icon}</i>${loadingStatus.label}` : $h`<i class="material-icons" style="vertical-align: text-top;">${currentStatus.value.icon}</i>${currentStatus.value.label}`}</a></div>
+        <div class="break"></div>
+        <div class="progress full_width">
+          <div style="width: ${percentageComplete.value}%" class="days_elapsed"></div>
+          <div style="width: ${photoProgress.value}%" class="photo_goal"></div>
+          <div style="width: ${photoCombineProgress.value}%" class="photo_combine"></div>
+        </div>
       </div>
     </div>
     <div class="popover popover-approved">
       <div class="popover-inner">
         <div class="block">
-          <p>This is how many of your photos have been approved this reporting period.</p>
+          <p>This is the number of your photos that have been approved this month.</p>
         </div>
       </div>
     </div>
     <div class="popover popover-new">
       <div class="popover-inner">
         <div class="block">
-          <p>This is how many new photos you have uploaded that have not yet been approved.</p>
+          <p>This is how many new photos you have uploaded this month that have not yet been approved.</p>
         </div>
       </div>
     </div>
     <div class="popover popover-days">
       <div class="popover-inner">
         <div class="block">
-          <p>The number of days that are left in the current reporting period.</p>
+          <p>Keep an eye on how many days are left in the current month.</p>
         </div>
       </div>
     </div>
     <div class="popover popover-status">
       <div class="popover-inner">
         <div class="block">
-          <p>This status reflects whether or not you're on track with your photo uploads for this reporting period.</p>
+          <p>Quickly check whether you are on track with your photo uploads for this month.</p>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-monthlyProgress">
+      <div class="popover-inner">
+        <div class="block">
+          <p>This is how many of your photos have been approved on separate days this month. You are required to upload at least 3 photos on separate days each week.</p>
         </div>
       </div>
     </div>
@@ -90,7 +116,7 @@
           ` : $h`
             <ul>
               ${activityImages.value.map((activityMonths) => $h`
-                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span> ${activityMonths.reportDates.length} of 10 report photos</span></li>
+                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span class="popover-open" data-popover=".popover-monthlyProgress"> ${activityMonths.reportDates.length} of 12 report photos <i style="font-size:18px; vertical-align: text-top; color: #164058;" class="material-icons">information</i></span></li>
                 ${activityMonths.items.map((activityImage) => $h`
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
@@ -149,7 +175,7 @@
           ` : $h`
             <ul>
               ${activityImagesPrevious.value.map((activityMonths) => $h`
-                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span> ${activityMonths.reportDates.length} of 10 report photos</span></li>
+                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span> ${activityMonths.reportDates.length} of 12 report photos</span></li>
                 ${activityMonths.items.map((activityImage) => $h`
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
@@ -215,6 +241,13 @@
   export default (props, { $, $f7, $on, $update, $store }) => {
     const imagesLoading = $store.getters.imagesLoading;
     const prevImagesLoading = $store.getters.prevImagesLoading;
+    const totalApproved = $store.getters.totalApproved;
+    const totalNew = $store.getters.totalNew;
+    const daysLeft = $store.getters.daysLeft;
+    const percentageComplete = $store.getters.percentageComplete;
+    const photoProgress = $store.getters.photoProgress;
+    const photoCombineProgress = $store.getters.photoCombineProgress;
+
     let isDesktop = app.f7.device.desktop;
     let toastDelete;
 
@@ -242,6 +275,7 @@
     let activityImagesSkeleton = [acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage, acticityImage];
     const activityImages = $store.getters.activityImages;
     const activityImagesPrevious = $store.getters.activityImagesPrevious;
+    const currentStatus = $store.getters.currentStatus;
     const user = $store.getters.user;
     let loadingStatus = $store.state.ReportingPeriodStatus.LOADING;
     let firstLoad = true;
@@ -356,6 +390,16 @@
           ignoreCache: true
         })
       }
+    }
+
+    const openCalendarPage = (threeMonthsBack, fullYearBack) => {
+      $f7.view.main.router.navigate("/calendar/", {
+        props: {
+          data: threeMonthsBack.value.concat(fullYearBack.value),
+          fullYear: (fullYearBack.value.length > 0) ? true : false,
+        },
+        ignoreCache: true
+      })
     }
 
     const reloadList = (e, done) => {

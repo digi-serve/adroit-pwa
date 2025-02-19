@@ -53,6 +53,7 @@ const store = createStore({
     activityImages: [],
     activityImagesPrevious: [],
     csrftoken: "",
+    currentStatus: {},
     daysLeft: 0,
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
@@ -62,16 +63,19 @@ const store = createStore({
     prevImagesLoading: true,
     locations: [],
     myProjects: [],
+    percentageComplete: 0,
+    photoCombineProgress: 0,
+    photoProgress: 0,
     ReportingPeriodStatus: {
       LOADING: {
         threshold: null,
-        color: "#044366",
+        color: "rgb(19 46 97)",
         label: "loading",
         icon: "downloading",
       },
       AHEAD: {
         threshold: 2,
-        color: "#009933",
+        color: "#4caf50",
         label: "ahead",
         icon: "sentiment_very_satisfied",
       },
@@ -97,6 +101,8 @@ const store = createStore({
     teamMembers: [],
     teamObjectives: [],
     teams: [],
+    totalApproved: 0,
+    totalNew: 0,
     user: { "Full Name": "" },
     username: "",
     version: "",
@@ -113,6 +119,12 @@ const store = createStore({
     },
     csrfToken({ state }) {
       return state.csrftoken;
+    },
+    currentStatus({ state }) {
+      return state.currentStatus;
+    },
+    daysLeft({ state }) {
+      return state.daysLeft;
     },
     denial({ state }) {
       return state.denial;
@@ -144,8 +156,23 @@ const store = createStore({
     myProjects({ state }) {
       return state.myProjects;
     },
+    percentageComplete({ state }) {
+      return state.percentageComplete;
+    },
+    photoCombineProgress({ state }) {
+      return state.photoCombineProgress;
+    },
+    photoProgress({ state }) {
+      return state.photoProgress;
+    },
     teamObjectives({ state }) {
       return state.teamObjectives;
+    },
+    totalApproved({ state }) {
+      return state.totalApproved;
+    },
+    totalNew({ state }) {
+      return state.totalNew;
     },
     user({ state }) {
       return state.user;
@@ -190,7 +217,33 @@ const store = createStore({
           .open();
         return false;
       }
+      let totalApproved = 0;
+      let totalNew = 0;
+      let today = new Date();
+      let targetImageCount = 12;
+
+      const currentMonth = today.getMonth(today);
+      const currentYear = today.getFullYear(today);
+      const period = currentMonth;
+      const start = new Date(currentYear, period, 1);
+      const end = new Date(currentYear, period + 1, 1);
       let groupedByMonths = [];
+
+      const daysElapsed = Math.ceil(
+        today.getTime() / (1000 * 3600 * 24) -
+          Math.ceil(start.getTime()) / (1000 * 3600 * 24)
+      );
+      const startToEnd = Math.ceil(
+        end.getTime() / (1000 * 3600 * 24) -
+          Math.ceil(start.getTime()) / (1000 * 3600 * 24)
+      );
+      state.daysLeft = Math.ceil(
+        end.getTime() / (1000 * 3600 * 24) -
+          Math.ceil(today.getTime()) / (1000 * 3600 * 24)
+      );
+      const proRataTargetImageCount = Math.floor(
+        targetImageCount * (daysElapsed / startToEnd)
+      );
 
       let threeMonthsAgo = new Date();
       threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2);
@@ -224,11 +277,18 @@ const store = createStore({
       )
         .then((result) => {
           let data = parse(result.json.data.data);
+          state.percentageComplete = (100 * daysElapsed) / startToEnd;
           let monthSlot = 0;
           data.forEach((item, i) => {
             let itemDate = new Date(item["Date of Activity"]);
             let itemMonth = itemDate.toLocaleString("default", {
               month: "short",
+            });
+            let itemMonthLong = itemDate.toLocaleString("default", {
+              month: "long",
+            });
+            let itemMonthIndex = itemDate.toLocaleString("default", {
+              month: "2-digit",
             });
             let itemYear = itemDate.toLocaleString("default", {
               year: "numeric",
@@ -236,6 +296,9 @@ const store = createStore({
             if (!groupedByMonths[monthSlot]) {
               groupedByMonths[monthSlot] = {
                 label: itemMonth + " " + itemYear,
+                long: itemMonthLong,
+                year: itemYear,
+                firstDate: itemYear + "-" + itemMonthIndex + "-01",
                 new: 0,
                 approved: 0,
                 reportDates: [], // we need to count how many approved photos are on separate dates
@@ -252,6 +315,9 @@ const store = createStore({
                 monthSlot++;
                 groupedByMonths[monthSlot] = {
                   label: itemMonth + " " + itemYear,
+                  long: itemMonthLong,
+                  year: itemYear,
+                  firstDate: itemYear + "-" + itemMonthIndex + "-01",
                   new: 0,
                   approved: 0,
                   reportDates: [], // we need to count how many approved photos are on separate dates
@@ -260,6 +326,24 @@ const store = createStore({
                 groupedByMonths[monthSlot].items.push(item);
               }
             }
+            let itemMonthNum = new Date(item["Date of Activity"]).getMonth();
+            if (itemMonthNum == currentMonth) {
+              if (item.Status == "Approved" || item.Status == "Ready") {
+                totalApproved++;
+              } else if (item.Status == "New" || item.Status == "Updated") {
+                totalNew++;
+              }
+              state.photoCombineProgress =
+                ((totalApproved + totalNew) / targetImageCount) * 100;
+              if (state.photoCombineProgress > 100) {
+                state.photoCombineProgress = 100;
+              }
+              state.photoProgress = (totalApproved / targetImageCount) * 100;
+              if (state.photoProgress > 100) {
+                state.photoProgress = 100;
+              }              
+            }            
+
             if (item.Status == "Approved" || item.Status == "Ready") {
               groupedByMonths[monthSlot].approved++;
               if (
@@ -275,7 +359,38 @@ const store = createStore({
               groupedByMonths[monthSlot].new++;
             }
           });
+          state.photoCombineProgress =
+            ((totalApproved + totalNew) / targetImageCount) * 100;
+          if (state.photoCombineProgress > 100) {
+            state.photoCombineProgress = 100;
+          }
+          state.photoProgress = (totalApproved / targetImageCount) * 100;
+          if (state.photoProgress > 100) {
+            state.photoProgress = 100;
+          }
+          state.totalApproved = totalApproved;
+          state.totalNew = totalNew;
           state.activityImages = groupedByMonths;
+          const diff = totalApproved - proRataTargetImageCount;
+
+          if (diff >= state.ReportingPeriodStatus.AHEAD.threshold) {
+            state.currentStatus = state.ReportingPeriodStatus.AHEAD;
+          }
+          if (
+            diff < state.ReportingPeriodStatus.AHEAD.threshold &&
+            diff >= state.ReportingPeriodStatus.ONTRACK.threshold
+          ) {
+            state.currentStatus = state.ReportingPeriodStatus.ONTRACK;
+          }
+          if (
+            diff < state.ReportingPeriodStatus.ONTRACK.threshold &&
+            diff >= state.ReportingPeriodStatus.BEHIND.threshold
+          ) {
+            state.currentStatus = state.ReportingPeriodStatus.BEHIND;
+          }
+          if (diff < state.ReportingPeriodStatus.BEHIND.threshold) {
+            state.currentStatus = state.ReportingPeriodStatus.WARNING;
+          }
           state.imagesLoading = false;
           if (done) {
             done();
@@ -366,12 +481,21 @@ const store = createStore({
             let itemMonth = itemDate.toLocaleString("default", {
               month: "short",
             });
+            let itemMonthLong = itemDate.toLocaleString("default", {
+              month: "long",
+            });
+            let itemMonthIndex = itemDate.toLocaleString("default", {
+              month: "2-digit",
+            });
             let itemYear = itemDate.toLocaleString("default", {
               year: "numeric",
             });
             if (!groupedByMonthsPrevious[monthSlot]) {
               groupedByMonthsPrevious[monthSlot] = {
                 label: itemMonth + " " + itemYear,
+                long: itemMonthLong,
+                year: itemYear,
+                firstDate: itemYear + "-" + itemMonthIndex + "-01",
                 new: 0,
                 approved: 0,
                 reportDates: [], // we need to count how many approved photos are on separate dates
@@ -388,6 +512,9 @@ const store = createStore({
                 monthSlot++;
                 groupedByMonthsPrevious[monthSlot] = {
                   label: itemMonth + " " + itemYear,
+                  long: itemMonthLong,
+                  year: itemYear,
+                  firstDate: itemYear + "-" + itemMonthIndex + "-01",
                   new: 0,
                   approved: 0,
                   reportDates: [], // we need to count how many approved photos are on separate dates

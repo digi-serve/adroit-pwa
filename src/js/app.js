@@ -21,7 +21,7 @@ import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
 // This needs to match the version in `/version.txt`
-let version = "3.1.5";
+let version = "3.2.2";
 
 Sentry.init({
   dsn: "https://19734818cf6847f3ae9891d1f8faee7e@o204562.ingest.sentry.io/4504251695628288",

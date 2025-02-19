@@ -38,7 +38,7 @@
 }
 .status_bar {
   color: white;
-  background: #5a87a1 !important;
+  background: #3f6ec5 !important;
   font-size: 9pt;
   font-weight: bold;
   height: 72px;
@@ -53,14 +53,16 @@
 .status_bar .progress {
   border-top: 1px solid white;
   height: 40px;
-  background-image: url("/assets/images/bg_bar_days_right@2x.png");
+/*  background-image: url("/assets/images/bg_bar_days_right@2x.png");*/
+  background-color: #265ec5;
   background-size: 1024px 40px;
 }
 .status_bar .days_elapsed {
   height: 40px;
-  background-image: url("/assets/images/bg_bar_days_elapsed@2x.png");
+/*  background-image: url("/assets/images/bg_bar_days_elapsed@2x.png");*/
+  background-color: #1f448d;
   background-size: 1024px 40px;
-  border-right: 3px solid black;
+  border-right: 3px solid #132e61;
   transition: 1s;
 }
 .status_bar .photo_goal {
@@ -68,7 +70,8 @@
   position: absolute;
   top: 29px;
   margin: 10px 0;
-  background-image: url("/assets/images/bg_bar_approved@2x.png");
+/*  background-image: url("/assets/images/bg_bar_approved@2x.png");*/
+  background-color: #4caf50;
   background-size: 1024px 20px;
   transition: 1s;
   transition-delay: 0.5s;
@@ -79,7 +82,8 @@
   position: absolute;
   top: 29px;
   margin: 10px 0;
-  background-image: url("/assets/images/bg_bar_new@2x.png");
+/*  background-image: url("/assets/images/bg_bar_new@2x.png");*/
+  background-color: #333;
   background-size: 1024px 20px;
   transition: 1s;
   transition-delay: 0.5s;
@@ -89,7 +93,7 @@
   border-right: none !important;
 }
 .toolbar_days_left {
-  background: #3a7190 !important;
+  background: #265ec5 !important;
 }
 .status_bar .toolbar-inner {
   flex-wrap: wrap;
@@ -116,7 +120,7 @@
   width: calc(25% - 1px);
   text-align: center;
   line-height: 28px;
-  border-right: 1px solid #3a7190;
+  border-right: 1px solid #265ec5;
   /* border-bottom: 1px solid white; */
 }
 .full_width {
@@ -133,7 +137,7 @@
   background: #4caf50 !important;
 }
 .status_New {
-  border-left: 8px solid #454545;
+  border-left: 8px solid #333;
 }
 .status_New_pullout {
   background: #454545 !important;
