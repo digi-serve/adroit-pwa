@@ -89,7 +89,7 @@
               <li class="swipeout status_${activityImage.status}">
                 <a href="#" class="item-link item-content swipeout-content">
                   <div class="item-media">
-                    <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
+                    <div class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;"></div>
                   </div>
                   <div class="item-inner">
                     <div class="item-title-row">
@@ -233,6 +233,7 @@
     const percentageComplete = $store.getters.percentageComplete;
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
+    const teamMembers = $store.getters.myTeamMembers;
     let isDesktop = app.f7.device.desktop;
     let toastDelete;
 
@@ -272,6 +273,9 @@
       $store.dispatch('getTeams');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
+
+      
+
       if (prevImagesLoaded.value) {
         $store.dispatch("fetchPreviousQuarterImages");
       }
@@ -298,6 +302,12 @@
       $("#choosePhoto")[0].value = null;
       $f7.fab.close(".fab");
       $store.dispatch('resetDenial');
+    })
+
+    // after we have team members try to get approvals
+    teamMembers.onUpdated(() => {
+      console.log("getting approvals");
+      $store.dispatch("fetchApprovals");
     })
 
     document.addEventListener('visibilitychange', (e) => {
@@ -372,7 +382,7 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.status == "denied" || activityImage.status == "new" || activityImage.status == "updated") {
+      if (activityImage.status != "archived") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage

@@ -1,3 +1,4 @@
+import ApprovalsPage from "../pages/approvals.f7";
 import CalendarPage from "../pages/calendar.f7";
 import HomePage from "../pages/home.f7";
 import HelpPage from "../pages/help.f7";
@@ -12,6 +13,10 @@ import RequestAndLoad from "../pages/request-and-load.f7";
 import NotFoundPage from "../pages/404.f7";
 
 var routes = [
+  {
+    path: "/approvals/",
+    component: ApprovalsPage
+  },
   {
     path: "/calendar/",
     component: CalendarPage
@@ -32,7 +37,6 @@ var routes = [
     path: "/form/",
     component: FormPage
   },
-
   {
     path: "/dynamic-route/blog/:blogId/post/:postId/",
     component: DynamicRoutePage

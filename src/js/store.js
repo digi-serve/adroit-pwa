@@ -7,6 +7,9 @@ const store = createStore({
     activities: [],
     activityImages: [],
     activityImagesPrevious: [],
+    approvals: [],
+    approvalCount: 0,
+    approvalsLoading: true,
     csrftoken: "",
     currentStatus: {},
     daysLeft: 0,
@@ -14,6 +17,7 @@ const store = createStore({
     fcfLocations: [],
     hasLocations: false,
     imagesLoading: true,
+    isApprover: false,
     prevImagesLoading: true,
     prevImagesLoaded: false,
     locations: [],
@@ -71,6 +75,15 @@ const store = createStore({
     activityImagesPrevious({ state }) {
       return state.activityImagesPrevious;
     },
+    approvalCount ({ state }) {
+      return state.approvalCount;
+    },
+    approvalsLoading({ state }) {
+      return state.approvalsLoading;
+    },
+    approvals({ state }) {
+      return state.approvals;
+    },
     csrfToken({ state }) {
       return state.csrftoken;
     },
@@ -91,6 +104,9 @@ const store = createStore({
     },
     imagesLoading({ state }) {
       return state.imagesLoading;
+    },
+    isApprover({ state }) {
+      return state.isApprover;
     },
     prevImagesLoading({ state }) {
       return state.prevImagesLoading;
@@ -163,6 +179,44 @@ const store = createStore({
       }
       localStorage.setItem("locations", JSON.stringify(locations));
       state.locations = locations;
+    },
+    fetchApprovals({ state }, done) {
+      // let query = `?date[>=]=${queryDate}&status[!]=archived&sort=date DESC`;
+      fetchJson(`${Api.urls.getApprovals}`, { method: "GET" })
+        .then((result) => {
+          let peeps = state.teamMembers;
+          let myTeamsApprovals = [];
+          let myTeam = [];
+          state.teamMembers.forEach((person) => {
+            myTeam.push(person.display_name);
+          });
+          result.json.forEach((item) => {
+            if (myTeam.includes(item.objectData.relatedInfo.viewData.user.displayName) && ["new", "updated"].includes(item.objectData.form.data.status)) {
+              myTeamsApprovals.push(item);
+            }
+          });
+          state.approvals = myTeamsApprovals;
+          state.approvalCount = myTeamsApprovals.length;
+          state.approvalsLoading = false;
+          state.isApprover = true;
+          done();
+        })
+        .catch((err) => {
+          if (err.code == "E_NOTPERMITTED") {
+            state.isApprover = false;
+          }
+          // console.error("fetchJson failed");
+        });
+    },
+    pruneApprovals({ state }, id) {
+      let newSet = [];
+      state.approvals.forEach((item) => {
+        if (item.id != id) {
+          newSet.push(item);
+        }
+      })
+      state.approvalCount = newSet.length;
+      state.approvals = newSet;
     },
     fetchImages({ state }, done) {
       if (!navigator.onLine) {

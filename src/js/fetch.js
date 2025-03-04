@@ -23,6 +23,16 @@ const fetchJson = async (url, options = {}) => {
     requestHeaders.set("Content-Type", "application/json");
   }
 
+  // if we send params we are not using formData due to issues 
+  // with passing translations for multilingual fields
+  // so we need to submit this differently
+  if (options.params) {
+    options = {
+      method: options.method,
+      body: JSON.stringify(options.params)
+    }
+  }
+
   let csrfToken = store.getters.csrfToken;
 
   if (csrfToken) {
@@ -78,7 +88,7 @@ const fetchJson = async (url, options = {}) => {
           // $f7.loginScreen.open("#my-login-screen");
           console.error("fetch failed", status, errorMessage, json);
         }
-        return Promise.reject();
+        return Promise.reject(json);
       }
       return { status, headers, body, json };
     });

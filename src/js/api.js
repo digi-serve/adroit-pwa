@@ -22,7 +22,9 @@ const Api = {
     createActivity: "/fcfactivities/teamactivities",
     getDenial: activityImageId =>
       `/fcf_activities/getdenial?id=${activityImageId}`,
-    version: "/pwa/version.txt"
+    version: "/pwa/version.txt",
+    getApprovals: "/opstool-process-approval/parequest?status=pending&sort=createdAt DESC",
+    processApproval: "/opstool-process-approval/parequest/",
     // myTeams: '/fcf_activities/mobile/myteams',
     // listUserTeams: '/fcf_activities/userteam/find',
     // teamActivities: teamId => `/fcfactivities/teamactivities?team=${teamId}`

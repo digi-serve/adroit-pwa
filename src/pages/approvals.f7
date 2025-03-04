@@ -1,0 +1,425 @@
+<template>
+  <div class="page" data-name="approvals">
+    <!-- Top Navbar -->
+    <div class="navbar">
+      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link icon-only panel-open text-color-white" data-panel="left">
+            <i class="icon material-icons">menu</i>
+          </a>
+        </div>
+        <div class="title text-color-white">Approve Photos</div>
+      </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
+      <div class="ptr-preloader">
+        <div class="preloader"></div>
+        <div class="ptr-arrow"></div>
+      </div>
+      <!-- <a href="#" class="button button-raised button-large button-fill login-screen-open" data-login-screen=".login-screen">As Overlay</a> -->
+      <div class="list media-list no-margin-top">
+        ${approvalsLoading.value ? $h`
+          <ul>
+            ${approvalImagesSkeleton.map((activityImage) => $h`
+              <li class="swipeout status_${activityImage.status}">
+                <a href="#" class="item-link item-content swipeout-content">
+                  <div class="item-media">
+                    <div class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;"></div>
+                  </div>
+                  <div class="item-inner">
+                    <div class="item-title-row">
+                      <div class="item-title skeleton-text skeleton-effect-fade">${activityImage.activity.activity_name}</div>
+                    </div>
+                    <div style="color: #555;" class="item-subtitle skeleton-text skeleton-effect-fade"><strong>${activityImage.activity.team.MinistryDisplayName}</strong></div>
+                    <div class="item-text skeleton-text skeleton-effect-fade">${activityImage.date}: ${activityImage.caption}</div>
+                  </div>
+                </a>
+                <div class="swipeout-actions-left">
+                  <a href="#" class="swipeout-close status_${activityImage.status}_pullout">${activityImage.status}</a>
+                </div>
+              </li>
+            `)}
+          </ul>
+        ` : $h`
+          ${approvalsImages.value.length == 0 ? $h`
+            <div style="display: block; font-size: 180px; background-color: #666; color: transparent; text-shadow: 0px 1px 1px rgba(255,255,255,0.5); -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">verified</div>
+            <div class="block no-margin-top text-align-center">
+              <p style="color: gray;">
+                <small>Congratulations!<br/>You are all caught up on approvals.</small>
+              </p>
+            </div>
+          ` : $h`
+            <ul>
+              ${approvalsImages.value.map((activityImage) => $h`
+                ${activityImage.objectData.relatedInfo.viewData.activity ? $h`
+                  <li key=${activityImage.id} data-activity-image-id="${activityImage.objectData.form.data.id}" class="swipeout status_approved status_denied_right">
+                    <a href="#" data-popup=".popup-${activityImage.id}" class="item-link item-content swipeout-content popup-open">
+                      <div class="item-media">
+                        <img id="image_${activityImage.objectData.form.data.id}" onerror=${() => reloadImage(activityImage.objectData.form.data.image, "image_" + activityImage.objectData.form.data.id)} style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="https://adroit.fcfthailand.org${activityImage.objectData.form.data.image}" />
+                      </div>
+                      <div class="item-inner">
+                        <div class="item-title-row">
+                          <div class="item-title">
+                            ${activityImage.objectData.relatedInfo.viewData.user.displayName}
+                          </div>
+                        </div>
+                        <div style="color: #555; font-weight: bold;" class="item-subtitle">
+                          ${activityImage.objectData.relatedInfo.viewData.createdAt}
+                        </div>
+                        <div class="item-text">
+                          ${activityImage.objectData.form.data.caption}
+                        </div>
+                      </div>
+                    </a>
+                    <div class="swipeout-actions-left">
+                      <a href="#" class="status_approved_pullout swipeout-overswipe" @click=${() => approve(activityImage)} data-confirm="Are you sure want to approve this photo?" data-confirm-title="Approve?"><i class="material-icons">thumb_up</i></a>
+                    </div>
+                    <div class="swipeout-actions-right">
+                      <a href="#" class="status_denied_pullout swipeout-overswipe popup-open" data-popup=".denyPopup-${activityImage.id}" data-confirm="Are you sure want to deny this photo?" data-confirm-title="Deny?"><i class="material-icons">thumb_down</i></a>
+                    </div>
+                    <div class="popup popup-${activityImage.id}">
+                      <div class="page">
+                        <div class="page-content">
+                          <div>
+                            <img id="image_${activityImage.objectData.form.data.id}" style="background: #111; width: 100%; height: 250px; object-fit: contain;" src="https://adroit.fcfthailand.org${activityImage.objectData.form.data.image.replace('_scaled', '_print')}" />
+                          </div>
+                          <div class="block" style="margin-top: 10px;">
+                            <strong>Uploaded by:</strong> ${activityImage.objectData.form.data.displayName}<br/>
+                            <strong>Date:</strong> ${activityImage.objectData.form.data.date}<br/>
+                            <strong>Location:</strong> ${activityImage.objectData.form.data.caption_govt}<br/>
+                            <p>
+                              <strong>Caption:</strong><br/>
+                              ${activityImage.objectData.form.data.caption}
+                            </p>
+                            <div class="list inset" style="margin: 10px 0;">
+                              <ul>
+                                <li class="dark list-group-title">
+                                  People in photo:
+                                </li>
+                                ${activityImage.objectData.form.data.taggedPeopleNames.map((person) => $h`
+                                <li>
+                                  <div class="item-content">
+                                    <div class="item-inner">
+                                      <div class="item-title">
+                                        ${person}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </li>
+                                `)}
+                              </ul>
+                            </div>
+                            <p class="segmented segmented-round">
+                              <button @click=${() => approve(activityImage)} class="button button-round button-large bg-color-green color-white"><i class="material-icons">thumb_up</i></button>
+                              <button data-popup=".denyPopup-${activityImage.id}" class="button button-round button-large bg-color-red color-white popup-open"><i class="material-icons">thumb_down</i></button>
+                            </p>
+                            <p>
+                              <button class="button button-round button-fill button-large button-outline popup-close">Cancel</button>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ` : $h`
+                  <li key=${activityImage.id} data-activity-image-id="${activityImage.objectData.form.data.id}" class="swipeout status_approved status_denied_right">
+                    <a href="#" data-popup=".popup-${activityImage.id}" class="item-link item-content swipeout-content popup-open">
+                      <div class="item-inner">
+                        <div class="item-title-row">
+                          <div class="item-title">
+                            ${activityImage.objectData.relatedInfo.viewData.user.displayName}
+                          </div>
+                        </div>
+                        <div style="color: #555; font-weight: bold;" class="item-subtitle">
+                          ${activityImage.objectData.relatedInfo.viewData.createdAt}
+                        </div>
+                        <div class="item-text">
+                          ${activityImage.objectData.form.data.activity_description}
+                        </div>
+                      </div>
+                    </a>
+                    <div class="swipeout-actions-left">
+                      <a href="#" class="status_approved_pullout swipeout-overswipe" @click=${() => approve(activityImage)} data-confirm="Are you sure want to approve this photo?" data-confirm-title="Approve?"><i class="material-icons">thumb_up</i></a>
+                    </div>
+                    <div class="swipeout-actions-right">
+                      <a href="#" class="status_denied_pullout swipeout-overswipe popup-open" data-popup=".denyPopup-${activityImage.id}"><i class="material-icons">thumb_down</i></a>
+                    </div>
+                    <div class="popup popup-${activityImage.id}">
+                      <div class="page">
+                        <div class="page-content">
+                          <div class="block" style="margin-top: 10px;">
+                            <strong>Name:</strong> ${activityImage.objectData.form.data.activity_name}<br/>
+                            <strong>Date Start:</strong> ${activityImage.objectData.form.data.date_start}<br/>
+                            <p>
+                              <strong>Description:</strong><br/>
+                              ${activityImage.objectData.form.data.activity_description}
+                            </p>
+                            <p class="segmented segmented-round">
+                              <button @click=${() => approve(activityImage)} class="button button-round button-large bg-color-green color-white"><i class="material-icons">thumb_up</i></button>
+                              <button data-popup=".denyPopup-${activityImage.id}" class="button button-round button-large bg-color-red color-white popup-open"><i class="material-icons">thumb_down</i></button>
+                            </p>
+                            <p>
+                              <button class="button button-round button-fill button-large button-outline popup-close">Cancel</button>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                `}
+                <div class="popup denyPopup-${activityImage.id}">
+                  <div class="page">
+                    <div class="page-content">
+                      <form class="list" id="commentsForm-${activityImage.id}">
+                        <ul>
+                          <li>
+                            <div class="item-content">
+                              <div class="item-inner">
+                                <div class="item-title">Please use a different photo.</div>
+                                <div class="item-after">
+                                  <label class="toggle toggle-init">
+                                    <input type="checkbox" name="fixPhoto" value="true" /><i class="toggle-icon"></i>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="item-content">
+                              <div class="item-inner">
+                                <div class="item-title">Caption needs to be reworded.</div>
+                                <div class="item-after">
+                                  <label class="toggle toggle-init">
+                                    <input type="checkbox" name="fixCaption" value="true" /><i class="toggle-icon"></i>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="item-content">
+                              <div class="item-inner">
+                                <div class="item-title">Date of photo needs to be changed.</div>
+                                <div class="item-after">
+                                  <label class="toggle toggle-init">
+                                    <input type="checkbox" name="fixDate" value="true" /><i class="toggle-icon"></i>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li>
+                            <div class="item-content">
+                              <div class="item-inner">
+                                <div class="item-title">Location needs to be changed.</div>
+                                <div class="item-after">
+                                  <label class="toggle toggle-init">
+                                    <input type="checkbox" name="fixLocation" value="true" /><i class="toggle-icon"></i>
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                          <li class="item-content item-input">
+                            <div class="item-inner">
+                              <div class="item-title item-label">Custom message:</div>
+                              <div class="item-input-wrap">
+                                <textarea name="customMessage" class="resizable" placeholder="Tell your volunteer why their photo was rejected."></textarea>
+                              </div>
+                            </div>
+                          </li>
+                        </ul>
+                      </form>
+                      <div class="block">
+                        <p class="segmented segmented-round">
+                          <a class="button button-round button-large button-fill popup-close" href="#">Cancel</a>
+                          <a class="button button-round button-large button-fill color-white bg-color-red" href="#" @click=${() => deny(activityImage)}>Deny</a>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `)}
+            </ul>
+          `}
+        `}
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+  import introJs from "intro.js";
+  import 'intro.js/introjs.css';
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    const approvalsLoading = $store.getters.approvalsLoading;
+    let isDesktop = app.f7.device.desktop;
+    let toastApproval; 
+
+    let showingUpdate = false;
+
+    let approvalsImage = {
+        "activity": {
+          "id": 874,
+          "team": {
+            "IDMinistry": 131,
+            "MinistryDisplayName": "[DGS]  Development Team"
+          },
+          "activity_name": "FCF Staff Activities"
+        },
+        "image": "",
+        "date": "2022-03-31",
+        "status": "approved",
+        "id": 12579,
+        "createdAt": "2022-04-01T02:37:50.000Z",
+        "updatedAt": "2022-09-29T19:56:09.000Z",
+        "caption": "Visiting the Public library to help clean bookshelves.",
+        "caption_govt": "Chiangmai Provincial Public Library",
+      };
+
+    let approvalImagesSkeleton = [approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage];
+    const approvalsImages = $store.getters.approvals;
+    const user = $store.getters.user;
+
+    $on('pageInit', () => {
+      // $store.dispatch("fetchApprovals");
+    })
+
+    $on('pageReinit', () => {
+    })
+
+    const approve = (data) => {
+      let item = data;
+      // Confirm
+      $f7.dialog.confirm('Are you sure want to approve this item?', 'Approve?', function () {
+        app.f7.preloader.show();
+        let url = Api.urls.processApproval + item.id;
+        const body = new FormData();
+        body.append('actionKey', item.actionKey);
+        body.append('userID', item.userID);
+        body.append('callback', item.callback);
+        body.append('status', "approved");
+        body.append('uniqueKey', item.uniqueKey);
+        body.append('id', item.id);
+        let method = 'PUT';
+        const options = {
+          method: method,
+          body,
+        };
+
+        fetchJson(url, options).then(response => {
+          // close the popup if it is open
+          app.f7.popup.close(".popup-"+item.id, true);
+
+          // remove item from storage
+          $store.dispatch("pruneApprovals", item.id);
+
+          toastApproval = $f7.toast.create({
+            icon: '<i class="icon material-icons">thumb_up</i>',
+            text: 'Item Approved',
+            position: 'center',
+            closeTimeout: 2000,
+          });
+          app.f7.preloader.hide();
+          // Open it
+          toastApproval.open();
+        }).catch(async error => {
+          // console.log(error);
+          // $f7.dialog.alert(error);
+        });
+      });
+    }
+
+    // const denyForm = (data) => {
+    //   $f7.popup.open(".denyPopup");
+    // }
+
+    const deny = (data) => {
+      app.f7.preloader.show();
+
+      let item = data;
+      // Confirm
+
+      var comments = app.f7.form.convertToData('#commentsForm-'+item.id);
+
+      // $f7.dialog.confirm('Are you sure want to deny this item?', 'Deny?', function () {
+        let url = Api.urls.processApproval + item.id;
+        let comment = JSON.stringify({
+          "fixPhoto": comments.fixPhoto.length !== 0,
+          "fixCaption": comments.fixCaption.length !== 0,
+          "fixLocation": comments.fixLocation.length !== 0,
+          "fixDate": comments.fixDate.length !== 0,
+          "customMessage": comments.customMessage,
+          "deniedBy": {
+            "IDPerson": user.value.IDPerson,
+            "display_name": user.value.display_name
+          }
+        });
+        let params = {
+          'actionKey': item.actionKey,
+          'userID': item.userID,
+          'callback': item.callback,
+          'status': 'rejected',
+          'uniqueKey': item.uniqueKey,
+          'comments': [],
+          "updatedValues": "",
+          'objectData': item.objectData,
+          'comment': comment,
+          'id': item.id
+        };
+        let options = {
+          method: 'PUT',
+          params: params
+        }
+
+        fetchJson(url, options).then(response => {
+          // close the popup if it is open
+          app.f7.popup.close(".denyPopup-"+item.id, true);
+          app.f7.popup.close(".popup-"+item.id, true);
+
+          // remove item from storage
+          $store.dispatch("pruneApprovals", item.id);
+
+          toastApproval = $f7.toast.create({
+            icon: '<i class="icon material-icons">thumb_down</i>',
+            text: 'Item Denied',
+            position: 'center',
+            closeTimeout: 2000,
+          });
+          app.f7.preloader.hide();
+          // Open it
+          toastApproval.open();
+        }).catch(async error => {
+          // console.log(error);
+          // $f7.dialog.alert(error);
+        });
+      // });
+    }
+
+    const editImage = (activityImage) => {
+      if (activityImage.status != "archived") {
+        $f7.view.main.router.navigate("/activity-image/edit/", {
+          props: {
+            activityImage: activityImage
+          },
+          ignoreCache: true
+        })
+      }
+    }
+
+    const reloadImage = (imagePath, imageId) => {
+      let newPath = "https://adroit.fcfthailand.org" + imagePath.replace("_scaled", "_print");
+      document.getElementById(imageId).src = newPath;
+    }
+
+    const reloadList = (e, done) => {
+      $store.dispatch("fetchApprovals", done);
+    }
+
+    return $render;
+  }
+</script>
