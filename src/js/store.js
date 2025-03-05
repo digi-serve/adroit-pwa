@@ -52,12 +52,16 @@ const store = createStore({
     activities: [],
     activityImages: [],
     activityImagesPrevious: [],
+    approvals: [],
+    approvalCount: 0,
+    approvalsLoading: true,
     csrftoken: "",
     currentStatus: {},
     daysLeft: 0,
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
     hasLocations: false,
+    isApprover: false,
     imagesLoading: true,
     gotUser: false,
     prevImagesLoading: true,
@@ -117,6 +121,15 @@ const store = createStore({
     activityImagesPrevious({ state }) {
       return state.activityImagesPrevious;
     },
+    approvalCount ({ state }) {
+      return state.approvalCount;
+    },
+    approvalsLoading({ state }) {
+      return state.approvalsLoading;
+    },
+    approvals({ state }) {
+      return state.approvals;
+    },
     csrfToken({ state }) {
       return state.csrftoken;
     },
@@ -140,6 +153,9 @@ const store = createStore({
     },
     gotUser({ state }) {
       return state.gotUser;
+    },
+    isApprover({ state }) {
+      return state.isApprover;
     },
     prevImagesLoading({ state }) {
       return state.imagesLoading;
@@ -203,6 +219,45 @@ const store = createStore({
       }
       localStorage.setItem("locations", JSON.stringify(locations));
       state.locations = locations;
+    },
+    fetchApprovals({ state }, done) {
+      // let query = `?date[>=]=${queryDate}&status[!]=archived&sort=date DESC`;
+      fetchJson(`${Api.urls.getApprovals.url}&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          ${JSON.stringify(Api.urls.getApprovals.where)}`, { method: "GET" })
+        .then((result) => {
+          // let peeps = state.teamMembers;
+          // let myTeamsApprovals = [];
+          // let myTeam = [];
+          // state.teamMembers.forEach((person) => {
+          //   myTeam.push(person.display_name);
+          // });
+          // result.json.forEach((item) => {
+          //   if (myTeam.includes(item.objectData.relatedInfo.viewData.user.displayName) && ["new", "updated"].includes(item.objectData.form.data.status)) {
+          //     myTeamsApprovals.push(item);
+          //   }
+          // });
+          state.approvals = result.json.data.data;
+          state.approvalCount = result.json.data.data.length;
+          state.approvalsLoading = false;
+          state.isApprover = true;
+          done();
+        })
+        .catch((err) => {
+          if (err.code == "E_NOTPERMITTED") {
+            state.isApprover = false;
+          }
+          // console.error("fetchJson failed");
+        });
+    },
+    pruneApprovals({ state }, id) {
+      let newSet = [];
+      state.approvals.forEach((item) => {
+        if (item.id != id) {
+          newSet.push(item);
+        }
+      })
+      state.approvalCount = newSet.length;
+      state.approvals = newSet;
     },
     fetchImages({ state }, done) {
       if (!navigator.onLine) {

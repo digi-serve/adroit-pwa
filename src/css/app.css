@@ -142,6 +142,9 @@
 .status_New_pullout {
   background: #454545 !important;
 }
+.status_denied_right {
+  border-right: 8px solid #f44336;
+}
 .status_Denied {
   border-left: 8px solid #f44336;
 }
@@ -331,4 +334,30 @@ select:-webkit-autofill:focus {
   background: rgb(19 46 97) !important;
   color: #FFF !important;
   font-size: 14px !important;
+}
+.bg-color-orange {
+/*  background-color: #f0582b !important;*/
+}
+.denial .list-group .list-group-item-danger {
+  vertical-align: middle;
+}
+.bg-color-red {
+/*  background-color: #cc3333 !important;*/
+}
+.bg-color-green {
+/*  background-color: #56b0a5 !important;*/
+}
+.md .contacts-list .list-group-title {
+  width: 100% !important;
+  margin-bottom: 48px !important;
+}
+.md .contacts-list li:not(.list-group-title) {
+  padding: 0;
+}
+.photoThumbnail {
+  background: #CCC; 
+  width: 85px; 
+  height: 85px; 
+  object-fit: cover; 
+  border-radius: 20%;
 }

@@ -154,7 +154,6 @@
     */
     props.data.forEach((data) => {
       data.items.forEach((item) => {
-        debugger;
         events.push(
           {
             date: new Date(item["Date of Activity"]),

@@ -1,3 +1,4 @@
+import ApprovalsPage from "../pages/approvals.f7";
 import CalendarPage from "../pages/calendar.f7";
 import HomePage from "../pages/home.f7";
 import HelpPage from "../pages/help.f7";
@@ -12,6 +13,10 @@ import AddActivityPage from "../pages/add-activity.f7";
 import NotFoundPage from "../pages/404.f7";
 
 var routes = [
+  {
+    path: "/approvals/",
+    component: ApprovalsPage
+  },
   {
     path: "/calendar/",
     component: CalendarPage

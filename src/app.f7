@@ -20,6 +20,29 @@
             </div>
             <div class="list bg_transparent">
                <ul>
+                 <li>
+                  <a href="/" class="item-content item-link panel-close">
+                    <div class="item-media"><i class="material-icons">photo</i></div>
+                    <div class="item-inner">
+                      <div class="item-title">Activity Images</div>
+                    </div>
+                  </a>
+                 </li>
+                ${isApprover.value ? $h`
+                 <li>
+                  <a href="/approvals/" class="item-content item-link panel-close">
+                    <div class="item-media"><i class="material-icons">verified</i></div>
+                    <div class="item-inner">
+                      <div class="item-title">Approvals</div>
+                      <div class="item-after">
+                        ${approvalCount.value ? $h`
+                          <span class="badge bg-color-orange">${approvalCount.value}</span>
+                        ` : $h``}
+                      </div>
+                    </div>
+                  </a>
+                 </li>
+                 ` : $h``}
                 <!--
                  <li>
                   <a href="/help/" class="item-content item-link panel-close">
@@ -106,7 +129,7 @@
                       <div class="item-title item-label">Password</div>
                       <div class="item-input-wrap">
                         <a @click="${showPasswordPreview}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility_off</i></a>
-                        <input required type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                        <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
                       </div>
                     </div>
                   </li>
@@ -115,7 +138,7 @@
                       <div class="item-title item-label">Password</div>
                       <div class="item-input-wrap">
                         <a @click="${showPassword}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility</i></a>
-                        <input required type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                        <input type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
                       </div>
                     </div>
                   </li>
@@ -170,6 +193,9 @@
     const user = $store.getters.user;
     const username = $store.getters.username;
     const gotUser = $store.getters.gotUser;
+    const isApprover = $store.getters.isApprover;
+    const approvalCount = $store.getters.approvalCount;
+
 
     user.onUpdated(() => {
       $store.dispatch('getLocations');

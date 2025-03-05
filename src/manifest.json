@@ -6,8 +6,8 @@
   "start_url": "/pwa/www/",
   "id": "/assets/images/adroit/",
   "display": "standalone",
-  "background_color": "#366989",
-  "theme_color": "#366989",
+  "background_color": "#265ec5",
+  "theme_color": "#265ec5",
   "icons": [
     {
       "src": "/pwa/www/assets/images/adroit/icons/128x128.png",

@@ -136,6 +136,34 @@ const Api = {
         ],
       },
     },
+    getApprovals: {
+      url: "/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14?populate=true",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "76b86cc2-f61f-49cb-b90d-f56b1cfa63a2",
+            rule: "in_query",
+            value: "1421418f-001d-4627-af8a-93e0bd0b5e8c",
+          },
+          {
+            glue: "or",
+            rules: [
+              {
+                key: "bd44b6eb-3427-4a20-a1c7-a9a9faee5957",
+                rule: "equals",
+                value: "New",
+              },
+              {
+                key: "bd44b6eb-3427-4a20-a1c7-a9a9faee5957",
+                rule: "equals",
+                value: "Updated",
+              },
+            ],
+          },
+        ],
+      },
+    },
     myActivities: {
       url: "/app_builder/model/3ad8d8ad-c06a-46b5-bd7d-c643818a864d",
       where: {

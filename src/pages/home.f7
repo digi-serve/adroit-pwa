@@ -89,7 +89,7 @@
               <li class="swipeout status_New">
                 <a href="#" class="item-link item-content swipeout-content">
                   <div class="item-media">
-                    <div class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; border-radius: 3px;"></div>
+                    <div class="skeleton-block skeleton-effect-fade photoThumbnail"></div>
                   </div>
                   <div class="item-inner">
                     <div class="item-title-row">
@@ -116,19 +116,26 @@
           ` : $h`
             <ul>
               ${activityImages.value.map((activityMonths) => $h`
-                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span class="popover-open" data-popover=".popover-monthlyProgress"> ${activityMonths.reportDates.length} of 12 report photos <i style="font-size:18px; vertical-align: text-top; color: #164058;" class="material-icons">information</i></span></li>
+                <li class="list-group-title justify-content-space-between monthGroupTitle">
+                  <div>${activityMonths.label}</div>
+                  <div class="popover-open" data-popover=".popover-monthlyProgress"> ${activityMonths.reportDates.length} of 12 report photos <i style="font-size:18px; vertical-align: text-top; color: #164058;" class="material-icons">information</i></div>
+                </li>
                 ${activityMonths.items.map((activityImage) => $h`
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
-                        <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 20%;" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                        <img class="photoThumbnail" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
                           <div class="item-title">${activityImage.ActivityDate__relation.Activities}</div>
                         </div>
-                        <div style="color: #555;" class="item-subtitle"><strong>${activityImage.ActivityPhoto__relation.Name}</strong></div>
-                        <div class="item-text">${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}</div>
+                        <div style="color: #555;" class="item-subtitle">
+                          <strong>${activityImage.ActivityPhoto__relation.Name}</strong>
+                        </div>
+                        <div class="item-text">
+                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}
+                        </div>
                       </div>
                     </a>
                     <div class="swipeout-actions-left">
@@ -151,7 +158,7 @@
               <li class="swipeout status_${activityImage.status}">
                 <a href="#" class="item-link item-content swipeout-content">
                   <div class="item-media">
-                    <img class="skeleton-block skeleton-effect-fade" style="width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="" />
+                    <div class="skeleton-block skeleton-effect-fade photoThumbnail"></div>
                   </div>
                   <div class="item-inner">
                     <div class="item-title-row">
@@ -175,12 +182,15 @@
           ` : $h`
             <ul>
               ${activityImagesPrevious.value.map((activityMonths) => $h`
-                <li class="list-group-title justify-content-space-between monthGroupTitle"><span>${activityMonths.label}</span><span> ${activityMonths.reportDates.length} of 12 report photos</span></li>
+                <li class="list-group-title justify-content-space-between monthGroupTitle">
+                  <span>${activityMonths.label}</span>
+                  <span> ${activityMonths.reportDates.length} of 12 report photos</span>
+                </li>
                 ${activityMonths.items.map((activityImage) => $h`
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
-                        <img style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                        <img class="photoThumbnail" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
@@ -247,6 +257,8 @@
     const percentageComplete = $store.getters.percentageComplete;
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
+    const teamMembers = $store.getters.myTeamMembers;
+
 
     let isDesktop = app.f7.device.desktop;
     let toastDelete;
@@ -310,6 +322,13 @@
       $f7.fab.close(".fab");
       $store.dispatch('resetDenial');
     })
+
+    // after we have team members try to get approvals
+    teamMembers.onUpdated(() => {
+      console.log("getting approvals");
+      $store.dispatch("fetchApprovals");
+    })
+
 
     document.addEventListener('visibilitychange', (e) => {
       if (document.visibilityState == "visible") {
@@ -382,7 +401,7 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.Status == "Denied" || activityImage.Status == "New" || activityImage.Status == "Updated") {
+      if (activityImage.Status != "Archived") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage
