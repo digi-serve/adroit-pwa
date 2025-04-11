@@ -7,91 +7,95 @@
       <div class="view">
         <div class="page bg-color-primary menu_sidebar">
           <div class="page-content">
-            <div class="block text-align-center no-margin-bottom">
-              <!-- block content -->
-              <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
-              <p>
-                ${gotUser.value ? $h`
-                  Welcome, ${user.value["Full Name"]}
-                ` : $h`
-                  
-                `}
-              </p>
-            </div>
-            <div class="list bg_transparent">
-               <ul>
-                 <li>
-                  <a href="/" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">photo</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">Activity Images</div>
-                    </div>
-                  </a>
-                 </li>
-                ${isApprover.value ? $h`
-                 <li>
-                  <a href="/approvals/" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">verified</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">Approvals</div>
-                      <div class="item-after">
-                        ${approvalCount.value ? $h`
-                          <span class="badge bg-color-orange">${approvalCount.value}</span>
-                        ` : $h``}
-                      </div>
-                    </div>
-                  </a>
-                 </li>
-                 ` : $h``}
-                <!--
-                 <li>
-                  <a href="/help/" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">help</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">Help</div>
-                    </div>
-                  </a>
-                 </li>
-                -->
-                 <li>
-                  <a href="/feedback/" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">mode_comment</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">Feedback</div>
-                    </div>
-                  </a>
-                 </li>
-                 <li>
-                  <a href="#" @click="${showTutorial}" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">play_circle</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">Show tutorial</div>
-                    </div>
-                  </a>
-                 </li>
-                 <li>
-                  <a href="/locations/" class="item-content item-link panel-close">
-                    <div class="item-media"><i class="material-icons">location_on</i></div>
-                    <div class="item-inner">
-                      <div class="item-title">My Locations</div>
-                    </div>
-                  </a>
-                 </li>
-                 <li>
-                  <a href="#" @click="${logout}" class="item-content item-link">
-                    <div class="item-media"><i class="material-icons">logout</i></div>
-                    <div class="item-inner">
-                       <div class="item-title">Log out</div>
-                    </div>
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div class="block text-align-center" style="position: absolute; width: 100%; margin-bottom: 15px; bottom: 0px;">
-              <p>
-                <img src="assets/images/digiServe_logo.png" width="30%"/><br/>
-                ${versionNumber}
-              </p>
+            <div style="display: flex; justify-content: space-between; flex-direction: column; height: 100vh;">
+              <div>
+                <div class="block text-align-center no-margin-bottom">
+                  <!-- block content -->
+                  <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
+                  <p>
+                    ${gotUser.value ? $h`
+                      Welcome, ${user.value["Full Name"]}
+                    ` : $h`
+                      
+                    `}
+                  </p>
+                </div>
+                <div class="list bg_transparent">
+                   <ul>
+                     <li>
+                      <a href="/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">photo</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Activity Images</div>
+                        </div>
+                      </a>
+                     </li>
+                    ${isApprover.value ? $h`
+                     <li>
+                      <a href="/approvals/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">verified</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Approvals</div>
+                          <div class="item-after">
+                            ${approvalCount.value ? $h`
+                              <span class="badge bg-color-orange">${approvalCount.value}</span>
+                            ` : $h``}
+                          </div>
+                        </div>
+                      </a>
+                     </li>
+                     ` : $h``}
+                    <!--
+                     <li>
+                      <a href="/help/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">help</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Help</div>
+                        </div>
+                      </a>
+                     </li>
+                    -->
+                     <li>
+                      <a href="/feedback/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">mode_comment</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Feedback</div>
+                        </div>
+                      </a>
+                     </li>
+                     <li>
+                      <a href="#" @click="${showTutorial}" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">play_circle</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">Show tutorial</div>
+                        </div>
+                      </a>
+                     </li>
+                     <li>
+                      <a href="/locations/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">location_on</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">My Locations</div>
+                        </div>
+                      </a>
+                     </li>
+                     <li>
+                      <a href="#" @click="${logout}" class="item-content item-link">
+                        <div class="item-media"><i class="material-icons">logout</i></div>
+                        <div class="item-inner">
+                           <div class="item-title">Log out</div>
+                        </div>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="block text-align-center" style="width: 100%; margin: 0 0 15px 0; bottom: 0px;">
+                <p>
+                  <img src="assets/images/digiServe_logo.png" width="30%"/><br/>
+                  ${versionNumber}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -173,6 +177,7 @@
                 </button>
               </div>
             </form>
+            <button @click="${forgotPassword}" class="button button-text color-white">Forgot Password?</button>
           </div>
         </div>
       </div>
@@ -329,6 +334,31 @@
       $("#passwordHolder").show();
       $("#passwordPreviewHolder").hide();
       $("#password").focus();
+    }
+
+    const forgotPassword = () => {
+      app.f7.dialog.prompt("Enter your email. We'll send a link to reset your password.", "Forgot Password?", function (email) {
+        app.f7.preloader.show();
+
+        let url = Api.urls.forgotPassword;
+
+        let params = {
+          'email': email,
+          'url': 'https://apps.fcfthailand.org/'
+        };
+        let options = {
+          method: 'POST',
+          params: params
+        }
+
+        fetchJson(url, options).then(response => {
+          app.f7.preloader.hide();
+          app.f7.dialog.alert(`An email with instructions on how to reset your password has been sent to ${email}. Check your spam or junk folder if you don’t see the email in your inbox.`, "Email Sent")
+        }).catch(async error => {
+          app.f7.preloader.hide();
+          app.f7.dialog.alert("Forgot password failed, please check email address was entered correctly.")
+        });
+      });
     }
 
     return $render;

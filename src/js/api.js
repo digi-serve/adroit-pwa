@@ -216,6 +216,7 @@ const Api = {
       `/fcf_activities/getdenial?id=${activityImageId}`,
     version: "/pwa/version.txt",
     profilePhoto: "/data/db80e601-2da2-4026-b32e-36580f3c9318/file_processor/",
+    forgotPassword: "/auth/login/reset",
     // myTeams: '/fcf_activities/mobile/myteams',
     // listUserTeams: '/fcf_activities/userteam/find',
     // teamActivities: teamId => `/fcfactivities/teamactivities?team=${teamId}`

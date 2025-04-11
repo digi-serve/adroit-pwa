@@ -218,7 +218,7 @@
       <input style="display: none;" id="takePhoto" type="file" accept="image/*" capture @change=${() => upload("#takePhoto")} />
       <input style="display: none;" id="choosePhoto" type="file" accept="image/*" @change=${() => upload("#choosePhoto")} />
     </div>
-    <div class="popup ios-popup" data-swipe-to-close="to-bottom">
+    <div class="popup ios-popup popup-push" data-swipe-to-close="to-bottom">
       <div class="view">
         <div class="page bg-color-primary dark">
           <div class="page-content">
@@ -308,13 +308,21 @@
           introJs().setOption("dontShowAgain", true).start();
         }, 3000);
       }
+      $('.ios-popup').on('popup:open', function (e) {
+        const blurTimeoutOpen = setTimeout(document.activeElement.blur(), 500);
+      });
+      $('.ios-popup').on('popup:opened', function (e) {
+        const blurTimeoutOpened = setTimeout(document.activeElement.blur(), 500);
+      });
 
       // Checks if should display install popup notification:
       if (isIos() && !isInStandaloneMode() && process.env.NODE_ENV === "production") {
+        // if (isIos() && !isInStandaloneMode()) {
         // debugger;
         $f7.popup.open('.ios-popup', true);
       }
     })
+
 
     $on('pageReinit', () => {
       $("#takePhoto")[0].value = null;
