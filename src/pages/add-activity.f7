@@ -15,9 +15,9 @@
     <div class="page-content">
       <form id="addActivityForm">
         <div class="block-title">FCF Projects</div>
-        <div class="block block-strong no-padding">
-          <p class="no-margin" style="padding: 16px 16px 0 16px;">Select the FCF project this activity is related to.</p>
-          <div class="list inline-labels no-hairlines no-margin">
+        <div class="block no-padding">
+          <p class="no-margin" style="padding: 0 16px 5px 16px;">Select the FCF project this activity is related to.</p>
+          <div class="list list-outline list-strong list-dividers inline-labels no-hairlines no-margin">
             <ul>
               <li>
                 <a class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
@@ -38,12 +38,14 @@
           </div>
         </div>
         <div class="block-title">Activity Duration</div>
-        <div class="list inline-labels no-margin">
+        <div class="list list-outline list-strong list-dividers inline-labels no-margin">
           <ul>
             <li>
               <div class="item-content item-input">
                 <div class="item-inner">
-                  <div class="item-title item-label">Start Date</div>
+                  <div class="item-title">Start Date</div>
+                </div>
+                <div class="item-inner">
                   <div class="item-input-wrap">
                     <input name="startDate" style="text-align: right;" type="text" placeholder="Date the activity begins" readonly="readonly" id="startDate" />
                   </div>
@@ -53,7 +55,7 @@
           </ul>
         </div>
         <div class="block-title">Description</div>
-        <div class="list">
+        <div class="list list-outline list-strong list-dividers">
           <ul>
             <li class="align-top">
               <div class="item-content item-input">

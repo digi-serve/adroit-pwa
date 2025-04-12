@@ -121,7 +121,7 @@ const store = createStore({
     activityImagesPrevious({ state }) {
       return state.activityImagesPrevious;
     },
-    approvalCount ({ state }) {
+    approvalCount({ state }) {
       return state.approvalCount;
     },
     approvalsLoading({ state }) {
@@ -222,8 +222,13 @@ const store = createStore({
     },
     fetchApprovals({ state }, done) {
       // let query = `?date[>=]=${queryDate}&status[!]=archived&sort=date DESC`;
-      fetchJson(`${Api.urls.getApprovals.url}&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
-          ${JSON.stringify(Api.urls.getApprovals.where)}`, { method: "GET" })
+      fetchJson(
+        `${
+          Api.urls.getApprovals.url
+        }&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          ${JSON.stringify(Api.urls.getApprovals.where)}`,
+        { method: "GET" }
+      )
         .then((result) => {
           // let peeps = state.teamMembers;
           // let myTeamsApprovals = [];
@@ -255,7 +260,7 @@ const store = createStore({
         if (item.id != id) {
           newSet.push(item);
         }
-      })
+      });
       state.approvalCount = newSet.length;
       state.approvals = newSet;
     },
@@ -396,8 +401,8 @@ const store = createStore({
               state.photoProgress = (totalApproved / targetImageCount) * 100;
               if (state.photoProgress > 100) {
                 state.photoProgress = 100;
-              }              
-            }            
+              }
+            }
 
             if (item.Status == "Approved" || item.Status == "Ready") {
               groupedByMonths[monthSlot].approved++;
@@ -849,7 +854,7 @@ const store = createStore({
       state.username = username;
     },
     getVersion({ state }) {
-      state.version = app.f7.version;
+      // state.version = state.version;
     },
     hasLocations({ state }) {
       if (state.locations.length) {
@@ -867,6 +872,9 @@ const store = createStore({
     setUsername({ state }, username) {
       localStorage.setItem("username", username);
       state.username = username;
+    },
+    setVersion({ state }, version) {
+      state.version = version;
     },
     updateActivities({ state, dispatch }, { minId }) {
       fetchJson(

@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="page-content">
-      <div class="list no-hairlines-md">
+      <div class="list list-outline list-strong list-dividers no-hairlines-md">
         <ul>
           <li class="item-content item-input">
             <div class="item-inner">
@@ -33,7 +33,7 @@
         </ul>
       </div>
       ${hasLocations.value ? $h`
-        <div class="list">
+        <div class="list list-outline list-strong list-dividers">
           <ul>
             ${locations.value.map((location) => $h`
               <li key=${location.id}>

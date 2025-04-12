@@ -82,7 +82,7 @@
         <div class="ptr-arrow"></div>
       </div>
       <!-- <a href="#" class="button button-raised button-large button-fill login-screen-open" data-login-screen=".login-screen">As Overlay</a> -->
-      <div class="list media-list no-margin-top contacts-list">
+      <div class="list list-outline list-strong list-dividers media-list no-margin-top contacts-list">
         ${imagesLoading.value ? $h`
           <ul>
             ${activityImagesSkeleton.map((activityImage) => $h`
@@ -258,6 +258,7 @@
     const photoProgress = $store.getters.photoProgress;
     const photoCombineProgress = $store.getters.photoCombineProgress;
     const teamMembers = $store.getters.myTeamMembers;
+    const version = $store.getters.version;
 
 
     let isDesktop = app.f7.device.desktop;
@@ -298,6 +299,7 @@
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
+      $store.dispatch('getVersion');
       if (props.showTutorial) {
         setTimeout(() => {
           introJs().start();
@@ -476,15 +478,13 @@
 
     const checkForUpdate = () => {
       if (!showingUpdate) {
-        let getVersionPath = Api.absoluteUrl(Api.urls.version);
-        $f7.request({
-          url: getVersionPath,
-          method: "GET",
-          cache: false
-        }).then((res) => {
-          console.log("getVersionPath: ", res.data);
-          console.log("getCurrVersion: ", $f7.version);
-          if ($f7.version.trim() != res.data.trim()) {
+        let getVersionPath = Api.urls.version;
+        fetchJson(getVersionPath, {
+          method: "GET"
+        }).then(res => {
+          console.log("getVersionPath: ", res.body);
+          console.log("getCurrVersion: ", version.value);
+          if (version.value.trim() != res.body.trim()) {
             showingUpdate = true;
             if ('serviceWorker' in navigator) {
               $f7.dialog.create({
@@ -498,7 +498,7 @@
                     }
                   },
                   {
-                    text: `Update to version ${res.data}`,
+                    text: `Update to version ${res.body}`,
                     bold: true,
                     cssClass: "bg-color-primary text-color-white",
                     onClick: function(dialog, e) {

@@ -27,7 +27,7 @@
     "eslint": "^8.21.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "framework7": "^7.0.8",
+    "framework7": "^8.3.4",
     "framework7-icons": "^5.0.5",
     "intro.js": "^6.0.0",
     "material-icons": "^1.12.1",
@@ -43,7 +43,7 @@
     "local-cors-proxy": "^1.1.0",
     "postcss-preset-env": "^7.8.2",
     "rollup-plugin-framework7": "^1.2.1",
-    "vite": "^3.2.2",
+    "vite": "^6.2.6",
     "workbox-cli": "^6.5.4"
   }
 }

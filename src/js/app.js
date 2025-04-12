@@ -21,7 +21,10 @@ import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
 // This needs to match the version in `/version.txt`
-let version = "3.3.11";
+let version = "3.3.12";
+
+// Framework7v8 removed version from app so we have to set it in store now
+store.dispatch("setVersion", version);
 
 Sentry.init({
   dsn: "https://19734818cf6847f3ae9891d1f8faee7e@o204562.ingest.sentry.io/4504251695628288",
@@ -40,7 +43,7 @@ var app = new Framework7({
   theme: "auto", // Automatic theme detection
   el: "#app", // App root element
   component: App, // App main component
-  version: version,
+  //version: version, // this was removed in framework7v8
   disableContextMenu: true,
 
   // App store

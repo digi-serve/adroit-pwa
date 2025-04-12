@@ -20,7 +20,7 @@
                     `}
                   </p>
                 </div>
-                <div class="list bg_transparent">
+                <div class="list list-outline list-strong list-dividers bg_transparent">
                    <ul>
                      <li>
                       <a href="/" class="item-content item-link panel-close">
@@ -117,7 +117,7 @@
               <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
             </div>
             <form action="javascript: console.log('logging in...')" onSubmit="${authenticate}">
-              <div class="list">
+              <div class="list list-outline list-strong list-dividers">
                 <ul>
                   <li class="item-content item-input">
                     <div class="item-inner">
@@ -200,6 +200,7 @@
     const gotUser = $store.getters.gotUser;
     const isApprover = $store.getters.isApprover;
     const approvalCount = $store.getters.approvalCount;
+    const versionNumber = $store.getters.version.value;
 
 
     user.onUpdated(() => {
@@ -225,7 +226,7 @@
     })
 
     let isLoading = false;
-    let versionNumber = $f7.version;
+    // let versionNumber = $f7.version;
     // let versionNumber = $store.getters.version;
     let password = '';
     $store.dispatch('getUsername');

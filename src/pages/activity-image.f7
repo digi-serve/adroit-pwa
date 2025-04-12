@@ -26,7 +26,7 @@
       <i @click=${readFile} class="material-icons uploadFail hidden">restart_alt</i>
       <i class="material-icons uploadSuccess hidden">check_circle</i>
       <span style="position: absolute; margin: -5px 0 0 0;" class="progressbar-infinite"></span>
-      <div class="list no-hairlines no-margin">
+      <div class="list list-strong no-hairlines no-margin">
         <ul>
           <li class="align-top">
             <div class="item-content item-input">
@@ -41,21 +41,23 @@
           </li>
         </ul>
       </div>
-      <div class="list inline-labels no-hairlines no-margin">
+      <div class="list list-strong list-dividers inline-labels no-hairlines no-margin">
         <ul>
           <li>
-            <div class="item-content item-input">
+            <div class="item-content">
               <div class="item-inner">
-                <div class="item-title item-label">Date</div>
+                <div class="item-title">Date</div>
+              </div>
+              <div class="item-inner">
                 <div class="item-input-wrap">
                   <input required name="date" style="text-align: right;" type="text" placeholder="Date the photo was taken" readonly="readonly" id="photoDate" />
                 </div>
               </div>
             </div>
           </li>
-          <li>
+          <li style="clear: both;">
             <div class="row no-gap">
-              <div class="col-85">
+              <div style="width: 85%; float:left;">
                 <a id="locationSelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
                   data-searchbar-placeholder="Search locations">
                   <select @change="${validateOnChange}" required placeholder="Select Location" name="location">
@@ -77,14 +79,14 @@
                   </div>
                 </a>
               </div>
-              <div class="col-15">
+              <div style="width: 15%; float:left;">
                 <a href="/locations/" style="border-radius: 0;" class="button button-large button-fill"><i class="material-icons">add</i></a>
               </div>
             </div>
           </li>
-          <li>
+          <li style="clear: both;">
             <div class="row no-gap">
-              <div class="col-85">
+              <div style="width: 85%; float:left;">
                 <a id="activitySelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
                   data-searchbar-placeholder="Search activity">
                   <select @change="${validateOnChange}" required name="activity">
@@ -99,12 +101,12 @@
                   </div>
                 </a>
               </div>
-              <div class="col-15">
+              <div style="width: 15%; float:left;">
                 <a href="#" @click="${addActivity}" style="border-radius: 0;" class="button button-large button-fill ${isUpdate ? $h`disabled` : $h``}"><i class="material-icons">add</i></a>
               </div>
             </div>
           </li>
-          <li>
+          <li style="clear: both;">
             <a id="tagPeople" class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
               data-searchbar-placeholder="Search volunteers">
               <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>

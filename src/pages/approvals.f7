@@ -19,7 +19,7 @@
         <div class="ptr-arrow"></div>
       </div>
       <!-- <a href="#" class="button button-raised button-large button-fill login-screen-open" data-login-screen=".login-screen">As Overlay</a> -->
-      <div class="list media-list no-margin-top">
+      <div class="list list-outline list-strong list-dividers media-list no-margin-top">
         ${approvalsLoading.value ? $h`
           <ul>
             ${approvalImagesSkeleton.map((activityImage) => $h`
@@ -92,7 +92,7 @@
                             <strong>Caption:</strong><br/>
                             ${activityImage["Description EN"]}
                           </p>
-                          <div class="list inset" style="margin: 10px 0;">
+                          <div class="list list-outline list-strong list-dividers inset" style="margin: 10px 0;">
                             <ul>
                               <li class="dark list-group-title">
                                 People in photo:
@@ -125,7 +125,7 @@
                 <div class="popup denyPopup-${activityImage.id}">
                   <div class="page">
                     <div class="page-content">
-                      <form class="list inset" id="commentsForm-${activityImage.id}">
+                      <form class="list list-outline list-strong list-dividers inset" id="commentsForm-${activityImage.id}">
                         <ul>
                           <li class="item-content item-input">
                             <div class="item-inner">
@@ -139,8 +139,8 @@
                       </form>
                       <div class="block">
                         <p class="segmented segmented-round">
-                          <a class="button button-round button-large button-fill popup-close" href="#">Cancel</a>
-                          <a class="button button-round button-large button-fill color-white bg-color-red" href="#" @click=${() => deny(activityImage)}>Deny</a>
+                          <a class="button button-round button-large button-fill text-white popup-close" href="#">Cancel</a>
+                          <a class="button button-round button-large button-fill text-white bg-color-red" href="#" @click=${() => deny(activityImage)}>Deny</a>
                         </p>
                       </div>
                     </div>
