@@ -298,17 +298,24 @@
       $f7.dialog.confirm('Are you sure want to approve this item?', 'Approve?', function () {
         app.f7.preloader.show();
         let url = Api.urls.processApproval + item.id;
-        const body = new FormData();
-        body.append('actionKey', item.actionKey);
-        body.append('userID', item.userID);
-        body.append('callback', item.callback);
-        body.append('status', "approved");
-        body.append('uniqueKey', item.uniqueKey);
-        body.append('id', item.id);
+
+        let params = {
+          'actionKey': item.actionKey,
+          'userID': item.userID,
+          'callback': item.callback,
+          'status': "approved",
+          'uniqueKey': item.uniqueKey,
+          'comments': [],
+          "updatedValues": "",
+          'objectData': item.objectData,
+          'comment': "",
+          'id': item.id
+        }
+
         let method = 'PUT';
         const options = {
           method: method,
-          body,
+          params: params
         };
 
         fetchJson(url, options).then(response => {
@@ -328,7 +335,7 @@
           // Open it
           toastApproval.open();
         }).catch(async error => {
-          // console.log(error);
+          console.log(error);
           // $f7.dialog.alert(error);
         });
       });
