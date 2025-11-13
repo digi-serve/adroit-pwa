@@ -26,21 +26,6 @@
       <i @click=${readFile} class="material-icons uploadFail hidden">restart_alt</i>
       <i class="material-icons uploadSuccess hidden">check_circle</i>
       <span style="position: absolute; margin: -5px 0 0 0;" class="progressbar-infinite"></span>
-      <div class="list list-strong no-hairlines no-margin">
-        <ul>
-          <li class="align-top">
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Caption</div>
-                <div class="item-input-wrap">
-                  <textarea id="caption" required name="caption" @input=${characterCounter} placeholder="Describe what you did and how it helps the Thai community." class="resizable charCount"></textarea>
-                  <div class="item-input-info charCountHolder">0/240 characters</div>
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </div>
       <div class="list list-strong list-dividers inline-labels no-hairlines no-margin">
         <ul>
           <li>
@@ -86,33 +71,52 @@
           </li>
           <li style="clear: both;">
             <div class="row no-gap">
-              <div style="width: 85%; float:left;">
-                <a id="activitySelect" class="item-link smart-select smart-select-init ${isUpdate ? $h`disabled` : $h``}" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
-                  data-searchbar-placeholder="Search activity">
-                  <select @change="${validateOnChange}" required name="activity">
-                    ${activities.value.map((activity) => $h`
-                    <option value="${activity.uuid}">${activity.Activities}</option>
-                    `)}
-                  </select>
-                  <div class="item-content">
-                    <div class="item-inner">
-                      <div class="item-title">Activity</div>
-                    </div>
+              <a id="activitySelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
+                data-searchbar-placeholder="Search activity">
+                <select @change="${activityChanged}" required name="activity">
+                  ${activities.value.map((activity) => $h`
+                  <option value="${activity.uuid}">${activity.Activities}</option>
+                  `)}
+                </select>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Activity</div>
                   </div>
-                </a>
-              </div>
-              <div style="width: 15%; float:left;">
-                <a href="#" @click="${addActivity}" style="border-radius: 0;" class="button button-large button-fill ${isUpdate ? $h`disabled` : $h``}"><i class="material-icons">add</i></a>
-              </div>
+                </div>
+              </a>
+            </div>
+          </li>
+          <li style="clear: both;">
+            <div class="row no-gap">
+              <a id="captionSelect" class="item-link smart-select">
+                <select name="captionselect">
+                  <option value="">Pick a caption</option>
+                  ${captions.map((caption) => $h`
+                  <option value="${caption.uuid}">${caption.English}</option>
+                  `)}
+                </select>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Caption</div>
+                  </div>
+                </div>
+              </a>
             </div>
           </li>
           <li style="clear: both;">
             <a id="tagPeople" class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
               data-searchbar-placeholder="Search volunteers">
               <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
+                <optgroup label="My Project">
                 ${teamMembers.value.map((teamMember) => $h`
                 <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${teamMember["Full Name"]}</option>
                 `)}
+                </optgroup>
+                <optgroup label="FCF Volunteers">
+                ${fcfVolunteers.value.map((volunteer) => $h`
+                <option value="${volunteer.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${volunteer.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${volunteer["Full Name"]}</option>
+                `)}
+                </optgroup>
               </select>
               <div class="item-content">
                 <div class="item-inner">
@@ -123,7 +127,27 @@
           </li>
         </ul>
       </div>
+      <div class="customDescription list list-strong hidden">
+        <ul>
+          <li class="align-top">
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Caption</div>
+                <div class="item-input-wrap">
+                  <textarea id="caption" name="caption" @input=${characterCounter} placeholder="Describe what you did and how it helps the Thai community." class="resizable charCount"></textarea>
+                  <div class="item-input-info charCountHolder">0/240 characters</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </form>
+    <div class="block customDescriptionButton">
+      <button class="button" @click=${customDescription}>
+        <span>Custom Description</span>
+      </button>
+    </div>
     <div class="block">
       <button class="<!--disabled--> button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
         @click=${save}>
@@ -143,22 +167,29 @@
     let isLoading = false;
     let progressBarEl;
     let activitySelect;
+    let captionSelect;
     let locationSelect;
     let tagPeople;
-    let caption;
     let imagePath;
     let isUpdate = false;
     let isDenial = false;
     // const denial = $store.getters.denial;
     let denial = "Reason for denial";
+    let captions = [];
     const myLocations = $store.getters.myLocations;
     const fcfLocations = $store.getters.fcfLocations;
     // const teams = $store.getters.myTeams;
     const teamMembers = $store.getters.myTeamMembers;
+    const fcfVolunteers = $store.getters.fcfVolunteers;
     const activities = $store.getters.activities;
     const user = $store.getters.user;
 
     if (props.activityImage) {
+      activities.value.forEach((activity) => {
+        if (activity.id == props.activityImage.ActivityDate__relation.id) {
+          captions = activity.HRAPCaption508__relation;
+        }
+      });
       isUpdate = true;
       if (props.activityImage.Status == "Denied" && props.activityImage['Reason for Denial'] != null) {
         isDenial = true;
@@ -202,6 +233,10 @@
 
       // load values if we are editing a previous entry
       if (props.activityImage && !props.stopAfterIn) {
+        if (props.activityImage["Description EN"] != "") {
+          $('.customDescriptionButton').css("display", "none");
+          $('.customDescription').css("display", "block");
+        }
         // $store.dispatch('getDenial', props.activityImage.id);
         calendarDefault.setValue([new Date(props.activityImage["Date of Activity"])]);
         // teamSelect.setValue(props.activityImage.ActivityDate__relation.id);
@@ -218,7 +253,30 @@
         activitySelect = $f7.smartSelect.get("#activitySelect");
         setTimeout(() => {
           activitySelect.setValue(props.activityImage.ActivityDate__relation.id);
-        }, 500)
+          setTimeout(() => {
+            captionSelect = $f7.smartSelect.create({
+              el: "#captionSelect",
+              closeOnSelect: true,
+              openIn: "popup",
+              searchbar: true,
+              searchbarPlaceholder: "Search captions",
+              cssClass: "captionSelects",
+              // virtualList: true,
+              // virtualListHeight: (data) => {
+              //   debugger;
+              //   return 222;
+              // },
+              // formatValueText: (value) => {
+              //   debugger;
+              //   return "James";
+              // }
+            });
+            setTimeout(() => {
+              captionSelect.setValue(props.activityImage.Photo738__relation.id);
+            }, 100)
+          }, 100)
+        }, 100)
+
 
         let people = [];
         props.activityImage.Person__relation.forEach((pep) => {
@@ -227,7 +285,7 @@
         tagPeople = $f7.smartSelect.get("#tagPeople");
         setTimeout(() => {
           tagPeople.setValue(people);
-        }, 500)
+        }, 100)
 
         $("#caption")[0].value = props.activityImage["Description EN"];
         characterCounter();
@@ -339,6 +397,7 @@
       const body = new FormData();
       body.append('Activity Date', formData.activity);
       body.append('Description EN', formData.caption);
+      body.append('Photo738', formData.captionselect);
       body.append('Activity Photo', formData.location);
       body.append('Date of Activity', formData.date);
       body.append("User", user.value["Owner User"].toString());
@@ -543,6 +602,43 @@
         textArea.value = trimmed;
         $('.charCountHolder').html(`240/240 characters`);
       }
+    }
+
+    const activityChanged = (e) => {
+      activities.value.forEach((activity) => {
+        if (activity.id == e.currentTarget.value) {
+          captions = activity.HRAPCaption508__relation;
+          $update();
+          if (captionSelect) {
+            captionSelect.setValue("");
+          }
+        }
+      });
+      validateOnChange(e);
+    }
+
+    const customDescription = (e) => {
+      $f7.dialog.create({
+        title: 'Review captions first',
+        content: 'Before writing a custom description please review the preapproved captions above in order to expidite translation and immigration reviews.',
+        buttons: [
+          {
+            text: 'Cancel'
+          },
+          {
+            text: 'Write custom description',
+            bold: true,
+            cssClass: "bg-color-primary text-color-white",
+            onClick: function(dialog, e) {
+              $('.customDescriptionButton').css("display", "none");
+              $('.customDescription').css("display", "block");
+            }
+          },
+        ],
+        verticalButtons: true,
+      }).open();
+
+
     }
 
     const validateOnChange = (e) => {

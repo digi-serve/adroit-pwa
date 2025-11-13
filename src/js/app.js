@@ -21,7 +21,7 @@ import * as Sentry from "@sentry/browser";
 import { BrowserTracing } from "@sentry/tracing";
 
 // This needs to match the version in `/version.txt`
-let version = "3.3.12";
+let version = "3.6.0";
 
 // Framework7v8 removed version from app so we have to set it in store now
 store.dispatch("setVersion", version);

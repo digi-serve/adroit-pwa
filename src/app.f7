@@ -11,7 +11,7 @@
               <div>
                 <div class="block text-align-center no-margin-bottom">
                   <!-- block content -->
-                  <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
+                  <img src="assets/images/1024.png" width="50%" style="margin-top: 50px;" class="sidebar_logo" />
                   <p>
                     ${gotUser.value ? $h`
                       Welcome, ${user.value["Full Name"]}
@@ -146,12 +146,11 @@
                       </div>
                     </div>
                   </li>
-                  <li class="item-content item-input"></li>
                 </ul>
               </div>
               <div class="block">
-                <button type="submit" class="button color-primary button-outline button-round bg-color-white button-large login-button button-preloader ${isLoading ? 'button-loading' : ''}">
-                  <div class="preloader">
+                <button type="submit" class="button color-primary button-fill button-round text-color-blue bg-color-white button-large login-button button-preloader ${isLoading ? 'button-loading' : ''}">
+                  <div class="preloader color-blue">
                     <span class="preloader-inner">
                       <span class="if-ios">
                         <span class="preloader-inner-line"></span>
@@ -210,6 +209,7 @@
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
       $store.dispatch('getActivities');
+      // $store.dispatch('getCaptions');
       Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
     })
 

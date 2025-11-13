@@ -23,14 +23,14 @@ const fetchJson = async (url, options = {}) => {
     requestHeaders.set("Content-Type", "application/json");
   }
 
-  // if we send params we are not using formData due to issues 
+  // if we send params we are not using formData due to issues
   // with passing translations for multilingual fields
   // so we need to submit this differently
   if (options.params) {
     options = {
       method: options.method,
-      body: JSON.stringify(options.params)
-    }
+      body: JSON.stringify(options.params),
+    };
   }
 
   //let csrfToken = store.getters.csrfToken;

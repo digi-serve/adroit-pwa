@@ -68,7 +68,8 @@
                         ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}
                       </div>
                       <div class="item-text">
-                        ${activityImage["Description EN"]}
+                        ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}
+                        ${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
                       </div>
                     </div>
                   </a>
@@ -90,7 +91,8 @@
                           <strong>Location:</strong> ${activityImage["ActivityPhoto__relation"].Name}<br/>
                           <p>
                             <strong>Caption:</strong><br/>
-                            ${activityImage["Description EN"]}
+                            ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}
+                            ${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
                           </p>
                           <div class="list list-outline list-strong list-dividers inset" style="margin: 10px 0;">
                             <ul>
@@ -125,7 +127,7 @@
                 <div class="popup denyPopup-${activityImage.id}">
                   <div class="page">
                     <div class="page-content">
-                      <form class="list list-outline list-strong list-dividers inset" id="commentsForm-${activityImage.id}">
+                      <form class="list list-outline list-strong list-dividers inset" style="margin-top: 80px;" id="commentsForm-${activityImage.id}">
                         <ul>
                           <li class="item-content item-input">
                             <div class="item-inner">
@@ -188,6 +190,7 @@
 
     let approvalImagesSkeleton = [approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage, approvalsImage];
     const approvalsImages = $store.getters.approvals;
+    // debugger;
     const user = $store.getters.user;
 
     $on('pageInit', () => {

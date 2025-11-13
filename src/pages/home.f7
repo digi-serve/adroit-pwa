@@ -134,7 +134,7 @@
                           <strong>${activityImage.ActivityPhoto__relation.Name}</strong>
                         </div>
                         <div class="item-text">
-                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}
+                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
                         </div>
                       </div>
                     </a>
@@ -310,11 +310,19 @@
           introJs().setOption("dontShowAgain", true).start();
         }, 3000);
       }
+      function removeFocus() {
+        const newActiveElement = document.activeElement;
+        console.log('Element focused:', newActiveElement);
+        newActiveElement.blur();
+        document.removeEventListener("focusin", removeFocus);
+      }
       $('.ios-popup').on('popup:open', function (e) {
-        const blurTimeoutOpen = setTimeout(document.activeElement.blur(), 500);
+        console.log("disable auto focus popup:open");
+        document.addEventListener('focusin', removeFocus);
       });
       $('.ios-popup').on('popup:opened', function (e) {
-        const blurTimeoutOpened = setTimeout(document.activeElement.blur(), 500);
+        console.log("disable auto focus popup:opened");
+        document.addEventListener('focusin', removeFocus);
       });
 
       // Checks if should display install popup notification:
@@ -370,6 +378,7 @@
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeamMembers');
       $store.dispatch('getActivities');
+      // $store.dispatch('getCaptions');
     });
 
     user.onUpdated((e) => {
@@ -437,6 +446,7 @@
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
       $store.dispatch('getActivities');
+      // $store.dispatch('getCaptions');
     }
 
     const onDeleted = (evt) => {

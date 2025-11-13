@@ -60,6 +60,7 @@ const store = createStore({
     daysLeft: 0,
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
+    fcfVolunteers: [],
     hasLocations: false,
     isApprover: false,
     imagesLoading: true,
@@ -145,6 +146,9 @@ const store = createStore({
     fcfLocations({ state }) {
       return state.fcfLocations;
     },
+    fcfVolunteers({ state }) {
+      return state.fcfVolunteers;
+    },
     hasLocations({ state }) {
       return state.hasLocations;
     },
@@ -225,7 +229,7 @@ const store = createStore({
       fetchJson(
         `${
           Api.urls.getApprovals.url
-        }&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+        }&skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
           ${JSON.stringify(Api.urls.getApprovals.where)}`,
         { method: "GET" }
       )
@@ -331,7 +335,7 @@ const store = createStore({
 
       fetchJson(
         `${Api.urls.myActivityImages.url}
-          &sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          &skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
           ${JSON.stringify(wheres)}`,
         { method: "GET" }
       )
@@ -528,7 +532,7 @@ const store = createStore({
 
       fetchJson(
         `${Api.urls.myActivityImages.url}
-          &sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+          &skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
           ${JSON.stringify(wheres)}`,
         { method: "GET" }
       )
@@ -610,7 +614,9 @@ const store = createStore({
     },
     getActivities({ state }) {
       fetchJson(
-        `${Api.urls.myActivities.url}?where=${JSON.stringify(
+        `${
+          Api.urls.myActivities.url
+        }?skipPack=true&populate=true&where=${JSON.stringify(
           Api.urls.myActivities.where
         )}`,
         {
@@ -649,7 +655,7 @@ const store = createStore({
     },
     getFCFLocations({ state }) {
       fetchJson(
-        `${Api.urls.locations.url}?where=${JSON.stringify(
+        `${Api.urls.locations.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.locations.where
         )}`
       )
@@ -662,7 +668,7 @@ const store = createStore({
     },
     getLocations({ state }) {
       fetchJson(
-        `${Api.urls.myLocations.url}?where=${JSON.stringify(
+        `${Api.urls.myLocations.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.myLocations.where
         )}`
       )
@@ -676,21 +682,39 @@ const store = createStore({
     },
     getTeamMembers({ state }) {
       fetchJson(
-        `${Api.urls.myTeamMembers.url}?where=${JSON.stringify(
+        `${Api.urls.myTeamMembers.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.myTeamMembers.where
-        )}`,
+        )}&sort=${JSON.stringify(Api.urls.myTeamMembers.sort)}`,
         {
           method: "GET",
         }
       )
         .then((res) => {
-          let volunteers = [];
-          res.json.data.data.forEach((res) => {
-            if (res["Person Type"] == "Volunteer") {
-              volunteers.push(res);
-            }
+          let myTeamLookUp = [];
+          res.json.data.data.forEach((volunteer) => {
+            myTeamLookUp.push(volunteer.id);
           });
-          state.teamMembers = volunteers;
+          state.teamMembers = res.json.data.data;
+          fetchJson(
+            `${Api.urls.fcfVolunteers.url}?skipPack=true&where=${JSON.stringify(
+              Api.urls.fcfVolunteers.where
+            )}&sort=${JSON.stringify(Api.urls.fcfVolunteers.sort)}`,
+            {
+              method: "GET",
+            }
+          )
+            .then((res) => {
+              let otherVolunteers = [];
+              res.json.data.data.forEach((volunteer) => {
+                if (myTeamLookUp.indexOf(volunteer.id) == -1) {
+                  otherVolunteers.push(volunteer);
+                }
+              });
+              state.fcfVolunteers = otherVolunteers;
+            })
+            .catch(function (err) {
+              app.f7.loginScreen.open("#my-login-screen");
+            });
         })
         .catch(function (err) {
           app.f7.loginScreen.open("#my-login-screen");
@@ -699,7 +723,7 @@ const store = createStore({
     getMyProjects({ state }) {
       if (!state?.user?.uuid) return false;
       fetchJson(
-        `${Api.urls.myProjects.url}?where=${JSON.stringify(
+        `${Api.urls.myProjects.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.myProjects.where
         )}`,
         { method: "GET" }
@@ -716,7 +740,9 @@ const store = createStore({
       if (!state?.user?.uuid) return false;
 
       fetchJson(
-        `${Api.urls.myAssignments(state.user.uuid).url}?where=${JSON.stringify(
+        `${
+          Api.urls.myAssignments(state.user.uuid).url
+        }?skipPack=true&where=${JSON.stringify(
           Api.urls.myAssignments(state.user.uuid).where
         )}`,
         { method: "GET" }
@@ -731,9 +757,9 @@ const store = createStore({
             wheres.rules.push(Api.urls.myTeams(res["Project Team Name"]).where);
           });
           fetchJson(
-            `${Api.urls.myTeams(state.user.uuid).url}?where=${JSON.stringify(
-              wheres
-            )}`,
+            `${
+              Api.urls.myTeams(state.user.uuid).url
+            }?skipPack=true&where=${JSON.stringify(wheres)}`,
             { method: "GET" }
           )
             .then((result) => {
@@ -750,7 +776,7 @@ const store = createStore({
               fetchJson(
                 `${
                   Api.urls.myAssignments(state.user.uuid).url
-                }?where=${JSON.stringify(
+                }?skipPack=true&where=${JSON.stringify(
                   Api.urls.myAssignments(state.user.uuid).where
                 )}`,
                 { method: "GET" }
@@ -767,9 +793,9 @@ const store = createStore({
                     );
                   });
                   fetchJson(
-                    `${Api.urls.assignments().url}?where=${JSON.stringify(
-                      wheres
-                    )}`,
+                    `${
+                      Api.urls.assignments().url
+                    }?skipPack=true&where=${JSON.stringify(wheres)}`,
                     { method: "GET" }
                   )
                     .then((result) => {
@@ -786,7 +812,7 @@ const store = createStore({
                       fetchJson(
                         `${
                           Api.urls.myProjectsWithMembers().url
-                        }?where=${JSON.stringify(wheres)}`,
+                        }?skipPack=true&where=${JSON.stringify(wheres)}`,
                         { method: "GET" }
                       )
                         .then((result) => {
@@ -831,12 +857,15 @@ const store = createStore({
     },
     getUser({ state }) {
       fetchJson(
-        `${Api.urls.whoami.url}?where=${JSON.stringify(Api.urls.whoami.where)}`,
+        `${Api.urls.whoami.url}?skipPack=true&where=${JSON.stringify(
+          Api.urls.whoami.where
+        )}`,
         {
           method: "GET",
         }
       )
         .then((res) => {
+          // debugger;
           console.log("you are logged in already");
           state.user = res.json.data.data[0];
           state.gotUser = true;
@@ -878,7 +907,7 @@ const store = createStore({
     },
     updateActivities({ state, dispatch }, { minId }) {
       fetchJson(
-        `${Api.urls.myTeams.url}?where=${JSON.stringify(
+        `${Api.urls.myTeams.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.myTeams.where
         )}`,
         { method: "GET" }

@@ -1,10 +1,17 @@
 /* Custom color theme properties */
-:root {
-  --f7-theme-color: #255CC3;
-  --f7-theme-color-rgb: 37, 92, 195;
-  --f7-theme-color-shade: #183F87;
-  --f7-theme-color-tint: #4685FA;
-  --f7-ios-primary: #255cc3;
+:root, .dark {
+  --f7-theme-color: #255cc3 !important;
+  --f7-theme-color-rgb: 37, 92, 195 !important;
+  --f7-theme-color-shade: #183F87 !important;
+  --f7-theme-color-tint: #4685FA !important;
+  --f7-ios-primary: #255cc3 !important;
+  --f7-md-primary: #255cc3 !important; 
+}
+.md .item-input:not(.item-input-outline) .item-content::before, .md .item-input:not(.item-input-outline).item-content::before {
+  background: transparent;
+}
+.md, .md .dark, .md [class*='color-'] {
+    --f7-input-border-color: rgba(255, 255, 255, 0.15);
 }
 /*
 .menu_sidebar {
@@ -361,4 +368,12 @@ select:-webkit-autofill:focus {
   height: 85px; 
   object-fit: cover; 
   border-radius: 20%;
+}
+.captionSelects .list .item-title {
+  white-space: normal;
+}
+@media (min-width: 768px) and (min-height: 768px) {
+  #imageLarge, #imagePreview {
+    height: 400px;
+  }
 }
