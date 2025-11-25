@@ -272,7 +272,9 @@
               // }
             });
             setTimeout(() => {
-              captionSelect.setValue(props.activityImage.Photo738__relation.id);
+              if (props.activityImage.Photo738__relation) {
+                captionSelect.setValue(props.activityImage.Photo738__relation.id);
+              }
             }, 100)
           }, 100)
         }, 100)
@@ -337,6 +339,20 @@
           if (location) {
             locationSelect.setValue(location);            
           }
+
+          setTimeout(() => {
+            setTimeout(() => {
+              captionSelect = $f7.smartSelect.create({
+                el: "#captionSelect",
+                closeOnSelect: true,
+                openIn: "popup",
+                searchbar: true,
+                searchbarPlaceholder: "Search captions",
+                cssClass: "captionSelects",
+              });
+            }, 100)
+          }, 100)
+
           if (activity) {
             activitySelect.setValue(activity);            
           }

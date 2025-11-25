@@ -370,7 +370,7 @@ select:-webkit-autofill:focus {
   border-radius: 20%;
 }
 .captionSelects .list .item-title {
-  white-space: normal;
+  white-space: normal !important;
 }
 @media (min-width: 768px) and (min-height: 768px) {
   #imageLarge, #imagePreview {
