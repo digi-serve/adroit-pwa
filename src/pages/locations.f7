@@ -18,6 +18,15 @@
       </div>
     </div>
     <div class="page-content">
+      <div class="block" style="">
+        <p>Be specific regarding the location of the photo.</p>
+        <ul style="list-style-type: none;">
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "Chiang Mai"</li>
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "FCF Office"</li>
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "Mae Hia"</li>
+          <li><i class="material-icons text-color-green" style="vertical-align: middle;">check_circle</i> "FCF Office, Mae Hia"</li>
+        </ul>
+      </div>
       <div class="list list-outline list-strong list-dividers no-hairlines-md">
         <ul>
           <li class="item-content item-input">
