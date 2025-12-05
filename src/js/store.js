@@ -111,6 +111,7 @@ const store = createStore({
     user: { "Full Name": "" },
     username: "",
     version: "",
+    switcheroo: false,
   },
   getters: {
     activities({ state }) {
@@ -184,6 +185,9 @@ const store = createStore({
     },
     photoProgress({ state }) {
       return state.photoProgress;
+    },
+    switcheroo({ state }) {
+      return state.switcheroo;
     },
     teamObjectives({ state }) {
       return state.teamObjectives;
@@ -682,7 +686,9 @@ const store = createStore({
     },
     getTeamMembers({ state }) {
       fetchJson(
-        `${Api.urls.myTeamMembers.url}?skipPack=true&where=${JSON.stringify(
+        `${
+          Api.urls.myTeamMembers.url
+        }?skipPack=true&populate=true&where=${JSON.stringify(
           Api.urls.myTeamMembers.where
         )}&sort=${JSON.stringify(Api.urls.myTeamMembers.sort)}`,
         {
@@ -866,7 +872,7 @@ const store = createStore({
       )
         .then((res) => {
           // debugger;
-          console.log("you are logged in already");
+          // console.log("you are logged in already");
           state.user = res.json.data.data[0];
           state.gotUser = true;
         })
@@ -904,6 +910,51 @@ const store = createStore({
     },
     setVersion({ state }, version) {
       state.version = version;
+    },
+    switcheroo({ state }, user) {
+      fetchJson(`${Api.urls.switcheroo(user).url}`, {
+        method: "POST",
+      })
+        .then((result) => {
+          state.switcheroo = true;
+          window.location.reload(true);
+        })
+        .catch((e) => {
+          // console.log(e);
+          fetchJson(`${Api.urls.switcheroo("").url}`, {
+            method: "DELETE",
+          })
+            .then((result) => {
+              state.switcheroo = false;
+              window.location.reload(true);
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        });
+    },
+    isSwitcheroo({ state }) {
+      fetchJson(`/config`, {
+        method: "GET",
+      })
+        .then((result) => {
+          state.switcheroo = result.json.data?.userReal?.uuid ? true : false;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    deleteSwitcheroo({ state }) {
+      fetchJson(`${Api.urls.switcheroo("").url}`, {
+        method: "DELETE",
+      })
+        .then((result) => {
+          state.switcheroo = false;
+          window.location.reload(true);
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
     updateActivities({ state, dispatch }, { minId }) {
       fetchJson(

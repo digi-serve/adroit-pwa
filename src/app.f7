@@ -14,7 +14,7 @@
                   <img src="assets/images/1024.png" width="50%" style="margin-top: 50px;" class="sidebar_logo" />
                   <p>
                     ${gotUser.value ? $h`
-                      Welcome, ${user.value["Full Name"]}
+                      ${isSwitcheroo.value ? $h`Viewing app as:` : $h`Welcome,`} ${user.value["Full Name"]}
                     ` : $h`
                       
                     `}
@@ -79,6 +79,26 @@
                         </div>
                       </a>
                      </li>
+                     ${isSwitcheroo.value ? $h`
+                     <li>
+                        <a href="#" @click="${deleteSwitcheroo}" class="item-content text-color-white panel-close">
+                          <div class="item-media"><i class="material-icons">switch_account</i></div>
+                          <div class="item-inner">
+                             <div class="item-title">Switch User</div>
+                             <div class="item-after"><i class="icon material-icons text-color-orange">cancel</i></div>
+                          </div>
+                        </a>
+                     </li>
+                     ` : $h`
+                     <li>
+                      <a href="/switcheroo/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">switch_account</i></div>
+                        <div class="item-inner">
+                           <div class="item-title">Switch User</div>
+                        </div>
+                      </a>
+                     </li>
+                     `}
                      <li>
                       <a href="#" @click="${logout}" class="item-content item-link">
                         <div class="item-media"><i class="material-icons">logout</i></div>
@@ -87,7 +107,7 @@
                         </div>
                       </a>
                     </li>
-                  </ul>
+                 </ul>
                 </div>
               </div>
               <div class="block text-align-center" style="width: 100%; margin: 0 0 15px 0; bottom: 0px;">
@@ -200,6 +220,7 @@
     const isApprover = $store.getters.isApprover;
     const approvalCount = $store.getters.approvalCount;
     const versionNumber = $store.getters.version.value;
+    const isSwitcheroo = $store.getters.switcheroo;
 
 
     user.onUpdated(() => {
@@ -231,6 +252,7 @@
     let password = '';
     $store.dispatch('getUsername');
     $store.dispatch('getVersion');
+    $store.dispatch("isSwitcheroo");
 
     // const updateUsername = (e) => {
     //   username = e.target.value;
@@ -360,6 +382,10 @@
           app.f7.dialog.alert("Forgot password failed, please check email address was entered correctly.")
         });
       });
+    }
+
+    const deleteSwitcheroo = () => {
+      $store.dispatch("deleteSwitcheroo");
     }
 
     return $render;

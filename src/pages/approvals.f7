@@ -95,8 +95,8 @@
                             ${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
                           </p>
                           <div class="list list-outline list-strong list-dividers inset" style="margin: 10px 0;">
-                            <ul>
-                              <li class="dark list-group-title">
+                            <ul style="overflow: hidden;">
+                              <li class="dark list-group-title bg-color-blue text-color-white">
                                 People in photo:
                               </li>
                               ${activityImage.Person__relation.map((person) => $h`

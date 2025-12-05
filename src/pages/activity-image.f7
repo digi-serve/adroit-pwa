@@ -193,7 +193,7 @@
       isUpdate = true;
       if (props.activityImage.Status == "Denied" && props.activityImage['Reason for Denial'] != null) {
         isDenial = true;
-        denial = props.activityImage['Reason for Denial'];
+        denial = props.activityImage['Reason for Denial'].length ? props.activityImage['Reason for Denial'] : "This photo was denied for use. Please review and resubmit.";
       }
     }
 

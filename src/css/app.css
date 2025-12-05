@@ -169,7 +169,7 @@
 }
 /* Image Preview */
 #imagePreview {
-  height: 175px;
+  height: 215px;
   object-fit: contain;
   position: relative;
   z-index: 100;
@@ -177,7 +177,7 @@
   filter: "blur(2px)";
 }
 #imageLarge {
-  height: 175px;
+  height: 215px;
   object-fit: contain;
   opacity: 0;
   transition: 1s all;
@@ -188,12 +188,12 @@
 .uploadFail {
   position: absolute;
   color: #4cd964;
-  height: 175px;
-  margin-top: -175px;
+  height: 215px;
+  margin-top: -215px;
   width: 100%;
   z-index: 3000;
   font-size: 48pt;
-  line-height: 175px;
+  line-height: 215px;
   text-align: center;
   text-shadow: 0 2px 2px #000;
 }
@@ -372,8 +372,34 @@ select:-webkit-autofill:focus {
 .captionSelects .list .item-title {
   white-space: normal !important;
 }
+@media (((min-width: 390px) and (min-height: 390px)) or (min-height: 812px))  {
+  #imageLarge, #imagePreview {
+    height: 285px;
+  }
+  .uploadSuccess, .uploadFail {
+    margin-top: -285px;
+    height: 285px;
+    line-height: 285px;
+  }
+}
+@media (min-width: 400px) and (min-height: 400px) {
+  #imageLarge, #imagePreview {
+    height: 325px;
+  }
+  .uploadSuccess, .uploadFail {
+    margin-top: -325px ;
+    height: 325px;
+    line-height: 325px;
+  }
+}
 @media (min-width: 768px) and (min-height: 768px) {
   #imageLarge, #imagePreview {
     height: 400px;
   }
+  .uploadSuccess, .uploadFail {
+    margin-top: -400px ;
+    height: 400px;
+    line-height: 400px;
+  }
+
 }

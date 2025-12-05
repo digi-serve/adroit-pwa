@@ -22,6 +22,11 @@ const Api = {
         ],
       },
     },
+    switcheroo: (user) => {
+      return {
+        url: `/auth/switcheroo/${user}`,
+      };
+    },
     assignments: (teamId) => {
       return {
         url: "/app_builder/model/24079188-f87b-4970-82fe-293b9e7b7f4d",

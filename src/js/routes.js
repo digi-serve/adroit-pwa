@@ -7,6 +7,7 @@ import FeedbackPage from "../pages/feedback.f7";
 import ActivityImagePage from "../pages/activity-image.f7";
 import LocationsPage from "../pages/locations.f7";
 import AddActivityPage from "../pages/add-activity.f7";
+import SwitcherooPage from "../pages/switcheroo.f7";
 
 // import DynamicRoutePage from "../pages/dynamic-route.f7";
 // import RequestAndLoad from "../pages/request-and-load.f7";
@@ -15,11 +16,11 @@ import NotFoundPage from "../pages/404.f7";
 var routes = [
   {
     path: "/approvals/",
-    component: ApprovalsPage
+    component: ApprovalsPage,
   },
   {
     path: "/calendar/",
-    component: CalendarPage
+    component: CalendarPage,
   },
   {
     path: "/",
@@ -57,6 +58,10 @@ var routes = [
   {
     path: "/add-activity/",
     component: AddActivityPage,
+  },
+  {
+    path: "/switcheroo/",
+    component: SwitcherooPage,
   },
   // {
   //   path: "/request-and-load/user/:userId/",

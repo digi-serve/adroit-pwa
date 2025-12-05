@@ -1,0 +1,59 @@
+<template>
+<div class="page" data-name="about">
+  <div class="navbar">
+    <div class="navbar-bg bg-color-primary"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back text-color-white">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+      </div>
+      <div class="title text-color-white">Switch User</div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="list list-outline-ios list-strong-ios list-dividers-ios">
+      <ul>
+        ${teamMembers.value.map((teamMember) => $h`
+        ${user.value.uuid == teamMember.uuid ? $h` ` : $h`
+        <li>
+          <a href="#" class="item-link item-content" @click="${switcheroo}" data-userID="${teamMember.OwnerUser__relation.uuid}">
+            <div class="item-media">
+              <img src="${Api.absoluteUrl('/file/')}${teamMember.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="width: 60px; height: 60px; object-fit: contain; background-color: #CCC; border-radius: 30px" />
+            </div>
+            <div class="item-inner">
+              <div class="item-title">
+                ${teamMember["Full Name"]}
+              </div>
+            </div>
+          </a>
+        </li>
+        `}
+        `)}
+      </ul>
+    </div>
+  </div>
+</div>
+</template>
+<script>
+import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    const teamMembers = $store.getters.myTeamMembers;
+    const isSwitcheroo = $store.getters.switcheroo;
+    const user = $store.getters.user;
+
+    const switcheroo = (e) => {
+      let userID = e.currentTarget.dataset.userid;
+      $store.dispatch("switcheroo", userID);
+    }
+
+    const deleteSwitcheroo = () => {
+      $store.dispatch("deleteSwitcheroo");
+    }
+
+    return $render;
+  };
+</script>
