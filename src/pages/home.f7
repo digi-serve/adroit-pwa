@@ -131,7 +131,7 @@
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
-                        <img class="photoThumbnail" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                        <img class="photoThumbnail" @error=${imageLoadError} src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
@@ -482,6 +482,19 @@
           // $f7.dialog.alert(error);
         });
 
+    }
+    const imageLoadError = (e) => {
+      if (!e.target.dataset.retry || e.target.dataset.retry < 5) {
+        setTimeout(() => {
+          e.target.src = e.target.src;
+
+          e.target.dataset.retry = (!e.target.dataset.retry) ? 1 : (parseInt(e.target.dataset.retry) + 1);
+          console.log(`trying to load image: ${e.target.dataset.retry}`)
+        }, 2000);
+      } else {
+        e.target.src = "/assets/images/1024.png";
+        e.target.style.objectFit = "contain";
+      }
     }
 
     const fetchPrevious = () => {

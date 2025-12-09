@@ -14,7 +14,7 @@
                   <img src="assets/images/1024.png" width="50%" style="margin-top: 50px;" class="sidebar_logo" />
                   <p>
                     ${gotUser.value ? $h`
-                      ${isSwitcheroo.value ? $h`Viewing app as:` : $h`Welcome,`} ${user.value["Full Name"]}
+                      ${isSwitcheroo.value ? $h`Viewing app as` : $h`Welcome,`} ${user.value["Full Name"]}
                     ` : $h`
                       
                     `}
@@ -90,6 +90,7 @@
                         </a>
                      </li>
                      ` : $h`
+                     ${hasSwitcheroo.value ? $h`
                      <li>
                       <a href="/switcheroo/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">switch_account</i></div>
@@ -98,7 +99,9 @@
                         </div>
                       </a>
                      </li>
+                     ` : $h``}
                      `}
+                     ${isSwitcheroo.value ? $h`` : $h`
                      <li>
                       <a href="#" @click="${logout}" class="item-content item-link">
                         <div class="item-media"><i class="material-icons">logout</i></div>
@@ -106,7 +109,8 @@
                            <div class="item-title">Log out</div>
                         </div>
                       </a>
-                    </li>
+                     </li>
+                     `}
                  </ul>
                 </div>
               </div>
@@ -221,6 +225,7 @@
     const approvalCount = $store.getters.approvalCount;
     const versionNumber = $store.getters.version.value;
     const isSwitcheroo = $store.getters.switcheroo;
+    const hasSwitcheroo = $store.getters.hasSwitcheroo;
 
 
     user.onUpdated(() => {
@@ -230,6 +235,7 @@
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
       $store.dispatch('getActivities');
+      $store.dispatch("isSwitcheroo");
       // $store.dispatch('getCaptions');
       Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
     })

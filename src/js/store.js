@@ -112,6 +112,7 @@ const store = createStore({
     username: "",
     version: "",
     switcheroo: false,
+    hasSwitcheroo: false,
   },
   getters: {
     activities({ state }) {
@@ -188,6 +189,9 @@ const store = createStore({
     },
     switcheroo({ state }) {
       return state.switcheroo;
+    },
+    hasSwitcheroo({ state }) {
+      return state.hasSwitcheroo;
     },
     teamObjectives({ state }) {
       return state.teamObjectives;
@@ -938,6 +942,11 @@ const store = createStore({
         method: "GET",
       })
         .then((result) => {
+          let switcherooRoleID = "320ef94a-73b5-476e-9db4-c08130c64bb8";
+          const hasSwitcheroo = result.json.data.user.roles.some(
+            (roles) => roles.uuid === switcherooRoleID
+          );
+          state.hasSwitcheroo = hasSwitcheroo;
           state.switcheroo = result.json.data?.userReal?.uuid ? true : false;
         })
         .catch((e) => {
