@@ -6,13 +6,26 @@
     <div class="panel panel-left panel-push dark panel-init">
       <div class="view">
         <div class="page bg-color-primary menu_sidebar">
+          <span style="position: absolute;" class="progressbar-profile-infinite hidden"></span>
           <div class="page-content">
             <div style="display: flex; justify-content: space-between; flex-direction: column; height: 100vh;">
               <div>
-                <div class="block text-align-center no-margin-bottom">
+                <div class="block text-align-center no-margin-bottom profile_bg">
                   <!-- block content -->
-                  <img src="assets/images/1024.png" width="50%" style="margin-top: 50px;" class="sidebar_logo" />
-                  <p>
+                  <div style="position: absolute;">
+                    <i @click="${profilePhoto}" class="material-icons uploadProfileFail icon-circle hidden" style="background: #f44336;">priority_high</i>
+                    <i class="material-icons uploadProfileSuccess icon-circle hidden" style="background: #4caf50;">check</i>
+                    <i @click="${profilePhoto}" class="material-icons uploadProfile icon-circle">photo_camera</i>
+                    <i class="material-icons uploadProfileLoader icon-circle spin hidden">cached</i>
+                  </div>
+                  ${gotUser.value ? $h`
+                    <img id="profilePreview" style="display: none; border: 5px solid white; width: 154px; height: 154px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
+                    <img @error=${imageLoadError} id="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 154px; height: 154px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
+                  ` : $h`
+                    <img src="assets/images/1024.png" width="50%" style="margin-top: 25px;" class="sidebar_logo" />
+                  `}
+                  <input style="display: none;" id="profilePhoto" type="file" accept="image/*" @change=${() => upload("#profilePhoto")} />
+                  <p style="margin-top: 5px;">
                     ${gotUser.value ? $h`
                       ${isSwitcheroo.value ? $h`Viewing app as` : $h`Welcome,`} ${user.value["Full Name"]}
                     ` : $h`
@@ -20,7 +33,7 @@
                     `}
                   </p>
                 </div>
-                <div class="list list-outline list-strong list-dividers bg_transparent">
+                <div class="list list-outline list-strong list-dividers bg_transparent" style="margin-top: 0px;">
                    <ul>
                      <li>
                       <a href="/" class="item-content item-link panel-close">
@@ -116,8 +129,8 @@
               </div>
               <div class="block text-align-center" style="width: 100%; margin: 0 0 15px 0; bottom: 0px;">
                 <p>
-                  <img src="assets/images/digiServe_logo.png" width="30%"/><br/>
-                  ${versionNumber}
+                  <!-- <img src="assets/images/digiServe_logo.png" width="30%"/><br/> -->
+                  v${versionNumber}
                 </p>
               </div>
             </div>
@@ -227,6 +240,7 @@
     const isSwitcheroo = $store.getters.switcheroo;
     const hasSwitcheroo = $store.getters.hasSwitcheroo;
 
+    let imagePath;
 
     user.onUpdated(() => {
       $store.dispatch('getLocations');
@@ -388,6 +402,195 @@
           app.f7.dialog.alert("Forgot password failed, please check email address was entered correctly.")
         });
       });
+    }
+
+    const profilePhoto = () => {
+      $("#profilePhoto").click();
+    }
+
+    const upload = (input) => {
+      const filePicker = $(input)[0];
+      if (!filePicker || !filePicker.files || filePicker.files.length <= 0) {
+          reject('No file selected.');
+          return;
+      }
+      const myFile = filePicker.files[0];
+
+      console.log("My File");
+      console.log(myFile);
+
+      readFile(myFile);
+      $("#profilePhoto")[0].value = null;
+
+      // $f7.view.main.router.navigate("/activity-image/add/", {
+      //   props: {
+      //     file: myFile
+      //   },
+      //   ignoreCache: true
+      // })
+    }
+
+    const readFile = (myFile) => {
+      $(".uploadProfileLoader")[0].classList.remove("hidden");
+      $(".uploadProfile")[0].classList.add("hidden");
+      let file = myFile;
+      let reader = new FileReader();
+
+      reader.onload = (res) => {
+        processFile(reader.result, file);
+      }
+
+      reader.onerror = function () {
+        alert('There was an error reading the file!');
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    const processFile = (dataURL, file) => {
+      let maxWidth = 2000;
+      let maxHeight = 2000;
+
+      // load a preview
+      let profilePreview = $("#profilePreview")[0];
+      profilePreview.src = dataURL;
+      profilePreview.style.display = "";
+      let imageProfile = $("#imageProfile")[0];
+      imageProfile.style.display = "none";
+
+      // load original for resizing
+      let image = new Image();
+      image.src = dataURL;
+
+      image.onload = function () {
+        // let width = image.width;
+        // let height = image.height;
+        // let shouldResize = (width > maxWidth) || (height > maxHeight);
+
+        // if (!shouldResize) {
+        //   sendFile(file);
+        //   return;
+        // }
+
+        // let newWidth;
+        // let newHeight;
+
+        // if (width > height) {
+        //   newHeight = height * (maxWidth / width);
+        //   newWidth = maxWidth;
+        // } else {
+        //   newWidth = width * (maxHeight / height);
+        //   newHeight = maxHeight;
+        // }
+
+        let canvas = document.createElement('canvas');
+
+        // canvas.width = newWidth;
+        // canvas.height = newHeight;
+
+        let context = canvas.getContext('2d');
+
+        // context.drawImage(this, 0, 0, newWidth, newHeight);
+
+        const minDimension = Math.min(image.width, image.height);
+        const sourceX = (image.width - minDimension) / 2;
+        const sourceY = (image.height - minDimension) / 2;
+
+        canvas.width = maxWidth;
+        canvas.height = maxHeight;
+
+        context.drawImage(
+            image,
+            sourceX,
+            sourceY,
+            minDimension,
+            minDimension,
+            0,
+            0,
+            maxWidth,
+            maxHeight
+        );
+
+        canvas.toBlob((blob) => {
+          const newFile = new File([blob], file.name, {
+            type: file.type,
+          });
+          sendFile(newFile);
+        });
+
+      };
+
+      image.onerror = function () {
+        alert('There was an error processing your file!');
+      };
+    }
+
+    const sendFile = (file) => {
+      const body = new FormData();
+      body.append('file', file);
+      body.append('file_fullpath', file.name);
+
+      const url = Api.urls.activityImageUpload;
+
+      const options = {
+        method: 'POST',
+        body: body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          if (response.json.status == "server") {
+            $(".uploadProfileLoader")[0].classList.add("hidden");
+            $(".uploadProfileSuccess")[0].classList.remove("hidden");
+            setTimeout(() => {
+              $(".uploadProfile")[0].classList.remove("hidden");
+              $(".uploadProfileSuccess")[0].classList.add("hidden");
+            }, 5000);
+            imagePath = response.json.data.uuid;
+            saveProfilePhoto();
+          }
+        })
+        .catch(async error => {
+          $(".uploadProfileLoader")[0].classList.add("hidden");
+          $(".uploadProfileFail")[0].classList.remove("hidden");
+        });
+
+    }
+
+    const saveProfilePhoto = () => {
+      let url = Api.urls.updateProfilePhoto(user.value.uuid);
+      const body = new FormData();
+      body.append('id', user.value.uuid);
+      body.append('Photo', imagePath);
+      let method = 'PUT';
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          // $f7.view.main.router.navigate("/", {
+          //   ignoreCache: true
+          // })
+        })
+        .catch(async error => {
+        });
+
+    }
+
+    const imageLoadError = (e) => {
+      if (!e.target.dataset.retry || e.target.dataset.retry < 5) {
+        setTimeout(() => {
+          e.target.src = e.target.src;
+
+          e.target.dataset.retry = (!e.target.dataset.retry) ? 1 : (parseInt(e.target.dataset.retry) + 1);
+          console.log(`trying to load image: ${e.target.dataset.retry}`)
+        }, 2000);
+      } else {
+        e.target.src = "/assets/images/1024.png";
+        e.target.style.objectFit = "contain";
+      }
     }
 
     const deleteSwitcheroo = () => {

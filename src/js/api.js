@@ -233,6 +233,8 @@ const Api = {
       "/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14",
     updateActivityImage: (activityImageId) =>
       `/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14/${activityImageId}`,
+    updateProfilePhoto: (userId) =>
+      `/app_builder/model/82df020c-695d-4360-8112-567a2f664569/${userId}`,
     createLocation: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",
     locations: {
       url: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",

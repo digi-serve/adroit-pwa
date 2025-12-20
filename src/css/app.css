@@ -36,8 +36,8 @@
   background: none;
 }
 .navbar-bg {
-  background: linear-gradient(var(--f7-theme-color-bg-color), #00000000), url(../assets/images/fcf_background.png);
-  background-size: 512px auto;
+  background: linear-gradient(var(--f7-theme-color-bg-color), #00000000), url(../assets/images/adroit/icons/navbar_bg.jpg);
+  background-size: 100% auto;
 }
 /* Status Bar */
 .break {
@@ -402,4 +402,43 @@ select:-webkit-autofill:focus {
     line-height: 400px;
   }
 
+}
+#profilePreview {
+  transition: border 2s;
+}
+.icon-circle {
+  background-color: #333;
+  border-radius: 50%;
+  padding: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  /* color: #000; */
+  left: 145px;
+  top: 145px;
+  position: relative;
+  border: 2px solid white;
+}
+.icon-circle.hidden {
+  display: none;
+}
+.spin {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.profile_bg {
+  padding-top: 32px;
+  margin: 0;
+  background-image: url("../assets/images/adroit/icons/profile_bg.jpg");
+  background-size: 260px;
+  height: 260px;
 }
