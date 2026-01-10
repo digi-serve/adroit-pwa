@@ -504,57 +504,60 @@
 
     const checkForUpdate = () => {
       if (!showingUpdate) {
-        let getVersionPath = Api.urls.version;
-        fetchJson(getVersionPath, {
-          method: "GET"
+        let getVersionPath = Api.urls.base + Api.urls.version;
+        fetch(getVersionPath, {
+          method: "GET",
+          cache: "no-store"
         }).then(res => {
-          console.log("getVersionPath: ", res.body);
-          console.log("getCurrVersion: ", version.value);
-          if (version.value.trim() != res.body.trim()) {
-            showingUpdate = true;
-            if ('serviceWorker' in navigator) {
-              $f7.dialog.create({
-                title: `Update Available`,
-                content: `There is an app update avaiable, tap "Update" to get the latest version.`,
-                buttons: [
-                  {
-                    text: 'Cancel',
-                    onClick: function(dialog, e) {
-                      showingUpdate = false;
-                    }
-                  },
-                  {
-                    text: `Update to version ${res.body}`,
-                    bold: true,
-                    cssClass: "bg-color-primary text-color-white",
-                    onClick: function(dialog, e) {
-                      $f7.progressbar.show();
-                      navigator.serviceWorker.getRegistrations().then(function (registrations) {
-                        let complete = registrations.length;
-                        let index = 0;
-                        for (let registration of registrations) {
-                          registration.unregister().then((boolean) => {
-                            index++;
-                            if (index == complete) {
-                              showingUpdate = false;
-                              window.location.reload(true);
-                            }
-                          });
-                        }
-                        if (complete == 0) {
-                          showingUpdate = false;
-                          window.location.reload(true);
-                        }
-                      });
-                    }
-                  },
-                ],
-                verticalButtons: true,
-              }).open();
+          res.text().then((text) => {
+            console.log("getVersionPath: ", text);
+            console.log("getCurrVersion: ", version.value);
+            if (version.value.trim() != text.trim()) {
+              showingUpdate = true;
+              if ('serviceWorker' in navigator) {
+                $f7.dialog.create({
+                  title: `Update Available`,
+                  content: `There is an app update avaiable, tap "Update" to get the latest version.`,
+                  buttons: [
+                    {
+                      text: 'Cancel',
+                      onClick: function(dialog, e) {
+                        showingUpdate = false;
+                      }
+                    },
+                    {
+                      text: `Update to version ${text}`,
+                      bold: true,
+                      cssClass: "bg-color-primary text-color-white",
+                      onClick: function(dialog, e) {
+                        $f7.progressbar.show();
+                        navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                          let complete = registrations.length;
+                          let index = 0;
+                          for (let registration of registrations) {
+                            registration.unregister().then((boolean) => {
+                              index++;
+                              if (index == complete) {
+                                showingUpdate = false;
+                                window.location.reload(true);
+                              }
+                            });
+                          }
+                          if (complete == 0) {
+                            showingUpdate = false;
+                            window.location.reload(true);
+                          }
+                        });
+                      }
+                    },
+                  ],
+                  verticalButtons: true,
+                }).open();
+              }
+            } else {
+              // alert("up to date");
             }
-          } else {
-            // alert("up to date");
-          }
+          });
         });
       }
     }

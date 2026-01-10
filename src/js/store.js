@@ -490,8 +490,8 @@ const store = createStore({
       let groupedByMonthsPrevious = [];
 
       let threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-      threeMonthsAgo.setDate(1);
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 2);
+      threeMonthsAgo.setDate(0);
 
       console.log(threeMonthsAgo);
 

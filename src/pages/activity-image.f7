@@ -45,7 +45,7 @@
               <div style="width: 85%; float:left;">
                 <a id="locationSelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
                   data-searchbar-placeholder="Search locations">
-                  <select @change="${validateOnChange}" required placeholder="Select Location" name="location">
+                  <select @change="${validateOnChange}" required id="locationSelectField" placeholder="Select Location" name="location">
                     <optgroup label="My Locations">
                       ${myLocations.value.map((location) => $h`
                       <option value="${location.uuid}">${location.Name}</option>
@@ -243,12 +243,12 @@
 
         locationSelect = $f7.smartSelect.get("#locationSelect");
         locationSelect.setValue(props.activityImage.ActivityPhoto__relation.id);
-        // if (locationSelect.getValue() == "") {
-        //   $store.dispatch('addLocation', props.activityImage.ActivityPhoto__relation.Name);
-        //   setTimeout(() => {
-        //     locationSelect.setValue(props.activityImage.caption_govt);
-        //   }, 500)
-        // }
+        if (locationSelect.getValue() == "") {
+          $('#locationSelectField').append(`<option value="${props.activityImage.ActivityPhoto__relation.id}">${props.activityImage.ActivityPhoto__relation.Name}</option>`);
+          setTimeout(() => {
+            locationSelect.setValue(props.activityImage.ActivityPhoto__relation.id);
+          }, 500)
+        }
 
         activitySelect = $f7.smartSelect.get("#activitySelect");
         setTimeout(() => {
