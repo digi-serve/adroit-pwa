@@ -301,7 +301,7 @@
       // $store.dispatch('getLocations');
       // $store.dispatch('getFCFLocations');
       // $store.dispatch('getTeamMembers');
-      // $store.dispatch("fetchImages");
+      $store.dispatch("fetchImages");
       // $store.dispatch('getVersion');
       if (props.showTutorial) {
         setTimeout(() => {
