@@ -117,7 +117,10 @@
                             <button data-popup=".denyPopup-${activityImage.id}" class="button button-round button-large bg-color-red color-white popup-open"><i class="material-icons">thumb_down</i></button>
                           </p>
                           <p>
-                            <button class="button button-round button-fill button-large button-outline popup-close">Cancel</button>
+                            <button @click=${() => editImage(activityImage)} class="button button-round button-fill button-large button-outline popup-close">Edit Activity</button>
+                          </p>
+                          <p>
+                            <button class="button button-round button-large button-outline popup-close">Cancel</button>
                           </p>
                         </div>
                       </div>
@@ -243,6 +246,16 @@
     // const denyForm = (data) => {
     //   $f7.popup.open(".denyPopup");
     // }
+
+    const editImage = (activityImage) => {
+      activityImage.approval = true;
+      $f7.view.main.router.navigate("/activity-image/edit/", {
+        props: {
+          activityImage: activityImage
+        },
+        ignoreCache: true
+      })
+    }
 
     const deny = (data) => {
       app.f7.preloader.show();

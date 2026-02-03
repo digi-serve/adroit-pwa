@@ -208,9 +208,24 @@
         dateFormat: "yyyy-mm-dd"
       });
       if (props.file) {
-        // debugger;
         calendarDefault.setValue([new Date(props.file.lastModified)]);
         readFile();
+        // EXIF.getData(props.file, function() {
+        //   const latRaw = EXIF.getTag(this, 'GPSLatitude');
+        //   const latRef = EXIF.getTag(this, 'GPSLatitudeRef');
+        //   const lonRaw = EXIF.getTag(this, 'GPSLongitude');
+        //   const lonRef = EXIF.getTag(this, 'GPSLongitudeRef');
+
+        //   if (latRaw && latRef && lonRaw && lonRef) {
+        //       const latitude = convertDMSToDecimal(latRaw, latRef);
+        //       const longitude = convertDMSToDecimal(lonRaw, lonRef);
+
+        //       console.log(`Decimal Latitude: ${latitude}`);
+        //       console.log(`Decimal Longitude: ${longitude}`);
+        //   } else {
+        //       console.log("No GPS data found in this image.");
+        //   }
+        // });
       }
     })
 
@@ -374,33 +389,63 @@
 
       isLoading = true;
       $update();
-      $f7.dialog.create({
-        title: 'Review your submission',
-        content: `<ul style="padding-inline-start: 15px; text-align: left;">
-                <li>My caption describes how this activity is helping the Thai community.</li>
-                <li>I have tagged everyone on my team who is in the photo.</li>
-              </ul>`,
-        buttons: [
-          {
-            text: 'Go Back',
-            onClick: function(dialog, e) {
-              isLoading = false;
-              $update();
-            }
-          },
-          {
-            text: 'Submit for Review',
-            bold: true,
-            cssClass: "bg-color-primary text-color-white",
-            onClick: function(dialog, e) {
-              // isLoading = false;
-              // $update();
-              submitRequest();
-            }
-          },
-        ],
-        verticalButtons: true,
-      }).open();
+
+      //open save and approve dialog if editing from approval process
+      if (props.activityImage && props.activityImage.approval) {
+        $f7.dialog.create({
+          title: 'Review your submission',
+          content: `You are editing an activity from the approval process. After saving you will also approve this photo for use in reports.`,
+          buttons: [
+            {
+              text: 'Go Back',
+              onClick: function(dialog, e) {
+                isLoading = false;
+                $update();
+              }
+            },
+            {
+              text: 'Save and Approve',
+              bold: true,
+              cssClass: "bg-color-primary text-color-white",
+              onClick: function(dialog, e) {
+                // isLoading = false;
+                // $update();
+                submitRequest();
+              }
+            },
+          ],
+          verticalButtons: true,
+        }).open();
+      } else {
+        //open default dialog if normal save
+        $f7.dialog.create({
+          title: 'Review your submission',
+          content: `<ul style="padding-inline-start: 15px; text-align: left;">
+                  <li>My caption describes how this activity is helping the Thai community.</li>
+                  <li>I have tagged everyone on my team who is in the photo.</li>
+                </ul>`,
+          buttons: [
+            {
+              text: 'Go Back',
+              onClick: function(dialog, e) {
+                isLoading = false;
+                $update();
+              }
+            },
+            {
+              text: 'Submit for Review',
+              bold: true,
+              cssClass: "bg-color-primary text-color-white",
+              onClick: function(dialog, e) {
+                // isLoading = false;
+                // $update();
+                submitRequest();
+              }
+            },
+          ],
+          verticalButtons: true,
+        }).open();
+      }
     }
 
     const submitRequest = () => {
@@ -422,7 +467,12 @@
       });
       // reset status if updating entry
       if (props.activityImage) {
-        body.append('Status', 'New');
+        // check if editing from approval process 
+        if (props.activityImage.approval) {
+          body.append('Status', 'Approved');
+        } else {
+          body.append('Status', 'New');
+        }
         body.append('id', props.activityImage.id);
         url = Api.urls.updateActivityImage(props.activityImage.id);
       }
@@ -438,46 +488,22 @@
 
       fetchJson(url, options)
         .then(response => {
-          $f7.view.main.router.navigate("/", {
-            ignoreCache: true
-          })
-          // const newActivityImage = response.json.data;
-          // newActivityImage.activity = this.rootStore.projects.getActivity(newActivityImage.activity);
-          // if (!this.isNew) {
-          //   // HACK: Need to re-populate some fields as they are not correctly populated in the PUT response
-          //   newActivityImage.taggedPeople = this.taggedPeople.map(p => p.IDPerson);
-          //   newActivityImage.uploadedBy = {
-          //     IDPerson: parseInt(this.rootStore.users.me.id, 10),
-          //   };
-          //   newActivityImage.displayName = this.rootStore.users.me.displayName;
-          // }
-          // runInAction(() => {
-          //   if (newActivityImage.taggedPeople.includes(parseInt(this.rootStore.users.me.id, 10))) {
-          //     this.rootStore.activityImages.updateActivityImage(String(newActivityImage.id), newActivityImage);
-          //   } else {
-          //     Monitoring.debug(
-          //       "Authenticated user not tagged in uploaded photo so it won't be displayed in the activity feed"
-          //     );
-          //     // Handle the corner case where the authenticated user _used_ to be tagged in the activity image
-          //     // but is no longer tagged in it (after editing)
-          //     this.rootStore.activityImages.removeActivityImage(String(newActivityImage.id));
-          //   }
-          //   this.postStatus = PostStatus.succeeded;
-          // });
-          // Monitoring.event(Event.ActivityPhotoUploadSuccess);
-          // Toast.success(Copy.toast.activityPhotoUploadSuccess);
+          // check if editing from approval process 
+          if (props?.activityImage?.approval) {
+            // remove item from storage
+            $store.dispatch("pruneApprovals", props.activityImage.id);
+
+            $f7.view.main.router.navigate("/approvals/", {
+              ignoreCache: true
+            })
+          } else {
+            $f7.view.main.router.navigate("/", {
+              ignoreCache: true
+            })
+          }
         })
         .catch(async error => {
-          // runInAction(() => {
-          //   this.postStatus = PostStatus.failed;
-          // });
-          // Monitoring.event(Event.ActivityPhotoUploadFail);
-          // Monitoring.exception(error, { problem: 'Failed to upload activity image', body: options.body });
-          // if (error.status === 401) {
-          //   await this.onUnauthorised();
-          // } else {
-          //   Toast.danger(Copy.toast.genericError);
-          // }
+          // do something?
         });
 
     }
@@ -671,6 +697,33 @@
         },
         ignoreCache: true
       })
+    }
+
+    /**
+     * Converts Degrees, Minutes, Seconds (DMS) coordinates to Decimal Degrees (DD).
+     * @param {Array<number>} dmsArray - An array containing [degrees, minutes, seconds].
+     * @param {string} directionRef - A string indicating direction, e.g., 'N', 'S', 'E', 'W'.
+     * @returns {number|null} The coordinate in decimal degrees, or null if invalid.
+     */
+    function convertDMSToDecimal(dmsArray, directionRef) {
+        if (!dmsArray || dmsArray.length !== 3) {
+            return null;
+        }
+
+        // EXIF data stores values as rational numbers, so ensure they are numeric.
+        // exif-js might already have converted them to numbers; if not, you'd handle the rational parts.
+        const degrees = dmsArray[0];
+        const minutes = dmsArray[1];
+        const seconds = dmsArray[2];
+
+        let decimal = degrees + (minutes / 60) + (seconds / 3600);
+
+        // If South or West, the decimal value should be negative
+        if (directionRef === "S" || directionRef === "W") {
+            decimal *= -1;
+        }
+
+        return decimal;
     }
 
     return $render;

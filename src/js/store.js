@@ -253,6 +253,16 @@ const store = createStore({
           //     myTeamsApprovals.push(item);
           //   }
           // });
+          result.json.data.data.forEach((item) => {
+            // make sure we are working with just the date so calculate any timezone offset first
+            let minutesOffset = new Date().getTimezoneOffset();
+            let shiftHours = new Date(
+              new Date(item["Date of Activity"]).getTime() +
+                minutesOffset * 60000
+            );
+
+            item["Date of Activity"] = shiftHours.toISOString();
+          });
           state.approvals = result.json.data.data;
           state.approvalCount = result.json.data.data.length;
           state.approvalsLoading = false;
@@ -351,7 +361,17 @@ const store = createStore({
           let data = parse(result.json.data.data);
           state.percentageComplete = (100 * daysElapsed) / startToEnd;
           let monthSlot = 0;
+
           data.forEach((item, i) => {
+            // make sure we are working with just the date so calculate any timezone offset first
+            let minutesOffset = new Date().getTimezoneOffset();
+            let shiftHours = new Date(
+              new Date(item["Date of Activity"]).getTime() +
+                minutesOffset * 60000
+            );
+
+            item["Date of Activity"] = shiftHours.toISOString();
+
             let itemDate = new Date(item["Date of Activity"]);
             let itemMonth = itemDate.toLocaleString("default", {
               month: "short",
@@ -549,6 +569,15 @@ const store = createStore({
 
           let monthSlot = 0;
           data.forEach((item, i) => {
+            // make sure we are working with just the date so calculate any timezone offset first
+            let minutesOffset = new Date().getTimezoneOffset();
+            let shiftHours = new Date(
+              new Date(item["Date of Activity"]).getTime() +
+                minutesOffset * 60000
+            );
+
+            item["Date of Activity"] = shiftHours.toISOString();
+
             let itemDate = new Date(item["Date of Activity"]);
             let itemMonth = itemDate.toLocaleString("default", {
               month: "short",

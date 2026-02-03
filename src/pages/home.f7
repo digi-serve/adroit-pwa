@@ -135,7 +135,7 @@
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${activityImage.ActivityDate__relation.Activities}</div>
+                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation.Activities}` : $h`Special Activity`}</div>
                         </div>
                         <div style="color: #555;" class="item-subtitle">
                           <strong>${activityImage.ActivityPhoto__relation.Name}</strong>
@@ -197,10 +197,10 @@
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${activityImage.ActivityDate__relation.Activities}</div>
+                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation.Activities}` : $h`Special Activity`}</div>
                         </div>
                         <div style="color: #555;" class="item-subtitle"><strong>${activityImage.ActivityPhoto__relation.Name}</strong></div>
-                        <div class="item-text">${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}</div>
+                        <div class="item-text">${new Date(activityImage["Date of Activity"]).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}</div>
                       </div>
                     </a>
                     <div class="swipeout-actions-left">
@@ -413,6 +413,7 @@
 
       console.log("My File");
       console.log(myFile);
+
 
       $f7.view.main.router.navigate("/activity-image/add/", {
         props: {

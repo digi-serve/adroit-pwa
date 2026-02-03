@@ -154,13 +154,20 @@
     */
     props.data.forEach((data) => {
       data.items.forEach((item) => {
-        events.push(
+        // get caption 
+        let caption = "";
+        if (item["Description EN"]) {
+          caption = item["Description EN"];
+        } else if (item["Photo738__relation"].English) {
+          caption = item["Photo738__relation"].English;
+        }
+        events.push( 
           {
             date: new Date(item["Date of Activity"]),
             image: Api.absoluteUrl('/file/') + item.Photo,
-            caption:  item["Description EN"],
-            location: item["ActivityPhoto__relation"].Name,
-            activity: item["ActivityDate__relation"].Activities,
+            caption:  caption,
+            location: (item["ActivityPhoto__relation"]) ? item["ActivityPhoto__relation"].Name : "",
+            activity: (item["ActivityDate__relation"]) ? item["ActivityDate__relation"].Activities : "Special Activity",
             color: (item.Status == "Approved" || item.Status == "Ready") ? '#4caf50' : (item.Status == "Denied") ? '#cc3333' : '#333',
           }
         )        
