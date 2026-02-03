@@ -343,7 +343,7 @@ const store = createStore({
 
       let datesRule = {
         key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
-        rule: "greater_or_equal",
+        rule: "greater",
         value: queryDate,
       };
 
@@ -352,8 +352,9 @@ const store = createStore({
       wheres.rules = wheres.rules.concat(datesRule);
 
       fetchJson(
-        `${Api.urls.myActivityImages.url}
-          &skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+        `${
+          Api.urls.myActivityImages.url
+        }&skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
           ${JSON.stringify(wheres)}`,
         { method: "GET" }
       )
@@ -559,8 +560,9 @@ const store = createStore({
       console.log("queryDate2: ", queryDate2);
 
       fetchJson(
-        `${Api.urls.myActivityImages.url}
-          &skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
+        `${
+          Api.urls.myActivityImages.url
+        }&skipPack=true&sort=[{"key":"589ca09c-9fc3-4433-8247-e8f99ab2b542","dir":"desc"}]&where=
           ${JSON.stringify(wheres)}`,
         { method: "GET" }
       )

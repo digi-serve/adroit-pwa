@@ -2,22 +2,22 @@
   <div class="page" data-name="home">
     <!-- Top Navbar -->
     <div class="navbar">
-      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-bg"></div>
       <div class="navbar-inner">
         <div class="left">
-          <a href="#" class="link icon-only panel-open text-color-white" data-panel="left">
+          <a href="#" class="link icon-only panel-open" data-panel="left">
             <i class="icon material-icons">menu</i>
           </a>
         </div>
-        <div class="title text-color-white">My Activity Photos</div>
+        <div class="title ">My Activity Photos</div>
         <div class="right">
-          <a data-popover=".popover-approved" data-position="right" data-intro="Look at your photos with a new calendar view to help you see where you may need to upload missing photos." href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only text-color-white">
+          <a data-popover=".popover-approved" data-position="right" data-intro="Look at your photos with a new calendar view to help you see where you may need to upload missing photos." href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only">
             <i class="icon material-icons">calendar_month</i>
           </a>
         </div>
       </div>
     </div>
-    <div class="toolbar toolbar-top status_bar popover-open" data-title="Welcome to the new status bar!" data-position="right" data-intro="Immigration has updated their requirements so we have updated our status bar to help you meet their new criteria.">
+    <div style="display: none;" class="toolbar toolbar-top status_bar popover-open" data-title="Welcome to the new status bar!" data-position="right" data-intro="Immigration has updated their requirements so we have updated our status bar to help you meet their new criteria.">
       <div class="toolbar-inner no-padding">
         <div class="toolbar_approved quarter_width"><a href="#" data-intro="This is the number of your photos that have been approved this month." class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #4caf50; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
         <div class="toolbar_new quarter_width"><a href="#" data-intro="This is how many new photos you have uploaded this month that have not yet been approved." class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #333333; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block; vertical-align: text-bottom;"></i>${totalNew.value} new</a></div>
@@ -75,6 +75,7 @@
         <i class="icon material-icons md-only">close</i>
       </a>
     </div>
+    <!--
     ${activityImagesPrevious.value.length == 0 ? $h`
       <div data-intro="Tap here to view all your photos from the last year." class="fab fab-left-bottom">
         <a @click="${fetchPrevious}" href="#">
@@ -82,6 +83,7 @@
         </a>
       </div>
     `:$h``}
+    -->
     <!-- Scrollable page content-->
     <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
       <div class="ptr-preloader">

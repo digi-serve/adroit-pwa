@@ -3,26 +3,26 @@
   <div id="app">
 
     <!-- Left panel with cover effect-->
-    <div class="panel panel-left panel-push dark panel-init">
+    <div class="panel panel-left panel-floating panel-resizable panel-init">
       <div class="view">
-        <div class="page bg-color-primary menu_sidebar">
+        <div class="page page-transparent">
           <span style="position: absolute;" class="progressbar-profile-infinite hidden"></span>
           <div class="page-content">
-            <div style="display: flex; justify-content: space-between; flex-direction: column; height: 100vh;">
+            <div style="display: flex; justify-content: space-between; flex-direction: column;">
               <div>
-                <div class="block text-align-center no-margin-bottom profile_bg">
+                <div class="block text-align-center no-margin-bottom">
                   <!-- block content -->
                   <div style="position: absolute;">
-                    <i @click="${profilePhoto}" class="material-icons uploadProfileFail icon-circle hidden" style="background: #f44336;">priority_high</i>
-                    <i class="material-icons uploadProfileSuccess icon-circle hidden" style="background: #4caf50;">check</i>
-                    <i @click="${profilePhoto}" class="material-icons uploadProfile icon-circle">photo_camera</i>
-                    <i class="material-icons uploadProfileLoader icon-circle spin hidden">cached</i>
+                    <i @click="${profilePhoto}" class="material-icons uploadProfileFail icon-circle hidden text-color-white" style="background: #f44336;">priority_high</i>
+                    <i class="material-icons uploadProfileSuccess icon-circle hidden text-color-white" style="background: #4caf50;">check</i>
+                    <i @click="${profilePhoto}" class="material-icons uploadProfile icon-circle text-color-white">photo_camera</i>
+                    <i class="material-icons uploadProfileLoader icon-circle text-color-white spin hidden">cached</i>
                   </div>
                   ${gotUser.value ? $h`
-                    <img id="profilePreview" style="display: none; border: 5px solid white; width: 154px; height: 154px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
-                    <img @error=${imageLoadError} id="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 154px; height: 154px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
+                    <img id="profilePreview" style="display: none; border: 5px solid white; width: 120px; height: 120px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
+                    <img @error=${imageLoadError} id="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 120px; height: 120px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
                   ` : $h`
-                    <img src="assets/images/1024.png" width="50%" style="margin-top: 25px;" class="sidebar_logo" />
+                    <img src="assets/images/1024.png" width="120" style="margin-top: 25px;" class="sidebar_logo" />
                   `}
                   <input style="display: none;" id="profilePhoto" type="file" accept="image/*" @change=${() => upload("#profilePhoto")} />
                   <p style="margin-top: 5px;">
@@ -33,7 +33,7 @@
                     `}
                   </p>
                 </div>
-                <div class="list list-outline list-strong list-dividers bg_transparent" style="margin-top: 0px;">
+                <div class="list" style="margin-top: 0px;">
                    <ul>
                      <li>
                       <a href="/" class="item-content item-link panel-close">

@@ -1,15 +1,14 @@
 <template>
 <div class="page" data-name="form">
   <div class="navbar">
-    <div class="navbar-bg bg-color-primary"></div>
+    <div class="navbar-bg"></div>
     <div class="navbar-inner sliding">
       <div class="left">
         <a href="#" class="link back text-color-white">
           <i class="icon icon-back"></i>
-          <span class="if-not-md">Cancel</span>
         </a>
       </div>
-      <div class="title text-color-white">Activity Photo</div>
+      <div class="title">Activity Photo</div>
     </div>
   </div>
   <div class="page-content">
