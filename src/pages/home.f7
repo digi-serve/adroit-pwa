@@ -75,6 +75,7 @@
         <i class="icon material-icons md-only">close</i>
       </a>
     </div>
+    <!-- 
     ${activityImagesPrevious.value.length == 0 ? $h`
       <div data-intro="Tap here to view all your photos from the last year." class="fab fab-left-bottom">
         <a @click="${fetchPrevious}" href="#">
@@ -82,6 +83,7 @@
         </a>
       </div>
     `:$h``}
+    -->
     <!-- Scrollable page content-->
     <div class="page-content ptr-content" @ptr:refresh=${reloadList}>
       <div class="ptr-preloader">
