@@ -270,6 +270,8 @@ const Api = {
     version: "/pwa/version.txt",
     profilePhoto: "/data/db80e601-2da2-4026-b32e-36580f3c9318/file_processor/",
     forgotPassword: "/auth/login/reset",
+    updateLanguage: (userId) =>
+      `/app_builder/model/228e3d91-5e42-49ec-b37c-59323ae433a1/${userId}`,
     // myTeams: '/fcf_activities/mobile/myteams',
     // listUserTeams: '/fcf_activities/userteam/find',
     // teamActivities: teamId => `/fcfactivities/teamactivities?team=${teamId}`

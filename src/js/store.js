@@ -2,13 +2,13 @@ import { createStore } from "framework7";
 import Api from "/js/api.js";
 import fetchJson from "/js/fetch.js";
 
-function parse(records) {
+function parse(records, state) {
   let theseRecords = JSON.parse(JSON.stringify(records));
   let translated;
   if (theseRecords.forEach) {
     let records = [];
     theseRecords.forEach((record) => {
-      records.push(parse(record));
+      records.push(parse(record, state));
     });
     theseRecords = records;
   } else if (typeof theseRecords == "object") {
@@ -20,10 +20,10 @@ function parse(records) {
           theseRecords[propt].forEach)
       ) {
         if (theseRecords[propt] != null) {
-          theseRecords[propt] = parse(theseRecords[propt]);
+          theseRecords[propt] = parse(theseRecords[propt], state);
         }
       } else if (propt == "translations") {
-        theseRecords = translate(theseRecords);
+        theseRecords = translate(theseRecords, state);
       }
     }
   }
@@ -31,12 +31,12 @@ function parse(records) {
   return theseRecords;
 }
 
-function translate(record) {
+function translate(record, state) {
   if (!record?.translations) return record;
   let translated;
 
   record.translations.forEach((trans) => {
-    if (trans.language_code == "en") {
+    if (trans.language_code == state.locale) {
       let translatedRecord = {
         ...record,
         ...trans,
@@ -113,6 +113,8 @@ const store = createStore({
     version: "",
     switcheroo: false,
     hasSwitcheroo: false,
+    locale: "en",
+    siteUserId: "",
   },
   getters: {
     activities({ state }) {
@@ -156,6 +158,9 @@ const store = createStore({
     },
     imagesLoading({ state }) {
       return state.imagesLoading;
+    },
+    locale({ state }) {
+      return state.locale;
     },
     gotUser({ state }) {
       return state.gotUser;
@@ -210,6 +215,9 @@ const store = createStore({
     },
     version({ state }) {
       return state.version;
+    },
+    siteUserId({ state }) {
+      return state.siteUserId;
     },
   },
   actions: {
@@ -343,7 +351,7 @@ const store = createStore({
 
       let datesRule = {
         key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
-        rule: "greater",
+        rule: "greater_or_equal",
         value: queryDate,
       };
 
@@ -359,7 +367,7 @@ const store = createStore({
         { method: "GET" }
       )
         .then((result) => {
-          let data = parse(result.json.data.data);
+          let data = parse(result.json.data.data, state);
           state.percentageComplete = (100 * daysElapsed) / startToEnd;
           let monthSlot = 0;
 
@@ -374,16 +382,16 @@ const store = createStore({
             item["Date of Activity"] = shiftHours.toISOString();
 
             let itemDate = new Date(item["Date of Activity"]);
-            let itemMonth = itemDate.toLocaleString("default", {
+            let itemMonth = itemDate.toLocaleString(state.locale, {
               month: "short",
             });
-            let itemMonthLong = itemDate.toLocaleString("default", {
+            let itemMonthLong = itemDate.toLocaleString(state.locale, {
               month: "long",
             });
-            let itemMonthIndex = itemDate.toLocaleString("default", {
+            let itemMonthIndex = itemDate.toLocaleString(state.locale, {
               month: "2-digit",
             });
-            let itemYear = itemDate.toLocaleString("default", {
+            let itemYear = itemDate.toLocaleString(state.locale, {
               year: "numeric",
             });
             if (!groupedByMonths[monthSlot]) {
@@ -426,15 +434,15 @@ const store = createStore({
               } else if (item.Status == "New" || item.Status == "Updated") {
                 totalNew++;
               }
-              state.photoCombineProgress =
-                ((totalApproved + totalNew) / targetImageCount) * 100;
-              if (state.photoCombineProgress > 100) {
-                state.photoCombineProgress = 100;
-              }
-              state.photoProgress = (totalApproved / targetImageCount) * 100;
-              if (state.photoProgress > 100) {
-                state.photoProgress = 100;
-              }
+              // state.photoCombineProgress =
+              //   ((totalApproved + totalNew) / targetImageCount) * 100;
+              // if (state.photoCombineProgress > 100) {
+              //   state.photoCombineProgress = 100;
+              // }
+              // state.photoProgress = (totalApproved / targetImageCount) * 100;
+              // if (state.photoProgress > 100) {
+              //   state.photoProgress = 100;
+              // }
             }
 
             if (item.Status == "Approved" || item.Status == "Ready") {
@@ -567,7 +575,7 @@ const store = createStore({
         { method: "GET" }
       )
         .then((result) => {
-          let data = parse(result.json.data.data);
+          let data = parse(result.json.data.data, state);
 
           let monthSlot = 0;
           data.forEach((item, i) => {
@@ -581,16 +589,16 @@ const store = createStore({
             item["Date of Activity"] = shiftHours.toISOString();
 
             let itemDate = new Date(item["Date of Activity"]);
-            let itemMonth = itemDate.toLocaleString("default", {
+            let itemMonth = itemDate.toLocaleString(state.locale, {
               month: "short",
             });
-            let itemMonthLong = itemDate.toLocaleString("default", {
+            let itemMonthLong = itemDate.toLocaleString(state.locale, {
               month: "long",
             });
-            let itemMonthIndex = itemDate.toLocaleString("default", {
+            let itemMonthIndex = itemDate.toLocaleString(state.locale, {
               month: "2-digit",
             });
-            let itemYear = itemDate.toLocaleString("default", {
+            let itemYear = itemDate.toLocaleString(state.locale, {
               year: "numeric",
             });
             if (!groupedByMonthsPrevious[monthSlot]) {
@@ -653,11 +661,13 @@ const store = createStore({
     },
     getActivities({ state }) {
       fetchJson(
-        `${
-          Api.urls.myActivities.url
-        }?skipPack=true&populate=true&where=${JSON.stringify(
+        `${Api.urls.myActivities.url}?skipPack=true&populate=${JSON.stringify([
+          "HR  AP Caption508",
+        ])}&where=${JSON.stringify(
           Api.urls.myActivities.where
-        )}`,
+        )}&sort=${JSON.stringify([
+          { key: "ac85d950-afe1-427f-9dd1-68a1fadccf87", dir: "asc" },
+        ])}`,
         {
           method: "GET",
         }
@@ -667,7 +677,7 @@ const store = createStore({
           let activities = [];
           res.json.data.data.forEach((activity) => {
             activity.translations.forEach((trans) => {
-              if (trans.language_code == "en") {
+              if (trans.language_code == state.locale) {
                 activity = {
                   ...activity,
                   ...trans,
@@ -696,7 +706,9 @@ const store = createStore({
       fetchJson(
         `${Api.urls.locations.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.locations.where
-        )}`
+        )}&sort=${JSON.stringify([
+          { key: "c7b28b81-749d-4549-967a-e350771d092a", dir: "asc" },
+        ])}`
       )
         .then((result) => {
           state.fcfLocations = result.json.data.data;
@@ -709,7 +721,9 @@ const store = createStore({
       fetchJson(
         `${Api.urls.myLocations.url}?skipPack=true&where=${JSON.stringify(
           Api.urls.myLocations.where
-        )}`
+        )}&sort=${JSON.stringify([
+          { key: "c7b28b81-749d-4549-967a-e350771d092a", dir: "asc" },
+        ])}`
       )
         .then((result) => {
           state.hasLocations = true;
@@ -721,9 +735,9 @@ const store = createStore({
     },
     getTeamMembers({ state }) {
       fetchJson(
-        `${
-          Api.urls.myTeamMembers.url
-        }?skipPack=true&populate=true&where=${JSON.stringify(
+        `${Api.urls.myTeamMembers.url}?skipPack=true&populate=${JSON.stringify([
+          "Owner User",
+        ])}&where=${JSON.stringify(
           Api.urls.myTeamMembers.where
         )}&sort=${JSON.stringify(Api.urls.myTeamMembers.sort)}`,
         {
@@ -737,7 +751,11 @@ const store = createStore({
           });
           state.teamMembers = res.json.data.data;
           fetchJson(
-            `${Api.urls.fcfVolunteers.url}?skipPack=true&where=${JSON.stringify(
+            `${
+              Api.urls.fcfVolunteers.url
+            }?skipPack=true&populate=${JSON.stringify([
+              "Owner User",
+            ])}&where=${JSON.stringify(
               Api.urls.fcfVolunteers.where
             )}&sort=${JSON.stringify(Api.urls.fcfVolunteers.sort)}`,
             {
@@ -770,7 +788,7 @@ const store = createStore({
         { method: "GET" }
       )
         .then((result) => {
-          state.myProjects = parse(result.json.data.data);
+          state.myProjects = parse(result.json.data.data, state);
           console.log(state.myProjects);
         })
         .catch((e) => {
@@ -923,6 +941,20 @@ const store = createStore({
       }
       state.username = username;
     },
+    getLanguage({ state }) {
+      let locale = localStorage.getItem("locale");
+      if (locale == null) {
+        locale = "en";
+      }
+      state.locale = locale;
+    },
+    getSiteUserId({ state }) {
+      let siteUserId = localStorage.getItem("siteuserid");
+      if (siteUserId == null) {
+        siteUserId = "";
+      }
+      state.siteUserId = siteUserId;
+    },
     getVersion({ state }) {
       // state.version = state.version;
     },
@@ -945,6 +977,14 @@ const store = createStore({
     },
     setVersion({ state }, version) {
       state.version = version;
+    },
+    setLanguage({ state }, language) {
+      localStorage.setItem("locale", language);
+      state.locale = language;
+    },
+    setSiteUserId({ state }, uuid) {
+      localStorage.setItem("siteuserid", uuid);
+      state.siteUserId = uuid;
     },
     switcheroo({ state }, user) {
       fetchJson(`${Api.urls.switcheroo(user).url}`, {

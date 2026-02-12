@@ -30,6 +30,7 @@
     "exif-js": "^2.3.0",
     "framework7": "^9.0.2",
     "framework7-icons": "^5.0.5",
+    "i18next": "^25.8.4",
     "intro.js": "^6.0.0",
     "material-icons": "^1.12.1",
     "prettier": "^2.2.1",

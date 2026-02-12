@@ -8,7 +8,7 @@
           <i class="icon icon-back"></i>
         </a>
       </div>
-      <div class="title">Activity Photo</div>
+      <div class="title">${i18next.t("homeTitle")}</div>
     </div>
   </div>
   <div class="page-content">
@@ -30,7 +30,7 @@
           <li>
             <div class="item-content">
               <div class="item-inner">
-                <div class="item-title">Date</div>
+                <div class="item-title">${i18next.t("date")}</div>
               </div>
               <div class="item-inner">
                 <div class="item-input-wrap">
@@ -43,22 +43,22 @@
             <div class="row no-gap">
               <div style="width: 85%; float:left;">
                 <a id="locationSelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
-                  data-searchbar-placeholder="Search locations">
+                  data-searchbar-placeholder="${i18next.t('searchLocations')}">
                   <select @change="${validateOnChange}" required id="locationSelectField" placeholder="Select Location" name="location">
-                    <optgroup label="My Locations">
+                    <optgroup label="${i18next.t('myLocations')}">
                       ${myLocations.value.map((location) => $h`
-                      <option value="${location.uuid}">${location.Name}</option>
+                      <option value="${location.uuid}">${location[trans({'en':'Name','th':'Location Name TH'})]}</option>
                       `)}
                     </optgroup>
-                    <optgroup label="FCF Locations">
+                    <optgroup label="${i18next.t('fcfLocations')}">
                       ${fcfLocations.value.map((location) => $h`
-                      <option value="${location.uuid}">${location.Name}</option>
+                      <option value="${location.uuid}">${location[trans({'en':'Name','th':'Location Name TH'})]}</option>
                       `)}
                     </optgroup>
                   </select>
                   <div class="item-content">
                     <div class="item-inner">
-                      <div class="item-title">Location</div>
+                      <div class="item-title">${i18next.t("location")}</div>
                     </div>
                   </div>
                 </a>
@@ -71,7 +71,7 @@
           <li style="clear: both;">
             <div class="row no-gap">
               <a id="activitySelect" class="item-link smart-select smart-select-init" data-close-on-select="true" data-validate-on-blur="true" data-open-in="popup" data-searchbar="true"
-                data-searchbar-placeholder="Search activity">
+                data-searchbar-placeholder="${i18next.t('searchActivity')}">
                 <select @change="${activityChanged}" required name="activity">
                   ${activities.value.map((activity) => $h`
                   <option value="${activity.uuid}">${activity.Activities}</option>
@@ -79,7 +79,7 @@
                 </select>
                 <div class="item-content">
                   <div class="item-inner">
-                    <div class="item-title">Activity</div>
+                    <div class="item-title">${i18next.t("activity")}</div>
                   </div>
                 </div>
               </a>
@@ -89,14 +89,14 @@
             <div class="row no-gap">
               <a id="captionSelect" class="item-link smart-select">
                 <select name="captionselect">
-                  <option value="">Pick a caption</option>
+                  <option value="">${i18next.t('pickCaption')}</option>
                   ${captions.map((caption) => $h`
-                  <option value="${caption.uuid}">${caption.English}</option>
+                  <option value="${caption.uuid}">${caption[trans({"en":"English","th":"Thai"})]}</option>
                   `)}
                 </select>
                 <div class="item-content">
                   <div class="item-inner">
-                    <div class="item-title">Caption</div>
+                    <div class="item-title">${i18next.t("caption")}</div>
                   </div>
                 </div>
               </a>
@@ -104,14 +104,14 @@
           </li>
           <li style="clear: both;">
             <a id="tagPeople" class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
-              data-searchbar-placeholder="Search volunteers">
+              data-searchbar-placeholder="${i18next.t('searchVolunteers')}">
               <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
-                <optgroup label="My Project">
+                <optgroup label="${i18next.t('myProject')}">
                 ${teamMembers.value.map((teamMember) => $h`
                 <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${teamMember["Full Name"]}</option>
                 `)}
                 </optgroup>
-                <optgroup label="FCF Volunteers">
+                <optgroup label="FCF ${i18next.t('volunteers')}">
                 ${fcfVolunteers.value.map((volunteer) => $h`
                 <option value="${volunteer.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${volunteer.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${volunteer["Full Name"]}</option>
                 `)}
@@ -119,7 +119,7 @@
               </select>
               <div class="item-content">
                 <div class="item-inner">
-                  <div class="item-title">People</div>
+                  <div class="item-title">${i18next.t("people")}</div>
                 </div>
               </div>
             </a>
@@ -131,10 +131,10 @@
           <li class="align-top">
             <div class="item-content item-input">
               <div class="item-inner">
-                <div class="item-title item-label">Caption</div>
+                <div class="item-title item-label">${i18next.t("caption")}</div>
                 <div class="item-input-wrap">
-                  <textarea id="caption" name="caption" @input=${characterCounter} placeholder="Describe what you did and how it helps the Thai community." class="resizable charCount"></textarea>
-                  <div class="item-input-info charCountHolder">0/240 characters</div>
+                  <textarea id="caption" name="caption" @input=${characterCounter} placeholder="${i18next.t('captionPlaceholder')}" class="resizable charCount"></textarea>
+                  <div class="item-input-info charCountHolder">0/240 ${i18next.t("characters")}</div>
                 </div>
               </div>
             </div>
@@ -144,14 +144,14 @@
     </form>
     <div class="block customDescriptionButton">
       <button class="button" @click=${customDescription}>
-        <span>Custom Description</span>
+        <span>${i18next.t("customDescription")}</span>
       </button>
     </div>
     <div class="block">
-      <button class="<!--disabled--> button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
+      <button class="button-round button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
         @click=${save}>
         <span class="preloader"></span>
-        <span>Save</span>
+        <span>${i18next.t("save")}</span>
       </button>
     </div>
   </div>
@@ -160,6 +160,9 @@
 <script>
   import Api from "/js/api.js";
   import fetchJson from "/js/fetch.js";
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     let calendarDefault;
@@ -182,6 +185,15 @@
     const fcfVolunteers = $store.getters.fcfVolunteers;
     const activities = $store.getters.activities;
     const user = $store.getters.user;
+    const locale = $store.getters.locale;
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
 
     if (props.activityImage) {
       activities.value.forEach((activity) => {
@@ -200,10 +212,11 @@
       // Calendar
       calendarDefault = $f7.calendar.create({
         inputEl: '#photoDate',
-        openIn: "popover",
+        openIn: "sheet",
         closeOnSelect: true,
         maxDate: new Date(),
         firstDay: 0,
+        locale: locale.value,
         dateFormat: "yyyy-mm-dd"
       });
       if (props.file) {
@@ -273,7 +286,7 @@
               closeOnSelect: true,
               openIn: "popup",
               searchbar: true,
-              searchbarPlaceholder: "Search captions",
+              searchbarPlaceholder: i18next.t("searchCaptions"),
               cssClass: "captionSelects",
               // virtualList: true,
               // virtualListHeight: (data) => {
@@ -315,8 +328,9 @@
             photos: [
               `${Api.absoluteUrl('/file/')}${props.activityImage.Photo}`
             ],
-            theme: 'dark',
-            type: 'standalone',
+            // theme: 'dark',
+            // type: 'standalone',
+            navbarShowCount: true,
             toolbar: false,
           });
           $("#imageLarge").on('click', function () {
@@ -392,18 +406,18 @@
       //open save and approve dialog if editing from approval process
       if (props.activityImage && props.activityImage.approval) {
         $f7.dialog.create({
-          title: 'Review your submission',
-          content: `You are editing an activity from the approval process. After saving you will also approve this photo for use in reports.`,
+          title: i18next.t("reviewSubmissionTitle"),
+          content: i18next.t("reviewSubmissionText"),
           buttons: [
             {
-              text: 'Go Back',
+              text: i18next.t("goBack"),
               onClick: function(dialog, e) {
                 isLoading = false;
                 $update();
               }
             },
             {
-              text: 'Save and Approve',
+              text: i18next.t("saveApprove"),
               bold: true,
               cssClass: "bg-color-primary text-color-white",
               onClick: function(dialog, e) {
@@ -418,21 +432,21 @@
       } else {
         //open default dialog if normal save
         $f7.dialog.create({
-          title: 'Review your submission',
+          title: i18next.t("reviewSubmissionTitle"),
           content: `<ul style="padding-inline-start: 15px; text-align: left;">
-                  <li>My caption describes how this activity is helping the Thai community.</li>
-                  <li>I have tagged everyone on my team who is in the photo.</li>
+                  <li>${i18next.t("captionHelps")}</li>
+                  <li>${i18next.t("captionTagged")}</li>
                 </ul>`,
           buttons: [
             {
-              text: 'Go Back',
+              text: i18next.t("goBack"),
               onClick: function(dialog, e) {
                 isLoading = false;
                 $update();
               }
             },
             {
-              text: 'Submit for Review',
+              text: i18next.t("submitReview"),
               bold: true,
               cssClass: "bg-color-primary text-color-white",
               onClick: function(dialog, e) {
@@ -637,11 +651,11 @@
       $f7.input.validate(textArea);
       let length = textArea.value.length;
       if (length <= 240) {
-        $('.charCountHolder').html(`${length}/240 characters`);
+        $('.charCountHolder').html(`${length}/240 ${i18next.t('characters')}`);
       } else {
         let trimmed = textArea.value.substr(0,240);
         textArea.value = trimmed;
-        $('.charCountHolder').html(`240/240 characters`);
+        $('.charCountHolder').html(`240/240 ${i18next.t('characters')}`);
       }
     }
 
@@ -660,14 +674,14 @@
 
     const customDescription = (e) => {
       $f7.dialog.create({
-        title: 'Review captions first',
-        content: 'Before writing a custom description please review the preapproved captions above in order to expidite translation and immigration reviews.',
+        title: i18next.t("reviewCaptions"),
+        content: i18next.t("captionText"),
         buttons: [
           {
-            text: 'Cancel'
+            text: i18next.t("cancel")
           },
           {
-            text: 'Write custom description',
+            text: i18next.t("captionTitle"),
             bold: true,
             cssClass: "bg-color-primary text-color-white",
             onClick: function(dialog, e) {
@@ -723,6 +737,10 @@
         }
 
         return decimal;
+    }
+
+    const trans = (object) => {
+      return object[locale.value];
     }
 
     return $render;

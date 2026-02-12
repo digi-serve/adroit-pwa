@@ -27,7 +27,7 @@
                   <input style="display: none;" id="profilePhoto" type="file" accept="image/*" @change=${() => upload("#profilePhoto")} />
                   <p style="margin-top: 5px;">
                     ${gotUser.value ? $h`
-                      ${isSwitcheroo.value ? $h`Viewing app as` : $h`Welcome,`} ${user.value["Full Name"]}
+                      ${isSwitcheroo.value ? $h`${i18next.t("viewingAppAs")}` : $h`${i18next.t("welcome")},`} ${user.value["Full Name"]}
                     ` : $h`
                       
                     `}
@@ -39,7 +39,7 @@
                       <a href="/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">photo</i></div>
                         <div class="item-inner">
-                          <div class="item-title">Activity Images</div>
+                          <div class="item-title">${i18next.t("homeTitle")}</div>
                         </div>
                       </a>
                      </li>
@@ -48,7 +48,7 @@
                       <a href="/approvals/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">verified</i></div>
                         <div class="item-inner">
-                          <div class="item-title">Approvals</div>
+                          <div class="item-title">${i18next.t("approvals")}</div>
                           <div class="item-after">
                             ${approvalCount.value ? $h`
                               <span class="badge bg-color-orange">${approvalCount.value}</span>
@@ -72,7 +72,7 @@
                       <a href="/feedback/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">mode_comment</i></div>
                         <div class="item-inner">
-                          <div class="item-title">Feedback</div>
+                          <div class="item-title">${i18next.t("feedback")}</div>
                         </div>
                       </a>
                      </li>
@@ -80,7 +80,7 @@
                       <a href="#" @click="${showTutorial}" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">play_circle</i></div>
                         <div class="item-inner">
-                          <div class="item-title">Show tutorial</div>
+                          <div class="item-title">${i18next.t("showTutorial")}</div>
                         </div>
                       </a>
                      </li>
@@ -88,7 +88,7 @@
                       <a href="/locations/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">location_on</i></div>
                         <div class="item-inner">
-                          <div class="item-title">My Locations</div>
+                          <div class="item-title">${i18next.t("myLocations")}</div>
                         </div>
                       </a>
                      </li>
@@ -97,7 +97,7 @@
                         <a href="#" @click="${deleteSwitcheroo}" class="item-content text-color-white panel-close">
                           <div class="item-media"><i class="material-icons">switch_account</i></div>
                           <div class="item-inner">
-                             <div class="item-title">Switch User</div>
+                             <div class="item-title">${i18next.t("switchUser")}</div>
                              <div class="item-after"><i class="icon material-icons text-color-orange">cancel</i></div>
                           </div>
                         </a>
@@ -108,7 +108,7 @@
                       <a href="/switcheroo/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">switch_account</i></div>
                         <div class="item-inner">
-                           <div class="item-title">Switch User</div>
+                           <div class="item-title">${i18next.t("switchUser")}</div>
                         </div>
                       </a>
                      </li>
@@ -116,10 +116,18 @@
                      `}
                      ${isSwitcheroo.value ? $h`` : $h`
                      <li>
+                      <a href="#" @click="${changeLanguage}" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">translate</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">${i18next.t("switchLanguage")}</div>
+                        </div>
+                      </a>
+                     </li>
+                     <li>
                       <a href="#" @click="${logout}" class="item-content item-link">
                         <div class="item-media"><i class="material-icons">logout</i></div>
                         <div class="item-inner">
-                           <div class="item-title">Log out</div>
+                           <div class="item-title">${i18next.t("logOut")}</div>
                         </div>
                       </a>
                      </li>
@@ -150,7 +158,7 @@
             <!-- <div class="login-screen-title">Login</div> -->
             <div class="block text-align-center no-margin-bottom">
               <!-- block content -->
-              <h2>FCF Volunteer Activity Reporting</h2>
+              <h2>${i18next.t("appName")}</h2>
               <img src="assets/images/1024.png" width="60%" class="sidebar_logo" />
             </div>
             <form action="javascript: console.log('logging in...')" onSubmit="${authenticate}">
@@ -158,25 +166,25 @@
                 <ul>
                   <li class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Username</div>
+                      <div class="item-title item-label">${i18next.t("email")}</div>
                       <div class="item-input-wrap">
-                        <input autocorrect="off" autocomplete="username" spellcheck="false" type="text" id="username" name="username" placeholder="Your username" value="${username.value}"/>
+                        <input autocorrect="off" autocomplete="username" spellcheck="false" type="text" id="username" name="username" placeholder="${i18next.t('yourEmail')}" value="${username.value}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
                   </li>
                   <li id="passwordHolder" class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Password</div>
+                      <div class="item-title item-label">${i18next.t("password")}</div>
                       <div class="item-input-wrap">
                         <a @click="${showPasswordPreview}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility_off</i></a>
-                        <input type="password" id="password" name="password" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
+                        <input type="password" id="password" name="password" placeholder="${i18next.t('yourPassword')}" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
                       </div>
                     </div>
                   </li>
                   <li id="passwordPreviewHolder" style="display: none;" class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Password</div>
+                      <div class="item-title item-label">${i18next.t("password")}</div>
                       <div class="item-input-wrap">
                         <a @click="${showPassword}" style="color: var(--f7-input-clear-button-color); position: absolute; right: 0; padding: 10px; margin-right: -15px; margin-top: -5px;" href="#"><i class="material-icons">visibility</i></a>
                         <input type="text" id="passwordPreview" name="passwordPreview" placeholder="Your password" value="${password}" @input="${updatePassword}" autocomplete="current-password" autocorrect="off" spellcheck="false"/>
@@ -209,11 +217,11 @@
                       </span>
                     </span>
                   </div>
-                  <span>Sign In</span>
+                  <span>${i18next.t("signIn")}</span>
                 </button>
               </div>
             </form>
-            <button @click="${forgotPassword}" class="button button-text color-white">Forgot Password?</button>
+            <button @click="${forgotPassword}" class="button button-text color-white">${i18next.t("forgotPassword")}</button>
           </div>
         </div>
       </div>
@@ -226,11 +234,15 @@
   import store from "/js/store.js";
   import fetchJson from "/js/fetch.js";
   import * as Sentry from "@sentry/browser";
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $update, $store }) => {
 
     // store.dispatch("getToken");
     store.dispatch("getUser");
+    store.dispatch("getSiteUserId");
     const user = $store.getters.user;
     const username = $store.getters.username;
     const gotUser = $store.getters.gotUser;
@@ -239,12 +251,23 @@
     const versionNumber = $store.getters.version.value;
     const isSwitcheroo = $store.getters.switcheroo;
     const hasSwitcheroo = $store.getters.hasSwitcheroo;
+    const locale = $store.getters.locale;
+    const siteUserId = $store.getters.siteUserId;
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
 
     let imagePath;
 
     user.onUpdated(() => {
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
+      store.dispatch("getSiteUserId");
       // $store.dispatch('getTeams');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
@@ -271,6 +294,7 @@
     // let versionNumber = $store.getters.version;
     let password = '';
     $store.dispatch('getUsername');
+    $store.dispatch('getLanguage');
     $store.dispatch('getVersion');
     $store.dispatch("isSwitcheroo");
 
@@ -290,6 +314,7 @@
       fetchJson(Api.urls.logout, { method: 'POST' })
         .then(data => {
           store.dispatch('addCsrfToken', "");
+          store.dispatch('setSiteUserId', "");
           $f7.loginScreen.open("#my-login-screen");
           $f7.preloader.hide();
         })
@@ -321,6 +346,8 @@
               store.dispatch("getUser");
               // $store.dispatch("setUser", data.json.data.user);
               $store.dispatch("setUsername", $("#username").value());
+              $store.dispatch("setLanguage", data.json.data.user.languageCode);
+              $store.dispatch("setSiteUserId", data.json.data.user.uuid);
               $("#password")[0].value = "";
               $f7.loginScreen.close();
               $(".button-preloader").removeClass("button-loading");
@@ -380,7 +407,7 @@
     }
 
     const forgotPassword = () => {
-      app.f7.dialog.prompt("Enter your email. We'll send a link to reset your password.", "Forgot Password?", function (email) {
+      app.f7.dialog.prompt(i18next.t("forgotPasswordText"), i18next.t("forgotPassword"), function (email) {
         app.f7.preloader.show();
 
         let url = Api.urls.forgotPassword;
@@ -595,6 +622,34 @@
 
     const deleteSwitcheroo = () => {
       $store.dispatch("deleteSwitcheroo");
+    }
+
+    const changeLanguage = () => {
+      let setLang;
+      if (locale.value == "en") {
+        $store.dispatch("setLanguage", "th");
+        setLang = "th";
+      } else {
+        $store.dispatch("setLanguage", "en");
+        setLang = "en";
+      }
+
+      let url = Api.urls.updateLanguage(siteUserId.value);
+      const body = new FormData();
+      body.append('id', siteUserId.value);
+      body.append('languageCode', setLang);
+      let method = 'PUT';
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          window.location.reload(true);
+        })
+        .catch(async error => {
+        });
     }
 
     return $render;

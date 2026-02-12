@@ -1,30 +1,29 @@
 <template>
   <div class="page">
     <div class="navbar">
-      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-bg"></div>
       <div class="navbar-inner sliding">
         <div class="left">
           <a href="#" class="link back text-color-white">
             <i class="icon icon-back"></i>
-            <span>Back</span>
           </a>
         </div>
-        <div class="title text-color-white">My Locations</div>
+        <div class="title text-color-white">${i18next.t("myLocations")}</div>
         <div class="right">
           <a href="#" class="link open-dialog text-color-white">
-            <i class="material-icons">help</i>
+            <i class="material-icons">question_mark</i>
           </a>
         </div>
       </div>
     </div>
     <div class="page-content">
       <div class="block" style="">
-        <p>Be specific regarding the location of the photo.</p>
+        <p>${i18next.t("locationItem1")}</p>
         <ul style="list-style-type: none;">
-          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "Chiang Mai"</li>
-          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "FCF Office"</li>
-          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "Mae Hia"</li>
-          <li><i class="material-icons text-color-green" style="vertical-align: middle;">check_circle</i> "FCF Office, Mae Hia"</li>
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "${i18next.t("locationItem2")}"</li>
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "${i18next.t("locationItem3")}"</li>
+          <li><i class="material-icons text-color-red" style="vertical-align: middle;">cancel</i> "${i18next.t("locationItem4")}"</li>
+          <li><i class="material-icons text-color-green" style="vertical-align: middle;">check_circle</i> "${i18next.t("locationItem5")}"</li>
         </ul>
       </div>
       <div class="list list-outline list-strong list-dividers no-hairlines-md">
@@ -32,7 +31,7 @@
           <li class="item-content item-input">
             <div class="item-inner">
               <div class="item-input-wrap">
-                <input class="addLocation" type="text" placeholder="Add new location" />
+                <input class="addLocation" type="text" placeholder="${i18next.t('addNewLocation')}" />
               </div>
             </div>
             <div class="item-media">
@@ -69,6 +68,9 @@
 <script>
   import Api from "/js/api.js";
   import fetchJson from "/js/fetch.js";
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const locations = $store.getters.myLocations;
@@ -82,11 +84,11 @@
       // Vertical Buttons
       $('.open-dialog').on('click', function () {
         $f7.dialog.create({
-          title: 'Your Saved Locations',
-          text: 'As an alternative to selecting one of the default FCF locations, you can add a new location when uploading an activity photo.',
+          title: i18next.t("savedLocationsTitle"),
+          text: i18next.t("savedLocationsText"),
           buttons: [
             {
-              text: 'Close',
+              text: i18next.t("close"),
             }
           ],
           verticalButtons: true,

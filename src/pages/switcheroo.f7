@@ -1,19 +1,21 @@
 <template>
 <div class="page" data-name="about">
   <div class="navbar">
-    <div class="navbar-bg bg-color-primary"></div>
+    <div class="navbar-bg"></div>
     <div class="navbar-inner sliding">
       <div class="left">
         <a href="#" class="link back text-color-white">
           <i class="icon icon-back"></i>
-          <span class="if-not-md">Back</span>
         </a>
       </div>
-      <div class="title text-color-white">Switch User</div>
+      <div class="title text-color-white">${i18next.t("switchUser")}</div>
+      <div class="title-large">
+        <div class="title-large-text">${i18next.t('switchUser')}</div>
+      </div>
     </div>
   </div>
   <div class="page-content">
-    <div class="list list-outline-ios list-strong-ios list-dividers-ios">
+    <div class="list list-outline-ios list-strong-ios list-dividers-ios no-margin-top">
       <ul>
         ${teamMembers.value.map((teamMember) => $h`
         ${user.value.uuid == teamMember.uuid ? $h` ` : $h`
@@ -37,8 +39,11 @@
 </div>
 </template>
 <script>
-import Api from "/js/api.js";
+  import Api from "/js/api.js";
   import fetchJson from "/js/fetch.js";
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const teamMembers = $store.getters.myTeamMembers;

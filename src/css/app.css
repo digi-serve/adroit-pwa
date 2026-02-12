@@ -13,6 +13,9 @@
 .md, .md .dark, .md [class*='color-'] {
     --f7-input-border-color: rgba(255, 255, 255, 0.15);
 }
+.list .item-link, .list label.item-content, .list .list-button {
+  z-index: 1;
+}
 /*
 .menu_sidebar {
   background: linear-gradient(
@@ -36,8 +39,8 @@
   background: none;
 }
 .navbar-bg {
-  background: linear-gradient(var(--f7-theme-color-bg-color), #00000000), url(../assets/images/adroit/icons/navbar_bg.jpg);
-  background-size: 100% auto;
+/*  background: linear-gradient(var(--f7-theme-color-bg-color), #00000000), url(../assets/images/adroit/icons/navbar_bg.jpg);
+  background-size: 100% auto;*/
 }
 /* Status Bar */
 .break {
@@ -46,11 +49,19 @@
 }
 .status_bar {
   color: white;
-  background: #3f6ec5 !important;
   font-size: 9pt;
   font-weight: bold;
-  height: 72px;
-  border: 1px solid white;
+  position: relative;
+  margin: 0 auto;
+  /*margin: 0 calc(var(--f7-toolbar-inner-padding-right) + var(--f7-safe-area-right)) 0 calc(var(--f7-toolbar-inner-padding-left) + var(--f7-safe-area-left));*/
+  /*bottom: 16px;*/
+  border-radius: 32px;
+  /*width: calc(100% - var(--f7-toolbar-inner-padding-right) - var(--f7-safe-area-right) - var(--f7-toolbar-inner-padding-left) - var(--f7-safe-area-left));*/
+  overflow: hidden;
+  height: 56px;
+  justify-content: center;
+  gap: 16px;
+  display: flex;
 }
 .status_bar i {
   font-size: 12pt;
@@ -59,43 +70,38 @@
   vertical-align: text-bottom;
 }
 .status_bar .progress {
-  border-top: 1px solid white;
-  height: 40px;
-/*  background-image: url("/assets/images/bg_bar_days_right@2x.png");*/
-  background-color: #265ec5;
-  background-size: 1024px 40px;
+  height: 56px;
+  /*width: auto !important;*/
 }
 .status_bar .days_elapsed {
-  height: 40px;
-/*  background-image: url("/assets/images/bg_bar_days_elapsed@2x.png");*/
-  background-color: #1f448d;
-  background-size: 1024px 40px;
-  border-right: 3px solid #132e61;
-  transition: 1s;
+  height: 56px;
+  background-color: #93006485; /*#1f448d;*/
+  /*border-right: 10px solid #930064;*/
+  transition: 2s;
 }
 .status_bar .photo_goal {
-  height: 20px;
+  height: 2px;
   position: absolute;
-  top: 29px;
-  margin: 10px 0;
-/*  background-image: url("/assets/images/bg_bar_approved@2x.png");*/
+  top: 0px;
+  margin: 54px 0 0 0;
   background-color: #4caf50;
-  background-size: 1024px 20px;
   transition: 1s;
   transition-delay: 0.5s;
   z-index: 51;
 }
 .status_bar .photo_combine {
-  height: 20px;
+  height: 2px;
   position: absolute;
-  top: 29px;
-  margin: 10px 0;
-/*  background-image: url("/assets/images/bg_bar_new@2x.png");*/
-  background-color: #333;
-  background-size: 1024px 20px;
+  top: 0px;
+  margin: 54px 0 0 0;
+  background-color: #3f51b5;
   transition: 1s;
   transition-delay: 0.5s;
-  z-index: 50;
+  z-index: 1;
+}
+.toolbar-bottom {
+  /*bottom: 40px;*/
+  font-size: 14px;
 }
 .toolbar_status {
   border-right: none !important;
@@ -106,10 +112,10 @@
 .status_bar .toolbar-inner {
   flex-wrap: wrap;
 }
-.toolbar_approved {
+.toolbar_approveds {
   width: calc(30% - 1px) !important;
 }
-.toolbar_new {
+.toolbar_news {
   width: calc(20% - 1px) !important;
 }
 .status_bar .warning {
@@ -124,11 +130,17 @@
 .status_bar .ontrack {
   background: #0bbb8f;
 }
-.quarter_width {
-  width: calc(25% - 1px);
+.fcf_toolbar {
   text-align: center;
-  line-height: 28px;
-  border-right: 1px solid #265ec5;
+}
+.ios .toolbar .link {
+  padding: 0 12px !important;
+}
+.quarter_widths {
+  width: calc(25% - 1px) !important;
+  /*text-align: center;*/
+  /*line-height: 28px;*/
+  /*border-right: 1px solid #265ec5;*/
   /* border-bottom: 1px solid white; */
 }
 .full_width {
@@ -145,10 +157,10 @@
   background: #4caf50 !important;
 }
 .status_New {
-  border-left: 8px solid #333;
+  border-left: 8px solid #3f51b5;
 }
 .status_New_pullout {
-  background: #454545 !important;
+  background: #3f51b5 !important;
 }
 .status_denied_right {
   border-right: 8px solid #f44336;
@@ -262,17 +274,17 @@
 }
 /* change smart select background color */
 .smart-select-page .navbar-inner {
-  background-color: var(--f7-theme-color) !important;
-  color: white !important;
+/*  background-color: var(--f7-theme-color) !important;
+  color: white !important;*/
 }
 .smart-select-page .link {
-  color: white !important;
+  /*color: white !important;*/
 }
 .smart-select-page .subnavbar {
-  background-color: var(--f7-theme-color) !important;
+  /*background-color: var(--f7-theme-color) !important;*/
 }
 .ios .smart-select-page .searchbar-disable-button {
-  color: white !important;
+  /*color: white !important;*/
 }
 /* Help Page */
 .fullwidth {
@@ -339,7 +351,7 @@ select:-webkit-autofill:focus {
 }
 .monthGroupTitle {
   height: 30px !important;
-  background: rgb(19 46 97) !important;
+  background: rgb(147 0 100) !important;
   color: #FFF !important;
   font-size: 14px !important;
 }
@@ -441,4 +453,10 @@ select:-webkit-autofill:focus {
   background-image: url("../assets/images/adroit/icons/profile_bg.jpg");
   background-size: 260px;
   height: 260px;
+}
+.introjs-tooltip {
+  color: #333;
+}
+.photo-browser-current, .photo-browser-of, .photo-browser-total {
+  color: transparent;
 }

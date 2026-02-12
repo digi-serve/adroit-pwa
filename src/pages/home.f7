@@ -9,72 +9,91 @@
             <i class="icon material-icons">menu</i>
           </a>
         </div>
-        <div class="title ">My Activity Photos</div>
+        <div class="title ">${i18next.t('homeTitle')}</div>
         <div class="right">
-          <a data-popover=".popover-approved" data-position="right" data-intro="Look at your photos with a new calendar view to help you see where you may need to upload missing photos." href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only">
+          <a data-popover=".popover-approved" data-position="right" data-intro="${i18next.t('dataIntroCalendar')}" href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only">
             <i class="icon material-icons">calendar_month</i>
           </a>
+          <a @click="${choosePhoto}" data-intro="${i18next.t('dataIntroAddNew')}" href="#" class="link icon-only">
+            <i class="icon f7-icons if-not-md">plus</i>
+            <i class="icon material-icons md-only">add</i>
+          </a>
+        </div>
+        <div class="title-large">
+          <div class="title-large-text">${i18next.t('homeTitle')}</div>
         </div>
       </div>
     </div>
-    <div style="display: none;" class="toolbar toolbar-top status_bar popover-open" data-title="Welcome to the new status bar!" data-position="right" data-intro="Immigration has updated their requirements so we have updated our status bar to help you meet their new criteria.">
-      <div class="toolbar-inner no-padding">
-        <div class="toolbar_approved quarter_width"><a href="#" data-intro="This is the number of your photos that have been approved this month." class="text-color-white popover-open" data-popover=".popover-approved"><i style="background-color: #4caf50; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block;"></i>${totalApproved.value} approved</a></div>
-        <div class="toolbar_new quarter_width"><a href="#" data-intro="This is how many new photos you have uploaded this month that have not yet been approved." class="text-color-white popover-open" data-popover=".popover-new"><i style="background-color: #333333; width: 12px; height: 12px; border: 1px solid white; border-radius: 100%; display: inline-block; vertical-align: text-bottom;"></i>${totalNew.value} new</a></div>
-        <div class="toolbar_days_left quarter_width"><a data-intro="Keep an eye on how many days are left in the current month." href="#" class="text-color-white popover-open" data-popover=".popover-days">${daysLeft.value} days left</a></div>
-        <div style="background: ${imagesLoading.value ? $h`${loadingStatus.color}` : $h`${currentStatus.value.color}`}" class="toolbar_status quarter_width"><a href="#" data-intro="Quickly check whether you are on track with your photo uploads for this month." class="text-color-white popover-open" data-popover=".popover-status">${imagesLoading.value ? $h`<i class="material-icons" style="vertical-align: text-top;">${loadingStatus.icon}</i>${loadingStatus.label}` : $h`<i class="material-icons" style="vertical-align: text-top;">${currentStatus.value.icon}</i>${currentStatus.value.label}`}</a></div>
-        <div class="break"></div>
-        <div class="progress full_width">
-          <div style="width: ${percentageComplete.value}%" class="days_elapsed"></div>
-          <div style="width: ${photoProgress.value}%" class="photo_goal"></div>
-          <div style="width: ${photoCombineProgress.value}%" class="photo_combine"></div>
+    <div class="toolbar toolbar-bottom fcf_toolbar hide-toolbar-on-scroll" data-position="right" data-intro="${i18next.t('dataIntroStatusBar')}">
+      <div class="toolbar-inner">
+        <div id="fcf_toolbar_pane" class="toolbar-pane">
+          <a href="#" data-intro="${i18next.t('dataIntroApproved')}" class="link popover-open" data-popover=".popover-approved"><div><div><div style="background-color: #4caf50; width: 21px; height: 21px; border: 1px solid white; line-height: 21px; border-radius: 100%; display: inline-block;">${totalApproved.value}</div></div><div>${i18next.t("approved")}</div></div></a>
+          <a href="#" data-intro="${i18next.t('dataIntroNew')}" class="link popover-open" data-popover=".popover-new"><div><div><div style="background-color: #3f51b5; width: 21px; height: 21px; border: 1px solid white; line-height: 21px; border-radius: 100%; display: inline-block;">${totalNew.value}</div></div><div>${i18next.t("new")}</div></div></a>
+          <a data-intro="${i18next.t('dataIntroDays')}" href="#" class="link popover-open" data-popover=".popover-days">
+            <div>
+              <div style="font-size: 18px; height: 23px;">${daysLeft.value}</div>
+              <div>${i18next.t("days")}</div>
+            </div>
+          </a>
+          <a href="#" data-intro="${i18next.t('dataIntroStatus')}" class="link popover-open" data-popover=".popover-status">
+            <div>
+              ${imagesLoading.value ? $h`<div style="height: 23px;"><i class="material-icons">${loadingStatus.icon}</i></div><div style="text-transform: capitalize;">${i18next.t(loadingStatus.label)}</div>` : $h`<div style="height: 23px;"><i class="material-icons">${currentStatus.value.icon}</i></div><div style="text-transform: capitalize;">${i18next.t(currentStatus.value.label)}</div>`}
+            </div>
+          </a>
         </div>
       </div>
+    <div id="fcf_status_bar" class="status_bar">
+      <div class="progress full_width">
+        <div style="width: ${percentageComplete.value}%" class="days_elapsed"></div>
+        <div style="width: ${photoProgress.value}%" class="photo_goal"></div>
+        <div style="width: ${photoCombineProgress.value}%" class="photo_combine"></div>
+      </div>
+    </div>
     </div>
     <div class="popover popover-approved">
       <div class="popover-inner">
         <div class="block">
-          <p>This is the number of your photos that have been approved this month.</p>
+          <p>${i18next.t("dataIntroApproved")}</p>
         </div>
       </div>
     </div>
     <div class="popover popover-new">
       <div class="popover-inner">
         <div class="block">
-          <p>This is how many new photos you have uploaded this month that have not yet been approved.</p>
+          <p>${i18next.t("dataIntroNew")}</p>
         </div>
       </div>
     </div>
     <div class="popover popover-days">
       <div class="popover-inner">
         <div class="block">
-          <p>Keep an eye on how many days are left in the current month.</p>
+          <p>${i18next.t("dataIntroDays")}</p>
         </div>
       </div>
     </div>
     <div class="popover popover-status">
       <div class="popover-inner">
         <div class="block">
-          <p>Quickly check whether you are on track with your photo uploads for this month.</p>
+          <p>${i18next.t("dataIntroStatus")}</p>
         </div>
       </div>
     </div>
     <div class="popover popover-monthlyProgress">
       <div class="popover-inner">
         <div class="block">
-          <p>This is how many of your photos have been approved on separate days this month. You are required to upload at least 3 photos on separate days each week.</p>
+          <p>${i18next.t("dataIntroMonthlyProgress")}</p>
         </div>
       </div>
     </div>
     <div class="fab-backdrop"></div>
-    <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
+    <!-- <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
       <a @click="${choosePhoto}" href="#">
         <i class="icon f7-icons if-not-md">plus</i>
         <i class="icon f7-icons if-not-md">xmark</i>
         <i class="icon material-icons md-only">add</i>
         <i class="icon material-icons md-only">close</i>
       </a>
-    </div>
+    </div> -->
     <!--
     ${activityImagesPrevious.value.length == 0 ? $h`
       <div data-intro="Tap here to view all your photos from the last year." class="fab fab-left-bottom">
@@ -116,7 +135,7 @@
           </ul>
         ` : $h`
           ${(activityImages.value.length == 0 && activityImagesPrevious.value.length == 0) ? $h`
-            <div style="display: block; font-size: 180px; background-color: #666; color: transparent; text-shadow: 0px 1px 1px rgba(255,255,255,0.5); -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">add_photo_alternate</div>
+            <div style="display: block; font-size: 180px; background-color: #00BCD4; color: transparent; text-shadow: 0px 1px 1px #2196F3; -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">add_photo_alternate</div>
             <div class="block no-margin-top text-align-center">
               <p style="color: gray;">
                 <small>Tap the <i class="icon f7-icons if-not-md">plus_circle</i><i class="icon material-icons md-only">add</i> below to add an activity photo.</small>
@@ -127,32 +146,32 @@
               ${activityImages.value.map((activityMonths) => $h`
                 <li class="list-group-title justify-content-space-between monthGroupTitle">
                   <div>${activityMonths.label}</div>
-                  <div class="popover-open" style="pointer-events: all;" data-popover=".popover-monthlyProgress"> ${activityMonths.reportDates.length} of 12 report photos</div>
+                  <div class="popover-open" style="pointer-events: all;" data-popover=".popover-monthlyProgress">${i18next.t('reportPhotos', { current: activityMonths.reportDates.length, total: 12 })}</div>
                 </li>
                 ${activityMonths.items.map((activityImage) => $h`
-                  <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
+                  <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}">
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
                         <img class="photoThumbnail" @error=${imageLoadError} src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation.Activities}` : $h`Special Activity`}</div>
+                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation[trans({'en':'Activities','th':'Activities TH'})]}` : $h` `}</div>
                         </div>
                         <div style="color: #555;" class="item-subtitle">
-                          <strong>${activityImage.ActivityPhoto__relation.Name}</strong>
+                          <strong>${activityImage.ActivityPhoto__relation[trans({'en':'Name','th':'Location Name TH'})]}</strong>
                         </div>
                         <div class="item-text">
-                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
+                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
                         </div>
                       </div>
                     </a>
                     <div class="swipeout-actions-left">
-                      <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${activityImage.Status}</a>
+                      <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${i18next.t(activityImage.Status.toLowerCase())}</a>
                     </div>
                     ${activityImage.Status === "Denied" && $h`
                     <div class="swipeout-actions-right">
-                      <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
+                      <a href="#" @click=${() => deleteImage(activityImage)} class="swipeout-close bg-color-red"><i class="icon material-icons">delete</i></a>
                     </div>
                     `}
                   </li>
@@ -189,7 +208,7 @@
               ${activityImagesPrevious.value.map((activityMonths) => $h`
                 <li class="list-group-title justify-content-space-between monthGroupTitle">
                   <span>${activityMonths.label}</span>
-                  <span> ${activityMonths.reportDates.length} of 12 report photos</span>
+                  <span>${i18next.t('reportPhotos', { current: activityMonths.reportDates.length, total: 12 })}</span>
                 </li>
                 ${activityMonths.items.map((activityImage) => $h`
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
@@ -206,7 +225,7 @@
                       </div>
                     </a>
                     <div class="swipeout-actions-left">
-                      <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${activityImage.Status}</a>
+                      <a href="#" class="swipeout-close status_${activityImage.Status}_pullout">${i18next.t(activityImage.Status)}</a>
                     </div>
                     ${activityImage.Status === "Denied" && $h`
                     <div class="swipeout-actions-right">
@@ -252,6 +271,9 @@
   import fetchJson from "/js/fetch.js";
   import introJs from "intro.js";
   import 'intro.js/introjs.css';
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const imagesLoading = $store.getters.imagesLoading;
@@ -264,6 +286,15 @@
     const photoCombineProgress = $store.getters.photoCombineProgress;
     const teamMembers = $store.getters.myTeamMembers;
     const version = $store.getters.version;
+    const locale = $store.getters.locale;
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
 
 
     let isDesktop = app.f7.device.desktop;
@@ -336,6 +367,33 @@
         // debugger;
         $f7.popup.open('.ios-popup', true);
       }
+
+      // Get a reference to the element you want to observe
+      const myElement = document.getElementById('fcf_toolbar_pane');
+
+      // Create a new ResizeObserver instance and pass a callback function
+      const observer = new ResizeObserver(entries => {
+          // The entries array contains a ResizeObserverEntry for each observed element
+          for (const entry of entries) {
+              // You can access the new width and perform actions here
+              const newWidth = entry.contentRect.width;
+              console.log(`Element width changed to: ${newWidth}px`);
+
+              document.getElementById('fcf_status_bar').style.width = `${newWidth}px`;
+              // Example action: change font size based on width
+              // if (newWidth < 300) {
+              //     entry.target.style.fontSize = '12px';
+              // } else {
+              //     entry.target.style.fontSize = '16px';
+              // }
+          }
+      });
+
+      // Start observing the target element
+      if (myElement) {
+          observer.observe(myElement);
+      }
+
     })
 
 
@@ -455,8 +513,30 @@
       // $store.dispatch('getCaptions');
     }
 
-    const onDeleted = (evt) => {
-      let activityImageId = evt.currentTarget.dataset.activityImageId;
+    const deleteImage = (activityImage) => {
+      $f7.dialog.create({
+        text: i18next.t('deleteConfirm'), 
+        title: i18next.t('delete')+'?', 
+        buttons: [
+          {
+            text: i18next.t("cancel"), // Custom text for the "Cancel" button
+            onClick: function () {
+            }
+          },
+          {
+            text: i18next.t("confirm"), // Custom text for the "OK" button
+            bold: true, // Optionally make one button bold
+            cssClass: "bg-color-red text-color-white",
+            onClick: function () {
+              onDeleted(activityImage);
+            }
+          }
+        ]
+      }).open();
+    }
+
+    const onDeleted = (activityImage) => {
+      let activityImageId = activityImage.id;
       let url = Api.urls.updateActivityImage(activityImageId);
       const body = new FormData();
       body.append('Status', 'Archived');
@@ -477,6 +557,9 @@
               closeTimeout: 2000,
             });
           }
+          // remove item from storage
+          $store.dispatch("pruneApprovals", activityImageId);
+          $store.dispatch("fetchImages");
           // Open it
           toastDelete.open();
         })
@@ -564,6 +647,11 @@
         });
       }
     }
+
+    const trans = (object) => {
+      return object[locale.value];
+    }
+
 
     return $render;
   }

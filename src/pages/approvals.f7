@@ -2,14 +2,17 @@
   <div class="page" data-name="approvals">
     <!-- Top Navbar -->
     <div class="navbar">
-      <div class="navbar-bg bg-color-primary"></div>
+      <div class="navbar-bg"></div>
       <div class="navbar-inner">
         <div class="left">
           <a href="#" class="link icon-only panel-open text-color-white" data-panel="left">
             <i class="icon material-icons">menu</i>
           </a>
         </div>
-        <div class="title text-color-white">Approve Photos</div>
+        <div class="title text-color-white">${i18next.t("approvals")}</div>
+        <div class="title-large">
+          <div class="title-large-text">${i18next.t('approvals')}</div>
+        </div>
       </div>
     </div>
     <!-- Scrollable page content-->
@@ -44,10 +47,10 @@
           </ul>
         ` : $h`
           ${approvalsImages.value.length == 0 ? $h`
-            <div style="display: block; font-size: 180px; background-color: #666; color: transparent; text-shadow: 0px 1px 1px rgba(255,255,255,0.5); -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">verified</div>
+            <div style="display: block; font-size: 180px; background-color: #00BCD4; color: transparent; text-shadow: 0px 1px 1px #2196F3; -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">verified</div>
             <div class="block no-margin-top text-align-center">
               <p style="color: gray;">
-                <small><b>Congratulations!</b><br/>You are all caught up on approvals.</small>
+                <small><b>${i18next.t("congratulations")}</b><br/>${i18next.t("approvalsCaughtUp")}</small>
               </p>
             </div>
           ` : $h`
@@ -56,7 +59,7 @@
                 <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_Approved status_denied_right">
                   <a href="#" data-popup=".popup-${activityImage.id}" class="item-link item-content swipeout-content popup-open">
                     <div class="item-media">
-                      <img id="image_${activityImage.Photo}" style="background: #CCC; width: 85px; height: 85px; object-fit: cover; border-radius: 3px;" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                      <img class="photoThumbnail" id="image_${activityImage.Photo}" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                     </div>
                     <div class="item-inner">
                       <div class="item-title-row">
@@ -65,11 +68,10 @@
                         </div>
                       </div>
                       <div style="color: #555; font-weight: bold;" class="item-subtitle">
-                        ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}
+                        ${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}
                       </div>
                       <div class="item-text">
-                        ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}
-                        ${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
+                        ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
                       </div>
                     </div>
                   </a>
@@ -81,23 +83,33 @@
                   </div>
                   <div class="popup popup-${activityImage.id}">
                     <div class="page">
+                      <div class="navbar">
+                        <div class="navbar-bg"></div>
+                        <div class="navbar-inner sliding">
+                          <div class="title"></div>
+                          <div class="right">
+                            <a class="link popup-close">
+                              <i class="icon icon-close"></i>
+                            </a>
+                          </div>                        
+                        </div>
+                      </div>
                       <div class="page-content">
                         <div>
                           <img id="image_${activityImage.id}" style="background: #111; width: 100%; height: 250px; object-fit: contain;" src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
                         </div>
                         <div class="block" style="margin-top: 10px;">
-                          <strong>Uploaded by:</strong> ${activityImage.User}<br/>
-                          <strong>Date:</strong> ${new Date(activityImage["Date of Activity"]).toLocaleDateString('en-us', { weekday:"short", month:"short", day:"numeric"})}<br/>
-                          <strong>Location:</strong> ${activityImage["ActivityPhoto__relation"].Name}<br/>
+                          <strong>${i18next.t("uploadedBy")}:</strong> ${activityImage.User}<br/>
+                          <strong>${i18next.t("date")}:</strong> ${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}<br/>
+                          <strong>${i18next.t("location")}:</strong> ${activityImage.ActivityPhoto__relation[trans({'en':'Name','th':'Location Name TH'})]}<br/>
                           <p>
-                            <strong>Caption:</strong><br/>
-                            ${activityImage["Description EN"] ? $h`${activityImage["Description EN"]}` : $h``}
-                            ${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation.English}` : $h``}
+                            <strong>${i18next.t("caption")}:</strong><br/>
+                            ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
                           </p>
                           <div class="list list-outline list-strong list-dividers inset" style="margin: 10px 0;">
                             <ul style="overflow: hidden;">
                               <li class="dark list-group-title bg-color-blue text-color-white">
-                                People in photo:
+                                ${i18next.t("peopleInPhoto")}:
                               </li>
                               ${activityImage.Person__relation.map((person) => $h`
                               <li>
@@ -117,10 +129,10 @@
                             <button data-popup=".denyPopup-${activityImage.id}" class="button button-round button-large bg-color-red color-white popup-open"><i class="material-icons">thumb_down</i></button>
                           </p>
                           <p>
-                            <button @click=${() => editImage(activityImage)} class="button button-round button-fill button-large button-outline popup-close">Edit Activity</button>
+                            <button @click=${() => editImage(activityImage)} class="button button-round button-fill button-large button-outline popup-close">${i18next.t("editActivity")}</button>
                           </p>
                           <p>
-                            <button class="button button-round button-large button-outline popup-close">Cancel</button>
+                            <button class="button button-round button-large button-outline popup-close">${i18next.t("cancel")}</button>
                           </p>
                         </div>
                       </div>
@@ -134,9 +146,9 @@
                         <ul>
                           <li class="item-content item-input">
                             <div class="item-inner">
-                              <div class="item-title item-label">Reason for denial:</div>
+                              <div class="item-title item-label">${i18next.t("reasonForDenial")}:</div>
                               <div class="item-input-wrap">
-                                <textarea name="customMessage" class="resizable" placeholder="Tell your volunteer why their photo was denied."></textarea>
+                                <textarea name="customMessage" class="resizable" placeholder="${i18next.t('reasonForDenialPlaceholder')}"></textarea>
                               </div>
                             </div>
                           </li>
@@ -144,8 +156,8 @@
                       </form>
                       <div class="block">
                         <p class="segmented segmented-round">
-                          <a class="button button-round button-large button-fill text-white popup-close" href="#">Cancel</a>
-                          <a class="button button-round button-large button-fill text-white bg-color-red" href="#" @click=${() => deny(activityImage)}>Deny</a>
+                          <a class="button button-round button-large button-fill text-white popup-close" href="#">${i18next.t("cancel")}</a>
+                          <a class="button button-round button-large button-fill text-white bg-color-red" href="#" @click=${() => deny(activityImage)}>${i18next.t("deny")}</a>
                         </p>
                       </div>
                     </div>
@@ -164,14 +176,15 @@
   import fetchJson from "/js/fetch.js";
   import introJs from "intro.js";
   import 'intro.js/introjs.css';
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const approvalsLoading = $store.getters.approvalsLoading;
     let isDesktop = app.f7.device.desktop;
     let toastApproval; 
-
     let showingUpdate = false;
-
     let approvalsImage = {
         "activity": {
           "id": 874,
@@ -195,7 +208,15 @@
     const approvalsImages = $store.getters.approvals;
     // debugger;
     const user = $store.getters.user;
+    const locale = $store.getters.locale;
 
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
     $on('pageInit', () => {
       // $store.dispatch("fetchApprovals");
     })
@@ -206,41 +227,58 @@
     const approve = (data) => {
       let item = data;
       // Confirm
-      $f7.dialog.confirm('Are you sure want to approve this item?', 'Approve?', function () {
-        app.f7.preloader.show();
+      $f7.dialog.create({
+        text: i18next.t("approveConfirm"), 
+        title: i18next.t("confirm")+'?', 
+        buttons: [
+          {
+            text: i18next.t("cancel"), // Custom text for the "Cancel" button
+            onClick: function () {
+            }
+          },
+          {
+            text: i18next.t("confirm"), // Custom text for the "OK" button
+            bold: true, // Optionally make one button bold
+            cssClass: "bg-color-primary text-color-white",
+            onClick: function () {
+              app.f7.preloader.show();
 
-        let url = Api.urls.updateActivityImage(item.id);
+              let url = Api.urls.updateActivityImage(item.id);
 
-        let params = {
-          'Status': 'Approved',
-          'id': item.id
-        };
-        let options = {
-          method: 'PUT',
-          params: params
-        }
+              let params = {
+                'Status': 'Approved',
+                'id': item.id
+              };
+              let options = {
+                method: 'PUT',
+                params: params
+              }
 
-        fetchJson(url, options).then(response => {
-          // close the popup if it is open
-          app.f7.popup.close(".popup-"+item.id, true);
+              fetchJson(url, options).then(response => {
+                // close the popup if it is open
+                app.f7.popup.close(".popup-"+item.id, true);
 
-          // remove item from storage
-          $store.dispatch("pruneApprovals", item.id);
+                // remove item from storage
+                $store.dispatch("pruneApprovals", item.id);
 
-          toastApproval = $f7.toast.create({
-            icon: '<i class="icon material-icons">thumb_up</i>',
-            text: 'Item Approved',
-            position: 'center',
-            closeTimeout: 2000,
-          });
-          app.f7.preloader.hide();
-          // Open it
-          toastApproval.open();
-        }).catch(async error => {
-          // console.log(error);
-          // $f7.dialog.alert(error);
-        });
-      });
+                toastApproval = $f7.toast.create({
+                  icon: '<i class="icon material-icons">thumb_up</i>',
+                  text: i18next.t('itemApproved'),
+                  position: 'center',
+                  closeTimeout: 2000,
+                });
+                app.f7.preloader.hide();
+                // Open it
+                toastApproval.open();
+              }).catch(async error => {
+                // console.log(error);
+                // $f7.dialog.alert(error);
+              });
+
+            }
+          }
+        ]
+      }).open();
     }
 
     // const denyForm = (data) => {
@@ -287,7 +325,7 @@
 
         toastApproval = $f7.toast.create({
           icon: '<i class="icon material-icons">thumb_down</i>',
-          text: 'Item Denied',
+          text: i18next.t('itemDenied'),
           position: 'center',
           closeTimeout: 2000,
         });
@@ -302,6 +340,10 @@
 
     const reloadList = (e, done) => {
       $store.dispatch("fetchApprovals", done);
+    }
+
+    const trans = (object) => {
+      return object[locale.value];
     }
 
     return $render;
