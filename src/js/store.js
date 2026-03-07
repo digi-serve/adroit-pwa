@@ -61,11 +61,12 @@ const store = createStore({
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
     fcfVolunteers: [],
+    fullYearLoaded: false,
     hasLocations: false,
     isApprover: false,
     imagesLoading: true,
     gotUser: false,
-    prevImagesLoading: true,
+    prevImagesLoading: false,
     locations: [],
     myProjects: [],
     percentageComplete: 0,
@@ -153,6 +154,9 @@ const store = createStore({
     fcfVolunteers({ state }) {
       return state.fcfVolunteers;
     },
+    fullYearLoaded({ state }) {
+      return state.fullYearLoaded;
+    },
     hasLocations({ state }) {
       return state.hasLocations;
     },
@@ -169,7 +173,7 @@ const store = createStore({
       return state.isApprover;
     },
     prevImagesLoading({ state }) {
-      return state.imagesLoading;
+      return state.prevImagesLoading;
     },
     myLocations({ state }) {
       return state.locations;
@@ -275,13 +279,14 @@ const store = createStore({
           state.approvalCount = result.json.data.data.length;
           state.approvalsLoading = false;
           state.isApprover = true;
-          done();
+          if (done) {
+            done();
+          }
         })
         .catch((err) => {
-          if (err.code == "E_NOTPERMITTED") {
+          if (err?.code == "E_NOTPERMITTED") {
             state.isApprover = false;
           }
-          // console.error("fetchJson failed");
         });
     },
     pruneApprovals({ state }, id) {
@@ -349,11 +354,28 @@ const store = createStore({
 
       let queryDate = [year, month, day].join("/");
 
-      let datesRule = {
-        key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
-        rule: "greater_or_equal",
-        value: queryDate,
-      };
+      // get activity images in last three months
+      var todayMonth = "" + (today.getMonth() + 1),
+        todayDay = "" + today.getDate(),
+        todayYear = today.getFullYear();
+
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
+
+      let queryToday = [todayYear, todayMonth, todayDay].join("/");
+
+      let datesRule = [
+        {
+          key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+          rule: "greater_or_equal",
+          value: queryDate,
+        },
+        {
+          key: "589ca09c-9fc3-4433-8247-e8f99ab2b542",
+          rule: "less_or_equal",
+          value: queryToday,
+        },
+      ];
 
       let wheres = { ...Api.urls.myActivityImages.where };
 
@@ -502,7 +524,7 @@ const store = createStore({
         });
     },
     fetchPreviousYearsImages({ state }, done) {
-      // state.prevImagesLoading = true;
+      state.prevImagesLoading = true;
       if (!navigator.onLine) {
         done();
         let toastWithButton = app.f7.toast
@@ -651,6 +673,7 @@ const store = createStore({
           });
           state.activityImagesPrevious = groupedByMonthsPrevious;
           state.prevImagesLoading = false;
+          state.fullYearLoaded = true;
           if (done) {
             done();
           }
@@ -1014,9 +1037,12 @@ const store = createStore({
       })
         .then((result) => {
           let switcherooRoleID = "320ef94a-73b5-476e-9db4-c08130c64bb8";
-          const hasSwitcheroo = result.json.data.user.roles.some(
-            (roles) => roles.uuid === switcherooRoleID
-          );
+          let hasSwitcheroo = false;
+          if (result.json.data.user) {
+            hasSwitcheroo = result.json.data.user.roles.some(
+              (roles) => roles.uuid === switcherooRoleID
+            );
+          }
           state.hasSwitcheroo = hasSwitcheroo;
           state.switcheroo = result.json.data?.userReal?.uuid ? true : false;
         })

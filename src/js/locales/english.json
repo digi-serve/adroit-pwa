@@ -86,8 +86,19 @@
     "dataIntroNew": "This is how many new photos you have uploaded this month that have not yet been approved.",
     "dataIntroDays": "Keep an eye on how many days are left in the current month.",
     "dataIntroStatus": "Quickly check whether you are on track with your photo uploads for this month.",
-    "dataIntroAddNew": "Tap here to submit a new activity photo.",
+    "dataIntroAddNew": "Tap here to submit a new activity photo or report a leave of absence.",
     "dataIntroMonthlyProgress": "This is how many of your photos have been approved on separate days this month. You are required to upload at least 3 photos on separate days each week.",
-    "switchLanguage": "เปลี่ยนเป็นภาษาไทย"
+    "switchLanguage": "เปลี่ยนเป็นภาษาไทย",
+    "myAbsence": "Leave of Absence",
+    "loadMoreImages": "Load more images",
+    "dateRange": "Dates Absent",
+    "selectDateRange": "Select date range",
+    "leaveOfAbsence": "Add Leave of Absence",
+    "addActivityImage": "Add Activity Image",
+    "absence": "Reason for abscence",
+    "absencePlaceholder": "Please leave a reason why you were abscent",
+    "calednarView": "Calendar View",
+    "uploadDocument": "Upload Supporting Document",
+    "uploading": "Uploading file..."
   }
 }

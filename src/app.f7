@@ -85,6 +85,14 @@
                       </a>
                      </li>
                      <li>
+                      <a href="/absence/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">flight</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">${i18next.t("myAbsence")}</div>
+                        </div>
+                      </a>
+                     </li>
+                     <li>
                       <a href="/locations/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">location_on</i></div>
                         <div class="item-inner">
@@ -274,7 +282,10 @@
       $store.dispatch('getActivities');
       $store.dispatch("isSwitcheroo");
       // $store.dispatch('getCaptions');
-      Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
+      if (isSwitcheroo.value == false && hasSwitcheroo.value == true && user.value.uuid && user.value["Full Name"] && Sentry && OneSignal) {
+        Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
+        OneSignal.login(user.value.uuid);
+      }
     })
 
     username.onUpdated(() => {
@@ -311,6 +322,7 @@
       $f7.preloader.show();
       password = "";
       $update();
+      OneSignal.logout();
       fetchJson(Api.urls.logout, { method: 'POST' })
         .then(data => {
           store.dispatch('addCsrfToken', "");
@@ -346,7 +358,7 @@
               store.dispatch("getUser");
               // $store.dispatch("setUser", data.json.data.user);
               $store.dispatch("setUsername", $("#username").value());
-              $store.dispatch("setLanguage", data.json.data.user.languageCode);
+              // $store.dispatch("setLanguage", data.json.data.user.languageCode);
               $store.dispatch("setSiteUserId", data.json.data.user.uuid);
               $("#password")[0].value = "";
               $f7.loginScreen.close();
@@ -615,8 +627,8 @@
           console.log(`trying to load image: ${e.target.dataset.retry}`)
         }, 2000);
       } else {
-        e.target.src = "/assets/images/1024.png";
-        e.target.style.objectFit = "contain";
+        // e.target.src = "/pwa/www/assets/images/1024.png";
+        // e.target.style.objectFit = "contain";
       }
     }
 
@@ -633,23 +645,24 @@
         $store.dispatch("setLanguage", "en");
         setLang = "en";
       }
+      window.location.reload(true);
 
-      let url = Api.urls.updateLanguage(siteUserId.value);
-      const body = new FormData();
-      body.append('id', siteUserId.value);
-      body.append('languageCode', setLang);
-      let method = 'PUT';
-      const options = {
-        method: method,
-        body,
-      };
+      // let url = Api.urls.updateLanguage(siteUserId.value);
+      // const body = new FormData();
+      // body.append('id', siteUserId.value);
+      // body.append('languageCode', setLang);
+      // let method = 'PUT';
+      // const options = {
+      //   method: method,
+      //   body,
+      // };
 
-      fetchJson(url, options)
-        .then(response => {
-          window.location.reload(true);
-        })
-        .catch(async error => {
-        });
+      // fetchJson(url, options)
+      //   .then(response => {
+      //     window.location.reload(true);
+      //   })
+      //   .catch(async error => {
+      //   });
     }
 
     return $render;

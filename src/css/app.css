@@ -460,3 +460,9 @@ select:-webkit-autofill:focus {
 .photo-browser-current, .photo-browser-of, .photo-browser-total {
   color: transparent;
 }
+.truncate-both-ends {
+  width: 90%;
+  white-space: nowrap; /* Prevents text from wrapping to a new line */
+  overflow: hidden;    /* Hides the overflowing text */
+  text-overflow: ellipsis; /* Applies ellipsis to end */
+}

@@ -8,7 +8,7 @@
             <i class="icon icon-back text-color-white"></i>
           </a>
         </div>
-        <div class="title navbar-calendar-title"></div>
+        <div class="title navbar-calendar-title">${i18next.t("calednarView")}</div>
       </div>
     </div>
     <div class="monthSwipe">Swipe left/right to navigate between months.</div>    
@@ -89,7 +89,7 @@
   }
   .monthSwipe {
     margin-top: calc(var(--f7-navbar-height) + var(--f7-safe-area-top));
-    height: 35px;
+    height: 0px;
     line-height: 35px;
     text-align: center;
     background: rgb(147 0 100);
@@ -127,8 +127,11 @@
 </style>
 <script>
   import Api from "/js/api.js";
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
 
-  export default (props, { $f7, $, $el, $update, $on }) => {
+  export default (props, { $f7, $, $el, $update, $store, $on }) => {
     console.log("props:", props.data);
     const date = new Date(props.data.firstDate);
     const year = date.getFullYear();
@@ -140,6 +143,15 @@
     let calendar;
     let eventItems = [];
     const events = [];
+    const locale = $store.getters.locale;
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
 
     // Each item needs to fit this format
     /*
@@ -160,16 +172,30 @@
         } else if (item["Photo738__relation"].English) {
           caption = item["Photo738__relation"].English;
         }
-        events.push( 
-          {
-            date: new Date(item["Date of Activity"]),
-            image: Api.absoluteUrl('/file/') + item.Photo,
-            caption:  caption,
-            location: (item["ActivityPhoto__relation"]) ? item["ActivityPhoto__relation"].Name : "",
-            activity: (item["ActivityDate__relation"]) ? item["ActivityDate__relation"].Activities : "Special Activity",
-            color: (item.Status == "Approved" || item.Status == "Ready") ? '#4caf50' : (item.Status == "Denied") ? '#cc3333' : '#333',
-          }
-        )        
+        if (item.Status == "Absence") {
+          events.push( 
+            {
+              from: new Date(item["Date of Activity"]),
+              to: new Date(item["End Date"]),
+              image: './assets/images/absence.png',
+              caption:  caption,
+              location: (item["ActivityPhoto__relation"]) ? item["ActivityPhoto__relation"].Name : "",
+              activity: (item["ActivityDate__relation"]) ? item["ActivityDate__relation"].Activities : "",
+              color: '#930064',
+            }
+          )        
+        } else {
+          events.push( 
+            {
+              date: new Date(item["Date of Activity"]),
+              image: (item.Status == "Absence") ? './assets/images/absence.png' : Api.absoluteUrl('/file/') + item.Photo,
+              caption:  caption,
+              location: (item["ActivityPhoto__relation"]) ? item["ActivityPhoto__relation"].Name : "",
+              activity: (item["ActivityDate__relation"]) ? item["ActivityDate__relation"].Activities : "",
+              color: (item.Status == "Approved" || item.Status == "Ready") ? '#4caf50' : (item.Status == "Denied") ? '#cc3333' : '#3f51b5',
+            }
+          )                  
+        }
       })
     });
 
@@ -177,10 +203,17 @@
       var currentDate = calendar.value[0];
       var currentEvents = events
         .filter(function (event) {
-          return (
-            event.date.getTime() >= currentDate.getTime() &&
-            event.date.getTime() < currentDate.getTime() + 24 * 60 * 60 * 1000
-          );
+          if (event.date) {
+            return (
+              event.date.getTime() >= currentDate.getTime() &&
+              event.date.getTime() < currentDate.getTime() + 24 * 60 * 60 * 1000
+            );            
+          } else {
+            return (
+              event.to.getTime() >= currentDate.getTime() &&
+              event.from.getTime() < currentDate.getTime() + 24 * 60 * 60 * 1000
+            ); 
+          }
         });
       eventItems = [];
       if (currentEvents.length) {
@@ -193,9 +226,9 @@
 
     const renderImages = (calendar) => {
       const dates = document.querySelectorAll('[data-date]');
-      dates.forEach((date) => {
-        date.setAttribute("style", "background-image: none;");
-      });
+      // dates.forEach((date) => {
+      //   date.setAttribute("style", "background-image: none;");
+      // });
       props.data.forEach((month) => {
         // if (month.long == monthNames[calendar.currentMonth]) {
           month.items.forEach((image) => {
@@ -211,7 +244,14 @@
             let newDateFormat = `${year}-${month}-${day}`;
             const dates = document.querySelectorAll('[data-date="'+newDateFormat+'"]');
             dates.forEach((date) => {
-              date.setAttribute("style", `background-image: url('${Api.absoluteUrl('/file/')}${image.Photo}');`);
+              if (image.Status != "Absence") {
+                let imageSrc = Api.absoluteUrl('/file/') + image.Photo;
+                const computedStyle = window.getComputedStyle(date);
+                if (computedStyle.backgroundImage && computedStyle.backgroundImage == 'none') {
+                  console.log(`adding photo`);
+                  date.setAttribute("style", `background-image: url("./assets/images/cal_bg.png"), url("${imageSrc}"); background-blend-mode: multiply;`);
+                }
+              }
             });
           })
         // }
@@ -228,7 +268,21 @@
       var maxDate = new Date(date.getFullYear(), date.getMonth() + 1, 0);
       calendar = $f7.calendar.create({
         containerEl: '#calendar',
-        toolbar: false,
+        // toolbar: false,
+        // yearPicker: false,
+        renderToolbar: function () {
+          return '<div class="toolbar calendar-custom-toolbar" style="height: 64px;">' +
+            '<div class="toolbar-inner">' +
+            '<div class="left">' +
+            '<a class="link"><i class="icon icon-back"></i></a>' +
+            '</div>' +
+            '<div class="center"></div>' +
+            '<div class="right">' +
+            '<a  class="link"><i class="icon icon-forward"></i></a>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        },
         value: [today],
         events: events,
         firstDay: 0,
@@ -236,16 +290,25 @@
         maxDate: maxDate,
         on: {
           init: function (calendar) {
-            $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
-            $f7.navbar.size($f7.navbar.getElByPage($el.value));
-            calendar.$el.addClass('no-safe-area-right');
+            // $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
+            // $f7.navbar.size($f7.navbar.getElByPage($el.value));
+            // calendar.$el.addClass('no-safe-area-right');
             renderEvents(calendar);
             renderImages(calendar);
+            $('.calendar-custom-toolbar .center').text(monthNames[calendar.currentMonth] + ', ' + calendar.currentYear);
+            $('.calendar-custom-toolbar .left .link').on('click', function () {
+              calendar.prevMonth();
+            });
+            $('.calendar-custom-toolbar .right .link').on('click', function () {
+              calendar.nextMonth();
+            });
           },
           monthYearChangeStart: function (calendar) {
-            $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
+            // $('.navbar-calendar-title').text(monthNames[calendar.currentMonth] + " " + calendar.currentYear);
+            $('.calendar-custom-toolbar .center').text(monthNames[calendar.currentMonth] + ', ' + calendar.currentYear);
             $f7.navbar.size($f7.navbar.getElByPage($el.value));
             renderImages(calendar);
+            // $('.calendar-custom-toolbar .center').text(monthNames[c.currentMonth] + ', ' + c.currentYear);
           },
           change: function (calendar) {
             renderEvents(calendar);

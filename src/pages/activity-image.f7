@@ -197,7 +197,7 @@
 
     if (props.activityImage) {
       activities.value.forEach((activity) => {
-        if (activity.id == props.activityImage.ActivityDate__relation.id) {
+        if (activity.id == props?.activityImage?.ActivityDate__relation?.id) {
           captions = activity.HRAPCaption508__relation;
         }
       });
@@ -279,7 +279,7 @@
 
         activitySelect = $f7.smartSelect.get("#activitySelect");
         setTimeout(() => {
-          activitySelect.setValue(props.activityImage.ActivityDate__relation.id);
+          activitySelect.setValue(props?.activityImage?.ActivityDate__relation?.id);
           setTimeout(() => {
             captionSelect = $f7.smartSelect.create({
               el: "#captionSelect",

@@ -14,7 +14,7 @@
           <a data-popover=".popover-approved" data-position="right" data-intro="${i18next.t('dataIntroCalendar')}" href="#" @click=${() => openCalendarPage(activityImages, activityImagesPrevious)} class="link icon-only">
             <i class="icon material-icons">calendar_month</i>
           </a>
-          <a @click="${choosePhoto}" data-intro="${i18next.t('dataIntroAddNew')}" href="#" class="link icon-only">
+          <a data-intro="${i18next.t('dataIntroAddNew')}" href="#" class="link icon-only popover-open" data-popover=".popover-menu">
             <i class="icon f7-icons if-not-md">plus</i>
             <i class="icon material-icons md-only">add</i>
           </a>
@@ -86,6 +86,24 @@
       </div>
     </div>
     <div class="fab-backdrop"></div>
+    <div class="popover popover-menu">
+      <div class="popover-inner">
+        <div class="list">
+          <ul>
+            <li>
+              <a @click="${choosePhoto}" href="#" class="list-button text-color-white popover-close">
+                ${i18next.t('addActivityImage')}
+              </a>
+            </li>
+            <li>
+              <a href="/absence/" class="list-button text-color-white popover-close">
+                ${i18next.t('leaveOfAbsence')}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
     <!-- <div data-intro="Tap here to either take a photo or upload one from your device." class="fab fab-right-bottom">
       <a @click="${choosePhoto}" href="#">
         <i class="icon f7-icons if-not-md">plus</i>
@@ -152,17 +170,17 @@
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}">
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
-                        <img class="photoThumbnail" @error=${imageLoadError} src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                        ${activityImage.Status.toLowerCase() == "absence" ? $h`<div class="photoThumbnail" style="background: #333;"><i class="icon material-icons" style="font-size: 58px;width: 85px;height: 85px;line-height: 85px;text-align: center;color: #555;">event_busy</i></div>` : $h`<img class="photoThumbnail lazy" @error=${imageLoadError} data-src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />`}                        
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation[trans({'en':'Activities','th':'Activities TH'})]}` : $h` `}</div>
+                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation[trans({'en':'Activities','th':'Activities TH'})]}` : $h` `}${activityImage.Status.toLowerCase() == "absence" ? $h`${activityImage.Status}` : $h` `}</div>
                         </div>
                         <div style="color: #555;" class="item-subtitle">
-                          <strong>${activityImage.ActivityPhoto__relation[trans({'en':'Name','th':'Location Name TH'})]}</strong>
+                          <strong>${activityImage.ActivityPhoto__relation ? $h`${activityImage.ActivityPhoto__relation[trans({'en':'Name','th':'Location Name TH'})]}` : $h` `}</strong>
                         </div>
                         <div class="item-text">
-                          ${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
+                          <b>${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}${activityImage["End Date"] ? $h` - ${new Date(activityImage["End Date"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}` : $h``}:</b> ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
                         </div>
                       </div>
                     </a>
@@ -203,7 +221,13 @@
             `)}
           </ul>
         ` : $h`
-          ${activityImagesPrevious.value.length == 0 ? $h`` : $h`
+          ${activityImagesPrevious.value.length == 0 ? $h`
+            <div class="block">
+              <a class="button-round button button-large button-fill" @click="${fetchPrevious}" href="#">
+                ${i18next.t("loadMoreImages")}
+              </a>
+            </div>
+          ` : $h`
             <ul>
               ${activityImagesPrevious.value.map((activityMonths) => $h`
                 <li class="list-group-title justify-content-space-between monthGroupTitle">
@@ -214,14 +238,18 @@
                   <li key=${activityImage.id} data-activity-image-id="${activityImage.id}" class="swipeout status_${activityImage.Status}" @swipeout:deleted=${onDeleted}>
                     <a href="#" @click=${() => editImage(activityImage)} class="item-link item-content swipeout-content">
                       <div class="item-media">
-                        <img class="photoThumbnail" @error=${imageLoadError} src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />
+                        ${activityImage.Status.toLowerCase() == "absence" ? $h`<div class="photoThumbnail" style="background: #333;"><i class="icon material-icons" style="font-size: 58px;width: 85px;height: 85px;line-height: 85px;text-align: center;color: #555;">event_busy</i></div>` : $h`<img class="photoThumbnail lazy" @error=${imageLoadError} data-src="${Api.absoluteUrl('/file/')}${activityImage.Photo}" />`}
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation.Activities}` : $h`Special Activity`}</div>
+                          <div class="item-title">${activityImage.ActivityDate__relation ? $h`${activityImage.ActivityDate__relation[trans({'en':'Activities','th':'Activities TH'})]}` : $h` `}${activityImage.Status.toLowerCase() == "absence" ? $h`${activityImage.Status}` : $h` `}</div>
                         </div>
-                        <div style="color: #555;" class="item-subtitle"><strong>${activityImage.ActivityPhoto__relation.Name}</strong></div>
-                        <div class="item-text">${new Date(activityImage["Date of Activity"]).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric"})}: ${activityImage["Description EN"]}</div>
+                        <div style="color: #555;" class="item-subtitle">
+                          <strong>${activityImage.ActivityPhoto__relation ? $h`${activityImage.ActivityPhoto__relation[trans({'en':'Name','th':'Location Name TH'})]}` : $h` `}</strong>
+                        </div>
+                        <div class="item-text">
+                          <b>${new Date(activityImage["Date of Activity"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}${activityImage["End Date"] ? $h` - ${new Date(activityImage["End Date"]).toLocaleDateString(locale.value, { weekday:"short", month:"short", day:"numeric"})}` : $h``}:</b> ${activityImage["Description EN"] ? $h`${activityImage[trans({"en":"Description EN","th":"Description TH"})]}` : $h``}${activityImage.Photo738__relation ? $h`${activityImage.Photo738__relation[trans({"en":"English","th":"Thai"})]}` : $h``}
+                        </div>
                       </div>
                     </a>
                     <div class="swipeout-actions-left">
@@ -229,7 +257,7 @@
                     </div>
                     ${activityImage.Status === "Denied" && $h`
                     <div class="swipeout-actions-right">
-                      <a href="#" class="swipeout-delete" data-confirm="Are you sure want to delete this item?" data-confirm-title="Delete?"><i class="icon material-icons">delete</i></a>
+                      <a href="#" @click=${() => deleteImage(activityImage)} class="swipeout-close bg-color-red"><i class="icon material-icons">delete</i></a>
                     </div>
                     `}
                   </li>
@@ -287,6 +315,7 @@
     const teamMembers = $store.getters.myTeamMembers;
     const version = $store.getters.version;
     const locale = $store.getters.locale;
+    const fullYearLoaded = $store.getters.fullYearLoaded;
 
     i18next.init({
       lng: locale.value,
@@ -335,6 +364,9 @@
       // $store.dispatch('getFCFLocations');
       // $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages");
+      if (fullYearLoaded.value) {
+        $store.dispatch("fetchPreviousYearsImages");
+      }
       // $store.dispatch('getVersion');
       if (props.showTutorial) {
         setTimeout(() => {
@@ -375,17 +407,12 @@
       const observer = new ResizeObserver(entries => {
           // The entries array contains a ResizeObserverEntry for each observed element
           for (const entry of entries) {
-              // You can access the new width and perform actions here
-              const newWidth = entry.contentRect.width;
-              console.log(`Element width changed to: ${newWidth}px`);
-
-              document.getElementById('fcf_status_bar').style.width = `${newWidth}px`;
-              // Example action: change font size based on width
-              // if (newWidth < 300) {
-              //     entry.target.style.fontSize = '12px';
-              // } else {
-              //     entry.target.style.fontSize = '16px';
-              // }
+              if (document.getElementById('fcf_status_bar')) {
+                // You can access the new width and perform actions here
+                const newWidth = entry.contentRect.width;
+                console.log(`Element width changed to: ${newWidth}px`);
+                document.getElementById('fcf_status_bar').style.width = `${newWidth}px`;
+              }
           }
       });
 
@@ -436,7 +463,11 @@
     const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
 
     $('.login-screen').on('loginscreen:close', function (e) {
+      // debugger;
       $store.dispatch("fetchImages");
+      if (fullYearLoaded.value) {
+        $store.dispatch("fetchPreviousYearsImages");
+      }
       $store.dispatch('getLocations');
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeamMembers');
@@ -449,12 +480,45 @@
         firstLoad = false;
         setTimeout(() => {
           introJs().setOption("dontShowAgain", true).start();
-          OneSignal.push(function() {
-            OneSignal.setExternalUserId(`${user?.value?.IDPerson}:${user?.value?.display_name.replace(" ", "-")}`);
-          });
+          // OneSignal.push(function() {
+          //   OneSignal.setExternalUserId(`${user?.value?.IDPerson}:${user?.value?.display_name.replace(" ", "-")}`);
+          // });
         }, 1000);
       }
     })
+
+    function lazyLoad() {
+      // lazy load images
+      setTimeout(function() {
+        const lazyImages = document.querySelectorAll('.lazy');
+
+        const io = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const image = entry.target;
+              // Swap data-src to src
+              image.src = image.dataset.src;
+              image.classList.remove('lazy');
+              // Stop observing the image
+              observer.unobserve(image);
+            }
+          });
+        });
+
+        lazyImages.forEach(image => io.observe(image));        
+      }, 500);
+    }
+
+    prevImagesLoading.onUpdated((e) => {
+      if (prevImagesLoading.value == false) {
+        lazyLoad();
+      }      
+    });
+    imagesLoading.onUpdated((e) => {
+      if (imagesLoading.value == false) {
+        lazyLoad();
+      }
+    });
 
     const takePhoto = () => {
       $("#takePhoto").click();
@@ -484,7 +548,14 @@
     }
 
     const editImage = (activityImage) => {
-      if (activityImage.Status != "Archived") {
+      if (activityImage.Status == "Absence") {
+        $f7.view.main.router.navigate("/absence/edit/", {
+          props: {
+            absence: activityImage
+          },
+          ignoreCache: true
+        })
+      } else if (activityImage.Status != "Archived") {
         $f7.view.main.router.navigate("/activity-image/edit/", {
           props: {
             activityImage: activityImage
@@ -509,6 +580,9 @@
       $store.dispatch('getFCFLocations');
       $store.dispatch('getTeamMembers');
       $store.dispatch("fetchImages", done);
+      if (fullYearLoaded.value) {
+        $store.dispatch("fetchPreviousYearsImages");
+      }
       $store.dispatch('getActivities');
       // $store.dispatch('getCaptions');
     }
@@ -559,7 +633,11 @@
           }
           // remove item from storage
           $store.dispatch("pruneApprovals", activityImageId);
+          // debugger;
           $store.dispatch("fetchImages");
+          if (fullYearLoaded.value) {
+            $store.dispatch("fetchPreviousYearsImages");
+          }
           // Open it
           toastDelete.open();
         })
@@ -578,8 +656,8 @@
           console.log(`trying to load image: ${e.target.dataset.retry}`)
         }, 2000);
       } else {
-        e.target.src = "/assets/images/1024.png";
-        e.target.style.objectFit = "contain";
+        // e.target.src = "/pwa/www/assets/images/1024.png";
+        // e.target.style.objectFit = "contain";
       }
     }
 

@@ -1,3 +1,4 @@
+import AbsencePage from "../pages/absence.f7";
 import ApprovalsPage from "../pages/approvals.f7";
 import CalendarPage from "../pages/calendar.f7";
 import HomePage from "../pages/home.f7";
@@ -14,6 +15,14 @@ import SwitcherooPage from "../pages/switcheroo.f7";
 import NotFoundPage from "../pages/404.f7";
 
 var routes = [
+  {
+    path: "/absence/",
+    component: AbsencePage,
+  },
+  {
+    path: "/absence/edit",
+    component: AbsencePage,
+  },
   {
     path: "/approvals/",
     component: ApprovalsPage,

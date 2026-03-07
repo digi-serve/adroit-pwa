@@ -1,0 +1,361 @@
+<template>
+<div class="page" data-name="about">
+  <div class="navbar">
+    <div class="navbar-bg"></div>
+    <div class="navbar-inner sliding">
+      <div class="left">
+        <a href="#" class="link back text-color-white">
+          <i class="icon icon-back"></i>
+        </a>
+      </div>
+      <div class="title text-color-white">${i18next.t("leaveOfAbsence")}</div>
+    </div>
+  </div>
+  <div class="page-content">
+    <div class="block">
+      <p>
+        Please submit this form to explain any absences in volunteer work when you are unable to upload photos for 5, or more, consecutive days.
+      </p>
+    </div>
+    <form id="addAbsenceForm">
+      <div class="list list-strong list-dividers inline-labels no-hairlines no-margin">
+        <ul>
+          <li style="clear: both;">
+            <a id="tagPeople" class="item-link smart-select smart-select-init" data-open-in="popup" data-searchbar="true"
+              data-searchbar-placeholder="${i18next.t('searchVolunteers')}">
+              <select @change="${validateOnChange}" required class="teamMembers" name="people" multiple>
+                <optgroup label="${i18next.t('myProject')}">
+                ${teamMembers.value.map((teamMember) => $h`
+                <option value="${teamMember.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${teamMember.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${teamMember["Full Name"]}</option>
+                `)}
+                </optgroup>
+                <optgroup label="FCF ${i18next.t('volunteers')}">
+                ${fcfVolunteers.value.map((volunteer) => $h`
+                <option value="${volunteer.uuid}" data-option-image="${Api.absoluteUrl('/file/')}${volunteer.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}">${volunteer["Full Name"]}</option>
+                `)}
+                </optgroup>
+              </select>
+              <div class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">${i18next.t("people")}</div>
+                </div>
+              </div>
+            </a>
+          </li>
+          <li>
+            <div class="item-content">
+              <div class="item-inner">
+                <div class="item-title">${i18next.t("dateRange")}</div>
+              </div>
+              <div class="item-inner">
+                <div class="item-input-wrap">
+                  <input required name="date" style="text-align: right;" type="text" placeholder="${i18next.t('selectDateRange')}" readonly="readonly" id="dateStart" />
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="customDescription list list-strong">
+        <ul>
+          <li class="align-top">
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">${i18next.t("absence")}</div>
+                <div class="item-input-wrap">
+                  <textarea id="caption" name="caption" style="min-height: 60px;" @input=${characterCounter} placeholder="${i18next.t('absencePlaceholder')}" class="resizable charCount"></textarea>
+                  <div class="item-input-info charCountHolder">0/240 ${i18next.t("characters")}</div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </form>
+    <div class="block">
+      <button id="upload" @click="${chooseFile}" style="height: auto; flex-direction: column; border-style: dashed; padding: 20px;" class="button button-large button-outline button-round">
+        <div style="height: 76px;">
+          <i style="font-size: 76px;" class="material-icons">upload</i>
+        </div>
+        <div>${i18next.t("uploadDocument")}</div>
+      </button>
+      <button id="uploading" style="height: auto; flex-direction: column; border-style: dashed; padding: 20px;" class="button button-large button-outline button-round hidden">
+        <div style="height: 76px;">
+          <div style="margin: 17px 0; height: 42px; width: 42px;" class="preloader preloader-large text-color-blue"></div>
+        </div>
+        <div>${i18next.t("uploading")}</div>
+      </button>
+      <button id="uploaded" style="height: auto; flex-direction: column; border-style: dashed; padding: 20px; overflow: visible;" class="button button-large button-outline button-round hidden">
+        <div @click="${removeUpload}" style="background: red; height: 35px; width: 35px; text-align: center; line-height: 45px; border-radius: 100%; border: 2px solid white; position: absolute; top: -5px; right: -5px;"><i class="material-icons text-color-white">close</i></div>
+        <div style="height: 76px;">
+          <i style="font-size: 76px;" class="material-icons">file_present</i>
+        </div>
+        <div id="filename" class="truncate-both-ends">
+          FileName.pdf
+        </div>
+      </button>
+      <div class="block">
+        <p>Please upload any supporting documentation you may have related to this absence.</p>
+        <p>Examples may include:</p>
+        <ul>
+          <li>an email or letter to the project director requesting leave</li>
+          <li>a doctor's note/invoice</li>
+          <li>travel documentation (helpful when not leaving Thailand because your passport will not have records of travel)</li>
+        </ul>
+      </div>
+      <input style="display: none;" id="chooseFile" type="file" accept=".doc,.pdf,image/*" @change=${() => uploadFile("#chooseFile")} />
+    </div>
+    <div class="block">
+      <button class="button-round button button-large button-fill button-preloader ${isLoading ? 'button-loading' : ''}"
+        @click=${submitAbsence}>
+        <span class="preloader"></span>
+        <span>${i18next.t("save")}</span>
+      </button>
+    </div>
+  </div>
+</div>
+</template>
+<script>
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
+  import Api from "/js/api.js";
+  import fetchJson from "/js/fetch.js";
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    const locale = $store.getters.locale;
+    const teamMembers = $store.getters.myTeamMembers;
+    const fcfVolunteers = $store.getters.fcfVolunteers;
+    const user = $store.getters.user;
+    let calendarStart;
+    let calendarEnd;
+    let tagPeople;
+    let fileID;
+    let fileName;
+    let isLoading = false;
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
+
+    $on('pageInit', () => {
+      // Calendar
+      calendarStart = $f7.calendar.create({
+        inputEl: '#dateStart',
+        openIn: "sheet",
+        rangePicker: true,
+        rangePickerMinDays: 3,
+        closeOnSelect: true,
+        // maxDate: new Date(),
+        firstDay: 0,
+        locale: locale.value,
+        dateFormat: "yyyy-mm-dd"
+      });
+    })
+
+    $on('pageAfterIn', (e, page) => {
+      tagPeople = $f7.smartSelect.get("#tagPeople");
+      setTimeout(() => {
+        tagPeople.setValue([user.value.id]);
+      }, 100);
+      if (props.absence) {
+
+        let people = [];
+        props.absence.Person__relation.forEach((pep) => {
+          people.push(pep.id.toString());
+        })
+        tagPeople = $f7.smartSelect.get("#tagPeople");
+        setTimeout(() => {
+          tagPeople.setValue(people);
+        }, 100)
+        calendarStart.setValue([new Date(props.absence["Date of Activity"]),new Date(props.absence["End Date"])]);
+        $("#caption")[0].value = props.absence["Description EN"];
+        characterCounter();
+        $f7.input.resizeTextarea("#caption");
+
+        if (props.absence["Absence Document"]) {
+          fileID = props.absence["Absence Document"].uuid;
+          fileName = props.absence["Absence Document"].filename;
+          $("#upload")[0].classList.add("hidden");
+          $("#filename")[0].innerHTML = fileName;
+          $("#uploaded")[0].classList.remove("hidden");
+        }
+      }
+    });
+
+    const validateOnChange = (e) => {
+      $f7.input.validate(e.currentTarget);
+    }
+
+    const characterCounter = (e) => {
+      let textArea = $('.charCount')[0];
+      $f7.input.validate(textArea);
+      let length = textArea.value.length;
+      if (length <= 240) {
+        $('.charCountHolder').html(`${length}/240 ${i18next.t('characters')}`);
+      } else {
+        let trimmed = textArea.value.substr(0,240);
+        textArea.value = trimmed;
+        $('.charCountHolder').html(`240/240 ${i18next.t('characters')}`);
+      }
+    }
+
+    const chooseFile = () => {
+      $("#chooseFile")[0].click();
+    }
+
+    const uploadFile = (input) => {
+      const filePicker = $(input)[0];
+      if (!filePicker || !filePicker.files || filePicker.files.length <= 0) {
+          reject('No file selected.');
+          return;
+      }
+      const myFile = filePicker.files[0];
+
+      console.log("My File");
+      console.log(myFile);
+
+      readFile(myFile);
+    }
+
+    const readFile = (myFile) => {
+      $("#upload")[0].classList.add("hidden");
+      $("#uploading")[0].classList.remove("hidden");
+
+      let file = myFile;
+      let reader = new FileReader();
+
+      reader.onload = (res) => {
+        sendFile(file);
+      }
+
+      reader.onerror = function () {
+        alert('There was an error reading the file!');
+      }
+
+      reader.readAsDataURL(file);
+    }
+
+    const sendFile = (file) => {
+      const body = new FormData();
+      body.append('file', file);
+      body.append('file_fullpath', file.name);
+
+      const url = Api.urls.activityImageUpload;
+
+      const options = {
+        method: 'POST',
+        body: body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          if (response.json.status == "server") {
+            debugger;
+            fileID = response.json.data.uuid;
+            fileName = file.name;
+            $("#uploading")[0].classList.add("hidden");
+            $("#filename")[0].innerHTML = file.name;
+            $("#uploaded")[0].classList.remove("hidden");
+          }
+        })
+        .catch(async error => {
+            $("#upload")[0].classList.remove("hidden");
+            $("#uploading")[0].classList.add("hidden");
+        });
+
+    }
+
+    const removeUpload = () => {
+      $("#uploaded")[0].classList.add("hidden");
+      $("#filename")[0].innerHTML = "";
+      $("#upload")[0].classList.remove("hidden");
+      fileID = "";
+      fileName = "";
+    }
+
+
+    const submitAbsence = () => {
+      isLoading = true;
+      $update();
+
+      var formData = $f7.form.convertToData('#addAbsenceForm');
+
+      let dateValues = calendarStart.getValue();
+
+      //Validate fields 
+      if (formData.people.length == 0) {
+        // not all fields are filled in
+        isLoading = false;
+        $update();
+        $f7.dialog.alert('Please tag at least one volunteer.');
+        return false;
+      }
+      if (!dateValues || dateValues.length != 2) {
+        // not all fields are filled in
+        isLoading = false;
+        $update();
+        $f7.dialog.alert('Please provide a beginning and ending absence date.');
+        return false;
+      }
+      if (formData.caption == "") {
+        // not all fields are filled in
+        isLoading = false;
+        $update();
+        $f7.dialog.alert('Please describe why the volunteer was absent.');
+        return false;
+      }
+
+      let url = Api.urls.createActivityImage;
+      const body = new FormData();
+      let dateRange = formData.date;
+      let dateRangeArray = dateRange.split(" - ");
+      let dateStart = dateRangeArray[0];
+      let dateEnd = dateRangeArray[1];
+
+      body.append('Description EN', formData.caption);
+      body.append('Date of Activity', dateStart);
+      body.append('End Date', dateEnd);
+      body.append("User", user.value["Owner User"].toString());
+      formData.people.forEach(person => {
+        body.append('Person', person);
+      });
+      body.append('Status', 'Absence');
+      if (fileID && fileID != "") {
+        body.append('Absence Document', JSON.stringify({"uuid":fileID,"filename":fileName}));
+      }
+      let method = 'POST';
+      if (props.absence) {
+        method = 'PUT';
+        body.append('id', props.absence.id);
+        url = Api.urls.updateActivityImage(props.absence.id);
+      }
+      const options = {
+        method: method,
+        body,
+      };
+
+      fetchJson(url, options)
+        .then(response => {
+          isLoading = false;
+          $update();
+          $f7.view.main.router.navigate("/", {
+            ignoreCache: true
+          })
+        })
+        .catch(async error => {
+          // do something?
+          isLoading = false;
+          $update();
+        });
+
+    }
+
+
+    return $render;
+  };
+</script>
