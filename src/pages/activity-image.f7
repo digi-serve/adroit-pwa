@@ -391,6 +391,12 @@
     const save = () => {
       let isValid = $f7.input.validateInputs("#newImage");
 
+      // check next if volunteer has chosen a caption or entered in a custom caption
+      if ($("#caption")[0].value.length == 0 && captionSelect.getValue() == "") {
+        $f7.dialog.alert('You did not select a "Caption" or create a "Custom Description".');
+        return false;
+      }
+
       let people = $('select[name="people"]').value();
 
       if (people.indexOf(user.value.uuid) == -1) {

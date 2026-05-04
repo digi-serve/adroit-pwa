@@ -1,0 +1,954 @@
+<template>
+  <div class="page" data-name="directory">
+    <!-- Top Navbar -->
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="left">
+          <a href="#" class="link icon-only panel-open text-color-white" data-panel="left">
+            <i class="icon material-icons">menu</i>
+          </a>
+        </div>
+        <div class="title text-color-white">${i18next.t("directory")}</div>
+        <div class="right">
+          <a class="link icon-only popover-open" data-popover=".popover-menu">
+            <i class="icon material-icons">filter_list</i>
+          </a>
+          <a class="link icon-only searchbar-enable" data-searchbar=".searchbar-demo">
+            <i class="icon material-icons">search</i>
+          </a>
+        </div>
+        <form data-search-container=".search-list" data-search-in=".item-title" class="searchbar searchbar-expandable searchbar-demo searchbar-init">
+          <div class="searchbar-inner">
+            <div class="searchbar-input-wrap">
+              <input type="search" placeholder="Search" />
+              <i class="searchbar-icon"></i>
+              <span class="input-clear-button"></span>
+            </div>
+            <span class="searchbar-disable-button">
+              <i class="icon icon-close"></i>
+            </span>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Scrollable page content-->
+    <div class="page-content ptr-content" @ptr:refresh=${reloadDirectory}>
+      <div class="searchbar-backdrop"></div>
+      <div class="list list-strong inset list-dividers-ios simple-list searchbar-not-found">
+        <ul>
+          <li>Nothing found</li>
+        </ul>
+      </div>
+      <div class="block text-align-center no-margin search-list searchbar-found">
+        <!-- block content -->
+        <div style="position: relative; width: 250px; margin: 0 auto; height: 0px;">
+          <i style="left: 65px; top: 170px; background: #f44336;" @click="${profilePhoto}" class="material-icons uploadProfileFail icon-circle hidden text-color-white">priority_high</i>
+          <i style="left: 65px; top: 170px; background: #4caf50;" class="material-icons uploadProfileSuccess icon-circle hidden text-color-white">check</i>
+          <i style="left: 65px; top: 170px;" @click="${profilePhoto}" class="material-icons uploadProfile icon-circle text-color-white">photo_camera</i>
+          <i style="left: 65px; top: 170px;" class="material-icons uploadProfileLoader icon-circle text-color-white spin hidden">cached</i>
+        </div>
+        ${gotUser.value ? $h`
+          <img class="profilePreview" style="display: none; border: 5px solid white; width: 180px; height: 180px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
+          <img @error=${imageLoadError} class="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 180px; height: 180px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
+        ` : $h`
+          <img src="assets/images/1024.png" style="object-fit: contain; width: 180px; height: 180px; border: 5px solid white; margin-top: 15px; border-radius: 100%;" />
+        `}
+        <input style="display: none;" id="profilePhotoDirectory" type="file" accept="image/*" @change=${() => upload("#profilePhoto")} />
+        <p style="margin-top: 5px;">
+          ${gotUser.value ? $h`
+            <i style="position: unset; margin-right: 10px;" class="material-icons uploadProfile icon-circle text-color-white popup-open" data-popup=".edit-profile">edit</i>
+            ${isSwitcheroo.value ? $h`${i18next.t("viewingAppAs")}` : $h`${i18next.t("welcome")},`} ${user.value["Full Name"]}
+          ` : $h`
+            <span class="skeleton-text skeleton-effect-fade">Welcome, Your profile</span>
+          `}
+        </p>
+      </div>
+      <div class="ptr-preloader">
+        <div class="preloader"></div>
+        <div class="ptr-arrow"></div>
+      </div>
+      <div class="list list-outline inset list-strong list-dividers media-list search-list searchbar-found">
+        ${fcfStaffVolunteersLoading.value ? $h`
+          <ul>
+            ${directorySkeleton.map((activityImage) => $h`
+              <li>
+                <a class="item-link">
+                  <div class="item-content">
+                    <div class="item-media">
+                        <div class="skeleton-block skeleton-effect-fade" style="border-radius: 100%; width: 50px; height: 50px;"></div>
+                    </div>
+                    <div class="item-inner">
+                      <div class="item-title-row">
+                        <div class="item-title skeleton-text skeleton-effect-fade">Yellow Submarine</div>
+                      </div>
+                      <div class="skeleton-effect-fade">
+                        <div class="chip margin-right-4">
+                          <div class="chip-label" style="width: 100px;"></div> 
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </a>
+              </li>
+            `)}
+          </ul>
+        ` : $h`
+          ${fcfStaffVolunteers.value.length == 0 ? $h`
+            <div style="display: block; font-size: 180px; background-color: #00BCD4; color: transparent; text-shadow: 0px 1px 1px #2196F3; -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">verified</div>
+            <div class="block no-margin-top text-align-center">
+              <p style="color: gray;">
+                <small><b>${i18next.t("congratulations")}</b><br/>${i18next.t("approvalsCaughtUp")}</small>
+              </p>
+            </div>
+          ` : $h`
+            <ul>
+              ${fcfStaffVolunteers.value.map((listing) => $h`
+                <li class="swipeout person ${listing.Project__relation.map((project) => $h`${project.Code.toLowerCase()}`).join(' ')} ${listing.isDirector ? $h`is-director` : `type-${listing['Person Type'].toLowerCase()}`}">
+                  <a @click="${() => createPopup(listing)}" class="item-link">
+                    <div class="item-content swipeout-content">
+                      <div class="item-media"><img style="border-radius: 100%; object-fit: cover;"
+                          src="${Api.absoluteUrl('/file/')}${listing.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" width="60" height="60" />
+                      </div>
+                      <div class="item-inner">
+                        <div class="item-title-row">
+                          <div class="item-title">${listing["First Name"]} ${(listing["Preferred Name"] != listing["First Name"] && listing["Preferred Name"] != "") ? $h` (${listing["Preferred Name"]}) ` : $h``} ${listing["Last Name"]}</div>
+                        </div>
+                        <div class="">
+                          ${listing.Project__relation.map((project) => $h`
+                            <div class="chip margin-right-4">
+                              ${project.isDirector ? $h`
+                                <div class="chip-media bg-color-deeppurple">
+                                  <i class="icon material-icons">local_police</i>
+                                </div>
+                              `: $h``}
+                              <div class="chip-label">${project[trans({'en':'PP','th':'Project Name TH'})]}</div> 
+                            </div> 
+                          `)}
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                  <div class="swipeout-actions-left">
+                    <a class="color-${listing['Person Type'].toLowerCase()}">${listing["Person Type"]}</a>
+                  </div>
+                </li>
+              `)}
+            </ul>
+          `}
+        `}
+      </div>
+    </div>
+    <div class="popover popover-menu">
+      <div class="popover-inner">
+        <div class="list">
+          <ul>
+            <li>
+              <a class="item-link smart-select smart-select-init" data-close-on-select="true" data-open-in="popover">
+                <form id="filterProject">
+                <select @change="${filterProject}" name="project">
+                  <option value="all" selected>All Projects</option>
+                  ${allProjects.value.map((project) => $h`
+                    <option value="${project.Code}">${project["PP"]}</option>
+                  `)}
+                </select>
+                <div class="item-content">
+                  <div class="item-inner">
+                    <div class="item-title">Project</div>
+                  </div>
+                </div>
+                </form>
+              </a>
+            </li>
+            <li>
+              <label class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">Staff</div>
+                  <div class="item-after">
+                    <div class="toggle toggle-init color-deeporange">
+                      <input @click="${showStaff}" type="checkbox" checked />
+                      <span class="toggle-icon"></span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">Volunteer</div>
+                  <div class="item-after">
+                    <div class="toggle toggle-init color-blue">
+                      <input @click="${showVolunteer}" type="checkbox" checked />
+                      <span class="toggle-icon"></span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">Directors</div>
+                  <div class="item-after">
+                    <div class="toggle toggle-init color-deeppurple">
+                      <input @click="${showDirector}" type="checkbox" checked />
+                      <span class="toggle-icon"></span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="popover popover-phone">
+      <div class="popover-inner">
+        <div class="block" style="margin: 10px;" id="phoneContent"></div>
+      </div>
+    </div>
+    <div class="popover popover-social">
+      <div class="popover-inner">
+        <div class="block" style="margin: 10px;" id="socialContent"></div>
+      </div>
+    </div>
+    <div class="popover popover-email">
+      <div class="popover-inner">
+        <div class="block" style="margin: 10px;" id="emailContent"></div>
+      </div>
+    </div>
+    ${gotUser.value ? $h`
+    <div class="popup edit-profile">
+      <div class="view">
+        <div class="page">
+          <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-inner">
+              <div class="left">
+                <a class="link popup-close"><i class="icon icon-close"></i></a>
+              </div>
+              <div class="title">Your Profile</div>
+              <div class="right bg-color-blue">
+                <a @click="${saveProfile}" class="link text-color-white"><i class="icon material-icons">checkmark</i></a>
+              </div>
+            </div>
+          </div>
+          <div class="page-content">
+            <form id="myProfile">
+              <div class="list list-strong-ios list-dividers-ios inset-ios">
+                <ul>
+                  <li class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Nickname (English)</div>
+                      <div class="item-input-wrap">
+                        <input name="nicknameEnglish" type="text" placeholder="Your nickname in English" value="${user.value['Preferred Name']}"/>
+                        <span class="input-clear-button"></span>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Nickname (Thai)</div>
+                      <div class="item-input-wrap">
+                        <input name="nicknameThai" type="text" placeholder="Your nickname in Thai" value="${user.value['Preferred Name Thai']}"/>
+                        <span class="input-clear-button"></span>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="item-content item-input">
+                    <div class="item-inner">
+                      <div class="item-title item-label">Job title</div>
+                      <div class="item-input-wrap">
+                        <input name="jobTitle" type="text" placeholder="Your job title" value="${user.value['Job Title']}"/>
+                        <span class="input-clear-button"></span>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="list list-strong-ios list-dividers-ios inset-ios">
+                <ul>
+                  <li class="align-top">
+                    <div class="item-content item-input">
+                      <div class="item-inner">
+                        <div class="item-title item-label">About me...</div>
+                        <div class="item-input-wrap">
+                          <textarea style="min-height: 70px;" id="bio" name="bio" @input=${characterCounter} placeholder="${i18next.t('bioPlaceholder')}" class="resizable charCount">${user.value.Bio}</textarea>
+                          <div class="item-input-info charCountHolder">0/240 ${i18next.t("characters")}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </form>
+            <div class="block-title">Contact Info</div>
+            ${user.value.Person305__relation.map((contact) => $h`
+            <form class="contactForms" id="contact-${contact.uuid}">
+              <input type="hidden" name="id" value="${contact.uuid}" />
+              <input type="hidden" name="Type" value="${contact.Type}" />
+              <div data-id="${contact.uuid}" class="list list-strong-ios list-dividers-ios inset-ios">
+                <ul>
+                  <li>
+                    <a class="item">
+                      <div class="item-content">
+                        <div class="item-inner">
+                          <div class="item-title text-color-white">Type</div>
+                          <div class="item-after">${contact.Type}</div>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="item-link smart-select smart-select-init" data-open-in="popover">
+                      <select name="Description">
+                        ${contact.Type == "Phone" ? $h`
+                          ${contact.Description == "Mobile" ? $h`
+                            <option selected>Mobile</option>
+                          ` : $h`
+                            <option>Mobile</option>
+                          `}
+                          ${contact.Description == "Home" ? $h`
+                            <option selected>Home</option>
+                          ` : $h`
+                            <option>Home</option>
+                          `}
+                          ${contact.Description == "Work" ? $h`
+                            <option selected>Work</option>
+                          ` : $h`
+                            <option>Work</option>
+                          `}
+                          ${contact.Description == "School" ? $h`
+                            <option selected>School</option>
+                          ` : $h`
+                            <option>School</option>
+                          `}
+                          ${contact.Description == "School" ? $h`
+                            <option selected>School</option>
+                          ` : $h`
+                            <option>School</option>
+                          `}
+                          ${contact.Description == "Main" ? $h`
+                            <option selected>Main</option>
+                          ` : $h`
+                            <option>Main</option>
+                          `}
+                          ${contact.Description == "Other" ? $h`
+                            <option selected>Other</option>
+                          ` : $h`
+                            <option>Other</option>
+                          `}
+                        ` : $h``}
+                        ${contact.Type == "Email" ? $h`
+                          ${contact.Description == "Home" ? $h`
+                            <option selected>Home</option>
+                          ` : $h`
+                            <option>Home</option>
+                          `}
+                          ${contact.Description == "Work" ? $h`
+                            <option selected>Work</option>
+                          ` : $h`
+                            <option>Work</option>
+                          `}
+                          ${contact.Description == "School" ? $h`
+                            <option selected>School</option>
+                          ` : $h`
+                            <option>School</option>
+                          `}
+                          ${contact.Description == "School" ? $h`
+                            <option selected>School</option>
+                          ` : $h`
+                            <option>School</option>
+                          `}
+                          ${contact.Description == "Other" ? $h`
+                            <option selected>Other</option>
+                          ` : $h`
+                            <option>Other</option>
+                          `}
+                        ` : $h``}
+                        ${contact.Type == "Social" ? $h`
+                          ${contact.Description == "LINE" ? $h`
+                            <option selected>LINE</option>
+                          ` : $h`
+                            <option>LINE</option>
+                          `}
+                          ${contact.Description == "Facebook" ? $h`
+                            <option selected>Facebook</option>
+                          ` : $h`
+                            <option>Facebook</option>
+                          `}
+                          ${contact.Description == "Instagram" ? $h`
+                            <option selected>Instagram</option>
+                          ` : $h`
+                            <option>Instagram</option>
+                          `}
+                          ${contact.Description == "Other" ? $h`
+                            <option selected>Other</option>
+                          ` : $h`
+                            <option>Other</option>
+                          `}
+                        ` : $h``}
+                      </select>
+                      <div class="item-content">
+                        <div class="item-inner">
+                          <div class="item-title">Label</div>
+                        </div>
+                      </div>
+                    </a>
+                  </li>
+                  <li class="item-content ">
+                    <div class="item-inner">
+                      <div class="item-title">Value</div>
+                      <div class="item-after">
+                        <input type="text" name="Contact" placeholder="Value" value="${contact.Contact}"/>
+                        <span class="input-clear-button"></span>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <label class="item-checkbox item-checkbox-icon-end item-content">
+                      ${contact.Public == "1" ? $h`
+                      <input type="checkbox" checked="checked" name="Public" value="1"  />
+                      ` : $h`
+                      <input type="checkbox" name="Public" value="1"  />
+                      `}
+                      <i class="icon icon-checkbox"></i>
+                      <div class="item-inner">
+                        <div class="item-title">Visible to FCF staff and volunteers</div>
+                      </div>
+                    </label>
+                  </li>
+                  <li>
+                    <div class="block padding no-margin">
+                      <a href="#" @click="${() => removeContact(contact.uuid)}" class="button button-fill button-round color-red">Remove</a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </form>
+            `)}
+            <form id="newContact">
+              <div class="list list-strong-ios list-dividers-ios inset-ios">
+                <ul>
+                   <li>
+                    <div class="item-content">
+                      <div class="item-inner">
+                        <div class="item-title">Type</div>
+                        <div class="item-after">
+                          <input @click="${openPicker}" type="text" placeholder="Select type" readonly="readonly" id="typePicker" />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li class="item-content ">
+                    <div class="item-inner">
+                      <div class="item-title">Value</div>
+                      <div class="item-after">
+                        <input type="text" name="Contact" placeholder=""/>
+                        <span class="input-clear-button"></span>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <label class="item-checkbox item-checkbox-icon-end item-content">
+                      <input type="checkbox" checked name="Public" value="Public"  />
+                      <i class="icon icon-checkbox"></i>
+                      <div class="item-inner">
+                        <div class="item-title">Visible to FCF staff and volunteers</div>
+                      </div>
+                    </label>
+                  </li>
+                  <li>
+                    <div class="block padding no-margin">
+                      <a href="#" @click="${() => addContact()}" class="button button-fill button-round color-blue">Add New</a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    ` : $h``}
+  </div>
+</template>
+<script>
+  import Api from "/js/api.js";
+  import store from "/js/store.js";
+  import fetchJson from "/js/fetch.js";
+  import introJs from "intro.js";
+  import 'intro.js/introjs.css';
+  import i18next from 'i18next';
+  import english from '/js/locales/english.json';
+  import thai from '/js/locales/thai.json';
+
+  export default (props, { $, $f7, $on, $update, $store }) => {
+    const fcfStaffVolunteersLoading = $store.getters.fcfStaffVolunteersLoading;
+    let isDesktop = app.f7.device.desktop;
+    let popup;
+    let popoverEmail;
+    let popoverPhone;
+    let pickerDependent;
+
+    let directorySkeleton = [1,2,3,4,5,6,7,8];
+    const fcfStaffVolunteers = $store.getters.fcfStaffVolunteers;
+    // debugger;
+    const user = $store.getters.user;
+    const locale = $store.getters.locale;
+    const allProjects = $store.getters.allProjects;
+    // store.dispatch("getSiteUserId");
+    const username = $store.getters.username;
+    const gotUser = $store.getters.gotUser;
+    // const gotUser = {value: false};
+    const isSwitcheroo = $store.getters.switcheroo;
+    const hasSwitcheroo = $store.getters.hasSwitcheroo;
+
+    store.dispatch("getUser");
+    $store.dispatch('getAllProjects');
+
+    i18next.init({
+      lng: locale.value,
+      resources: {
+        en: english,
+        th: thai,
+      }
+    });
+
+    $on('pageInit', () => {
+      $store.dispatch("fetchFCFStaffVolunteers");
+      console.log(user);
+
+      var contactTypes = {
+        Phone: ['Mobile', 'Home', 'Work', 'School', 'Main', 'Other'],
+        Email: ['Home', 'Work', 'School', 'Other'],
+        Social: ['LINE', 'Facebook', 'Instagram', 'Other']
+      };
+
+      pickerDependent = $f7.picker.create({
+        inputEl: '#typePicker',
+        rotateEffect: true,
+        on: {
+          change: function (picker, values) {
+            document.getElementById("typePicker").placeholder = values[0] + ": " + values[1];
+          },
+        },
+        cols: [
+          {
+            textAlign: 'left',
+            values: ['Phone', 'Email', 'Social'],
+            onChange: function (picker, type) {
+              if (picker.cols[1].replaceValues) {
+                picker.cols[1].replaceValues(contactTypes[type]);
+              }
+            }
+          },
+          {
+            values: contactTypes.Phone
+          },
+        ]
+      });
+
+      // pickerDependent.resizeCols(); // Recalculate size inside popup
+
+      // app.on('popup:open', (mypopup) => {
+      //   debugger;
+      //   if (mypopup.$el.find('#typePicker').length > 0) {
+      //     pickerDependent.resizeCols(); // Recalculate size inside popup
+      //   }
+      // });
+
+    })
+
+    $on('pageBeforeRemove', () => {
+      pickerDependent.destroy();
+    });
+
+    $on('pageReinit', () => {
+    })
+
+    user.onUpdated(() => {
+      // characterCounter();
+    })
+
+    const reloadDirectory = (e, done) => {
+      $store.dispatch("fetchFCFStaffVolunteers", done);
+    }
+
+    const trans = (object) => {
+      return object[locale.value];
+    }
+
+    const profilePhoto = () => {
+      $("#profilePhoto").click();
+    }
+
+    const openPicker = () => {
+      pickerDependent.open();
+    }
+
+    const showStaff = () => {
+      document.querySelectorAll('.type-staff').forEach(el => {
+        if (el.classList.contains("hidePerson")) {
+          el.classList.remove('hidePerson');
+          el.classList.add('showPerson');
+        } else {
+          el.classList.add('hidePerson');
+          el.classList.remove('showPerson');
+        }
+      });      
+    }
+
+    const showVolunteer = () => {
+      document.querySelectorAll('.type-volunteer').forEach(el => {
+        if (el.classList.contains("hidePerson")) {
+          el.classList.remove('hidePerson');
+          el.classList.add('showPerson');
+        } else {
+          el.classList.add('hidePerson');
+          el.classList.remove('showPerson');
+        }
+      });
+    }
+
+    const showDirector = () => {
+      document.querySelectorAll('.is-director').forEach(el => {
+        if (el.classList.contains("hidePerson")) {
+          el.classList.remove('hidePerson');
+          el.classList.add('showPerson');
+        } else {
+          el.classList.add('hidePerson');
+          el.classList.remove('showPerson');
+        }
+      });
+    }
+   
+    const filterProject = (e) => {
+      var formData = $f7.form.convertToData('#filterProject');
+      if (formData.project == "all") {
+        document.querySelectorAll('.person').forEach(el => {
+          el.classList.remove('hideProject');
+          el.classList.add('showProject');
+        });
+      } else {
+        document.querySelectorAll('.person').forEach(el => {
+          if (el.classList.contains(formData.project.toLowerCase())) {
+            el.classList.remove('hideProject');
+            el.classList.add('showProject');
+          } else {
+            el.classList.add('hideProject');
+            el.classList.remove('showProject');
+          }
+        });        
+      }
+    }
+
+    const imageLoadError = (e) => {
+      if (!e.target.dataset.retry || e.target.dataset.retry < 5) {
+        setTimeout(() => {
+          e.target.src = e.target.src;
+
+          e.target.dataset.retry = (!e.target.dataset.retry) ? 1 : (parseInt(e.target.dataset.retry) + 1);
+          console.log(`trying to load image: ${e.target.dataset.retry}`)
+        }, 2000);
+      } else {
+        // e.target.src = "/pwa/www/assets/images/1024.png";
+        // e.target.style.objectFit = "contain";
+      }
+    }
+
+    const createPopup = (listing) => {
+      // Create popup
+      console.log(listing);
+
+      let name = [];
+      name.push(listing["First Name"]);
+      name.push((listing["Preferred Name"] != listing["First Name"] && listing["Preferred Name"] != "") ? `(${listing["Preferred Name"]})` : "");
+      name.push(listing["Last Name"]);
+      
+      let pro = "";
+      listing.Project__relation.forEach((project) => {
+        pro += `<div class="chip margin-right-4">`;
+        if (project.isDirector) {
+          pro += `<div class="chip-media bg-color-deeppurple">
+            <i class="icon material-icons">local_police</i>
+          </div>`;
+        }
+        pro += `<div class="chip-label">${project[trans({'en':'PP','th':'Project Name TH'})]}</div> 
+        </div>`; 
+      });
+      let background = (listing['Person Type'] == "Staff" ? "deeporange" : "blue");
+      if (listing.isDirector) {
+        background = "deeppurple";
+      }
+      let phone = "";
+      let social = "";
+      let email = "";
+      let hasPhone = "disabled";
+      let hasSocial = "disabled";
+      let hasEmail = "disabled";
+      listing.Person305__relation.forEach((item) => {
+        if (item.Public == 1) {
+          if (item.Type == "Phone") {
+            if (phone.length) {
+              phone += "<hr/>";
+            }
+            phone += '<div>' + (item.Description ? item.Description : "Phone number") + '</div>'; 
+            phone += `<div><a class="lighter text-color-white external" href="tel:${item.Contact}">${item.Contact}</a></div>`;
+          } else if (item.Type == "Social") {
+            if (social.length) {
+              social += "<hr/>";
+            }
+            social += '<div>' + (item.Description ? item.Description : "Social media") + '</div>'; 
+            social += `<div class="lighter">${item.Contact}</div>`;
+          } else if (item.Type == "Email") {
+            if (email.length) {
+              email += "<hr/>";
+            }
+            email += '<div>' + (item.Description ? item.Description : "Email address") + '</div>'; 
+            email += `<div><a class="lighter text-color-white external" href="mailto:${item.Contact}">${item.Contact}</a></div>`;
+          }          
+        }
+      });
+      if (phone) {
+        document.getElementById("phoneContent").innerHTML = phone;
+        hasPhone = "";
+      }
+      if (social) {
+        document.getElementById("socialContent").innerHTML = social;
+        hasSocial = "";
+      }
+      if (email) {
+        document.getElementById("emailContent").innerHTML = email;
+        hasEmail = "";
+      }
+
+      if (popup) {
+        popup.destroy();
+      }
+      popup = $f7.popup.create({
+        swipeToClose: true,
+        push: true,
+        content: /*html*/`
+          <div class="popup directory-block">
+            <div class="page light bg-color-${background}">
+              <div class="navbar">
+                <div class="navbar-bg"></div>
+                <div class="navbar-inner">
+                  <div class="title"></div>
+                  <div class="right"><a  class="link popup-close"><i class="icon icon-close"></i></a></div>
+                </div>
+              </div>
+              <div class="page-content">
+                <img id="listingPhotoMove" style="border: 5px solid white; border-radius: 100%; object-fit: cover; margin: 0px auto 20px auto; width: 250px; height: 250px; display: block;" src="${Api.absoluteUrl('/file/')}${listing.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" width="250" height="250" />
+                <h1 class="text-align-center no-margin" style="padding: 0 20px;">${name.join(" ")}</h1>
+                <div class="navbar no-margin no-box-shadow">
+                  <div class="navbar-inner" style="justify-content: center;">
+                    <div class="left">
+                      <a id="phoneButton" class="link icon-only popover-open ${hasPhone}" data-popover=".popover-phone">
+                        <i class="icon material-icons">phone</i>
+                      </a>
+                    </div>
+                    <div class="right" style="margin: 0;">  
+                      <a id="socialButton" class="link icon-only popover-open ${hasSocial}" data-popover=".popover-social">
+                        <i class="icon material-icons">chat</i>
+                      </a>
+                    </div>
+                    <div class="right">  
+                      <a id="emailButton" class="link icon-only popover-open ${hasEmail}" data-popover=".popover-email">
+                        <i class="icon material-icons">mail</i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+                <div class="block block-strong inset no-margin-top">
+                  <div>Project</div> 
+                  <div>${pro}</div>
+                  <hr/>
+                  <div>Job Title</div> 
+                  <div class="lighter">${listing["Job Title"]}<br/></div>
+                  <hr/>
+                  <div>Type</div> 
+                  <div>
+                    <div class="chip margin-right-4 color-${listing["Person Type"].toLowerCase()}">
+                      <div class="chip-label">${listing["Person Type"]}</div>
+                    </div>
+                  </div>  
+                  <hr/>
+                  <div>Birthday</div> 
+                  <div class="lighter">${new Date(listing["Birth Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</div>
+                  <hr/>
+                  <div>About me...</div> 
+                  <div class="lighter"><br/><br/><br/></div>                                    
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      });
+      // Open it
+      popup.open();
+
+      // Function to start the accelerometer effect
+      function initMotion() {
+          // Check if permission is needed (iOS 13+)
+          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+              DeviceOrientationEvent.requestPermission()
+                  .then(state => {
+                      if (state === 'granted') {
+                          window.addEventListener('deviceorientation', handleOrientation);
+                      }
+                  });
+          } else {
+              window.addEventListener('deviceorientation', handleOrientation);
+          }
+      }
+
+      function handleOrientation(event) {
+          const x = event.gamma; // Range: -90 to 90
+          const y = event.beta;  // Range: -180 to 180
+
+          const moveX = x * 0.5; // Sensitivity adjustment
+          const moveY = y * 0.5;
+
+          // Apply movement to a background element
+          const bg = document.querySelector('#listingPhotoMove');
+          bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
+      }
+    }
+
+    const characterCounter = (e) => {
+      let textArea = $('.charCount')[0];
+      $f7.input.validate(textArea);
+      let length = textArea.value.length;
+      if (length <= 240) {
+        $('.charCountHolder').html(`${length}/240 ${i18next.t('characters')}`);
+      } else {
+        let trimmed = textArea.value.substr(0,240);
+        textArea.value = trimmed;
+        $('.charCountHolder').html(`240/240 ${i18next.t('characters')}`);
+      }
+    }
+
+    const removeContact = (id) => {
+      $f7.dialog.confirm('Remove?', () => {
+        let el = document.querySelector('#contact-'+id);
+        el.remove();
+        let vals = {};
+        vals.id = id;
+        const urlContact = Api.urls.updateContact(id);
+        const optionsContact = {
+          method: 'DELETE'
+        };
+
+        // this.status = ActivityStatus.saving;
+        fetchJson(urlContact, optionsContact)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(async error => {
+            console.log(error);
+          });
+      });
+    }
+
+    const addContact = () => {
+      var formData = $f7.form.convertToData('#newContact');
+      let vals = pickerDependent.getValue();
+      if (vals && vals.length == 2) {
+        formData.Type = vals[0];
+        formData.Description = vals[1];
+      } else {
+        alert("oops");
+        return false;
+      }
+      formData.Person = user.value.uuid;
+
+      if (!formData.Contact) {
+        alert("oops");
+        return false;
+      }
+      const urlContact = Api.urls.addContact();
+      const optionsContact = {
+        method: 'POST',
+        params: formData,
+      };
+      if (formData.Public.length) {
+        formData.Public = 1;
+      } else {
+        formData.Public = null;
+      }
+      // this.status = ActivityStatus.saving;
+      fetchJson(urlContact, optionsContact)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(async error => {
+          console.log(error);
+        });
+    }
+
+    const saveProfile = () => {
+      var formData = $f7.form.convertToData('#myProfile');
+
+      var contactForms = $('.contactForms');
+      var contactVals = [];
+      contactForms.forEach((form) => {
+        let tempVals = $f7.form.convertToData(form);
+        tempVals.Person = user.value.uuid
+        if (tempVals.Public.length) {
+          tempVals.Public = 1;
+        } else {
+          tempVals.Public = null;
+        }
+        contactVals.push(tempVals);
+
+        const urlContact = Api.urls.updateContact(tempVals.id);
+        console.log("body: ", tempVals);
+        const optionsContact = {
+          method: 'PUT',
+          params: tempVals,
+        };
+
+        // this.status = ActivityStatus.saving;
+        fetchJson(urlContact, optionsContact)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(async error => {
+            console.log(error);
+          });
+
+      })
+
+      const url = Api.urls.updateProfilePhoto(user.value.uuid);
+      let body = {};
+      body.id = user.value.uuid;
+      body['Preferred Name'] = formData.nicknameEnglish;
+      body['Preferred Name Thai'] = formData.nicknameThai;
+      body['Job Title'] = formData.jobTitle;
+      body['Bio'] = formData.bio;
+      console.log("body: ", body);
+      const options = {
+        method: 'PUT',
+        params: body,
+      };
+
+      // this.status = ActivityStatus.saving;
+      fetchJson(url, options)
+        .then(response => {
+          // $f7.view.main.router.back();
+          // $store.dispatch('getActivities');
+          console.log(response);
+        })
+        .catch(async error => {
+          console.log(error);
+        });
+
+    }
+
+
+    return $render;
+  }
+</script>

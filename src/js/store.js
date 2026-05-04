@@ -61,6 +61,8 @@ const store = createStore({
     denial: "<div class='preloader' style='margin: 0 auto;'></div>",
     fcfLocations: [],
     fcfVolunteers: [],
+    fcfStaffVolunteers: [],
+    fcfStaffVolunteersLoading: true,
     fullYearLoaded: false,
     hasLocations: false,
     isApprover: false,
@@ -68,6 +70,7 @@ const store = createStore({
     gotUser: false,
     prevImagesLoading: false,
     locations: [],
+    allProjects: [],
     myProjects: [],
     percentageComplete: 0,
     photoCombineProgress: 0,
@@ -151,6 +154,12 @@ const store = createStore({
     fcfLocations({ state }) {
       return state.fcfLocations;
     },
+    fcfStaffVolunteers({ state }) {
+      return state.fcfStaffVolunteers;
+    },
+    fcfStaffVolunteersLoading({ state }) {
+      return state.fcfStaffVolunteersLoading;
+    },
     fcfVolunteers({ state }) {
       return state.fcfVolunteers;
     },
@@ -183,6 +192,9 @@ const store = createStore({
     },
     myTeamMembers({ state }) {
       return state.teamMembers;
+    },
+    allProjects({ state }) {
+      return state.allProjects;
     },
     myProjects({ state }) {
       return state.myProjects;
@@ -712,7 +724,7 @@ const store = createStore({
           state.activities = activities;
         })
         .catch(function (err) {
-          app.f7.loginScreen.open("#my-login-screen");
+          // app.f7.loginScreen.open("#my-login-screen");
         });
     },
     getDenial({ state }, activityId) {
@@ -751,6 +763,41 @@ const store = createStore({
         .then((result) => {
           state.hasLocations = true;
           state.locations = result.json.data.data;
+        })
+        .catch((e) => {
+          // console.log(e);
+        });
+    },
+    fetchFCFStaffVolunteers({ state }) {
+      fetchJson(
+        `${
+          Api.urls.fcfStaffVolunteers.url
+        }?skipPack=true&populate=populate=${JSON.stringify([
+          "Project,Project Working226,Person305",
+        ])}&where=${JSON.stringify(
+          Api.urls.fcfStaffVolunteers.where
+        )}&sort=${JSON.stringify(Api.urls.fcfStaffVolunteers.sort)}`
+      )
+        .then((result) => {
+          let data = parse(result.json.data.data, state);
+          state.fcfStaffVolunteersLoading = false;
+          // identify if they are the director inside the list of projects they are working for
+          data.forEach((staff) => {
+            let directorOf = [];
+            staff.isDirector = false;
+            staff.ProjectWorking226__relation.forEach((director) => {
+              directorOf.push(director.Code);
+            });
+            staff.Project__relation.forEach((member) => {
+              if (directorOf.includes(member.Code)) {
+                member.isDirector = true;
+                staff.isDirector = true;
+              } else {
+                member.isDirector = false;
+              }
+            });
+          });
+          state.fcfStaffVolunteers = data;
         })
         .catch((e) => {
           // console.log(e);
@@ -795,11 +842,26 @@ const store = createStore({
               state.fcfVolunteers = otherVolunteers;
             })
             .catch(function (err) {
-              app.f7.loginScreen.open("#my-login-screen");
+              // app.f7.loginScreen.open("#my-login-screen");
             });
         })
         .catch(function (err) {
-          app.f7.loginScreen.open("#my-login-screen");
+          // app.f7.loginScreen.open("#my-login-screen");
+        });
+    },
+    getAllProjects({ state }) {
+      fetchJson(
+        `${Api.urls.allProjects.url}?skipPack=true&sort=${JSON.stringify(
+          Api.urls.allProjects.sort
+        )}`,
+        { method: "GET" }
+      )
+        .then((result) => {
+          state.allProjects = parse(result.json.data.data, state);
+          console.log(state.allProjects);
+        })
+        .catch((e) => {
+          console.log(e);
         });
     },
     getMyProjects({ state }) {
@@ -939,9 +1001,9 @@ const store = createStore({
     },
     getUser({ state }) {
       fetchJson(
-        `${Api.urls.whoami.url}?skipPack=true&where=${JSON.stringify(
-          Api.urls.whoami.where
-        )}`,
+        `${Api.urls.whoami.url}?skipPack=true&populate=${JSON.stringify([
+          "Person305",
+        ])}&where=${JSON.stringify(Api.urls.whoami.where)}`,
         {
           method: "GET",
         }

@@ -295,11 +295,11 @@
         $f7.dialog.alert('Please tag at least one volunteer.');
         return false;
       }
-      if (!dateValues || dateValues.length != 2) {
+      if (!dateValues || dateValues.length == 1) {
         // not all fields are filled in
         isLoading = false;
         $update();
-        $f7.dialog.alert('Please provide a beginning and ending absence date.');
+        $f7.dialog.alert('Please provide a beginning and ending absence date. To do so click the beinning date on the calendar and then click the ending date to create a range.');
         return false;
       }
       if (formData.caption == "") {

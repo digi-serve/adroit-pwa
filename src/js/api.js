@@ -96,6 +96,38 @@ const Api = {
       },
       sort: [{ key: "ae590415-64e1-43f5-bba4-ff0827866d96", dir: "asc" }],
     },
+    fcfStaffVolunteers: {
+      url: "/app_builder/model/82df020c-695d-4360-8112-567a2f664569",
+      where: {
+        glue: "and",
+        rules: [
+          {
+            key: "2197bd50-80f9-470f-9010-48b5ab73da89",
+            rule: "equals",
+            value: "Active",
+          },
+          {
+            glue: "or",
+            rules: [
+              {
+                key: "74329030-8405-4876-8a55-ba6fbf5384b2",
+                rule: "equals",
+                value: "Volunteer",
+              },
+              {
+                key: "74329030-8405-4876-8a55-ba6fbf5384b2",
+                rule: "equals",
+                value: "Staff",
+              },
+            ],
+          },
+        ],
+      },
+      sort: [
+        // { key: "08bf6aa4-ba4b-4b00-a7a4-f7d81a485d6b", dir: "asc" },
+        { key: "ae590415-64e1-43f5-bba4-ff0827866d96", dir: "asc" },
+      ],
+    },
     fcfVolunteers: {
       url: "/app_builder/model/82df020c-695d-4360-8112-567a2f664569",
       where: {
@@ -127,6 +159,14 @@ const Api = {
           },
         ],
       },
+    },
+    allProjects: {
+      url: "/app_builder/model/55530a46-3b77-4b22-8221-bf52a68c6cbc",
+      where: {
+        glue: "and",
+        rules: [],
+      },
+      sort: [{ key: "5c5e86b1-fd6a-43bf-bb7f-ebb6d1eadba5", dir: "asc" }],
     },
     myProjectsWithMembers: (profileId) => {
       return {
@@ -233,6 +273,10 @@ const Api = {
       "/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14",
     updateActivityImage: (activityImageId) =>
       `/app_builder/model/4d6af935-ccb5-454e-9aab-ab4793beaf14/${activityImageId}`,
+    addContact: () =>
+      `/app_builder/model/516e7f9f-1a8d-4c06-b2eb-717315d96310/`,
+    updateContact: (contactId) =>
+      `/app_builder/model/516e7f9f-1a8d-4c06-b2eb-717315d96310/${contactId}`,
     updateProfilePhoto: (userId) =>
       `/app_builder/model/82df020c-695d-4360-8112-567a2f664569/${userId}`,
     createLocation: "/app_builder/model/b4c969f8-31e1-4993-9e34-2370068449be",

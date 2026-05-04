@@ -359,7 +359,7 @@
     let firstLoad = true;
 
     $on('pageInit', () => {
-      checkForUpdate();
+      // checkForUpdate();
       // $store.dispatch('getLocations');
       // $store.dispatch('getFCFLocations');
       // $store.dispatch('getTeamMembers');
@@ -439,7 +439,7 @@
 
 
     document.addEventListener('visibilitychange', (e) => {
-      if (document.visibilityState == "visible") {
+      if (document.visibilityState == "visible" && user?.value["Full Name"]) {
         checkForUpdate();
       }
     });
@@ -476,6 +476,7 @@
     });
 
     user.onUpdated((e) => {
+      checkForUpdate();
       if (firstLoad && user?.value?.display_name) {
         firstLoad = false;
         setTimeout(() => {

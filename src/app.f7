@@ -19,8 +19,8 @@
                     <i class="material-icons uploadProfileLoader icon-circle text-color-white spin hidden">cached</i>
                   </div>
                   ${gotUser.value ? $h`
-                    <img id="profilePreview" style="display: none; border: 5px solid white; width: 120px; height: 120px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
-                    <img @error=${imageLoadError} id="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 120px; height: 120px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
+                    <img class="profilePreview" style="display: none; border: 5px solid white; width: 120px; height: 120px; object-fit: cover; background-color: #CCC; border-radius: 100%; margin-top: 15px;" src=""/>
+                    <img @error=${imageLoadError} class="imageProfile" src="${Api.absoluteUrl('/file/')}${user.value.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" style="margin-top: 15px; border: 5px solid white; width: 120px; height: 120px; object-fit: contain; background-color: #CCC; border-radius: 100%" />
                   ` : $h`
                     <img src="assets/images/1024.png" width="120" style="margin-top: 25px;" class="sidebar_logo" />
                   `}
@@ -450,7 +450,7 @@
     const upload = (input) => {
       const filePicker = $(input)[0];
       if (!filePicker || !filePicker.files || filePicker.files.length <= 0) {
-          reject('No file selected.');
+          // reject('No file selected.');
           return;
       }
       const myFile = filePicker.files[0];
@@ -470,8 +470,12 @@
     }
 
     const readFile = (myFile) => {
-      $(".uploadProfileLoader")[0].classList.remove("hidden");
-      $(".uploadProfile")[0].classList.add("hidden");
+      $(".uploadProfileLoader").forEach((item) => {
+        item.classList.remove("hidden");
+      });
+      $(".uploadProfile").forEach((item) => {
+        item.classList.add("hidden");
+      });
       let file = myFile;
       let reader = new FileReader();
 
@@ -491,11 +495,15 @@
       let maxHeight = 2000;
 
       // load a preview
-      let profilePreview = $("#profilePreview")[0];
-      profilePreview.src = dataURL;
-      profilePreview.style.display = "";
-      let imageProfile = $("#imageProfile")[0];
-      imageProfile.style.display = "none";
+      //let profilePreview = 
+      $(".profilePreview").forEach((item) => {
+        item.src = dataURL;
+        item.style.display = "";
+      });
+      // let imageProfile = 
+      $(".imageProfile").forEach((item) => {
+        item.style.display = "none";
+      });
 
       // load original for resizing
       let image = new Image();
@@ -579,19 +587,31 @@
       fetchJson(url, options)
         .then(response => {
           if (response.json.status == "server") {
-            $(".uploadProfileLoader")[0].classList.add("hidden");
-            $(".uploadProfileSuccess")[0].classList.remove("hidden");
+            $(".uploadProfileLoader").forEach((item) => {
+              item.classList.add("hidden");
+            });
+            $(".uploadProfileSuccess").forEach((item) => {
+              item.classList.remove("hidden");
+            });
             setTimeout(() => {
-              $(".uploadProfile")[0].classList.remove("hidden");
-              $(".uploadProfileSuccess")[0].classList.add("hidden");
+              $(".uploadProfile").forEach((item) => {
+                item.classList.remove("hidden");
+              });
+              $(".uploadProfileSuccess").forEach((item) => {
+                item.classList.add("hidden");
+              });
             }, 5000);
             imagePath = response.json.data.uuid;
             saveProfilePhoto();
           }
         })
         .catch(async error => {
-          $(".uploadProfileLoader")[0].classList.add("hidden");
-          $(".uploadProfileFail")[0].classList.remove("hidden");
+          $(".uploadProfileLoader").forEach((item) => {
+            item.classList.add("hidden");
+          });
+          $(".uploadProfileFail").forEach((item) => {
+            item.classList.remove("hidden");
+          });
         });
 
     }

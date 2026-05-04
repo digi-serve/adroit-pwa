@@ -1,13 +1,16 @@
 import AbsencePage from "../pages/absence.f7";
 import ApprovalsPage from "../pages/approvals.f7";
 import CalendarPage from "../pages/calendar.f7";
+import DirectoryList from "../pages/directory.f7";
+import DirectoryPage from "../pages/directory-edit.f7";
+import DirectoryEdit from "../pages/directory-view.f7";
 import HomePage from "../pages/home.f7";
 import HelpPage from "../pages/help.f7";
 import FeedbackPage from "../pages/feedback.f7";
 // import FormPage from "../pages/form.f7";
 import ActivityImagePage from "../pages/activity-image.f7";
 import LocationsPage from "../pages/locations.f7";
-import AddActivityPage from "../pages/add-activity.f7";
+import AddActivityPage from "../pages/activity-add.f7";
 import SwitcherooPage from "../pages/switcheroo.f7";
 
 // import DynamicRoutePage from "../pages/dynamic-route.f7";
@@ -33,7 +36,8 @@ var routes = [
   },
   {
     path: "/",
-    component: HomePage,
+    component: DirectoryList,
+    // component: HomePage,
   },
   {
     path: "/help/",
@@ -59,6 +63,18 @@ var routes = [
   {
     path: "/activity-image/edit/",
     component: ActivityImagePage,
+  },
+  {
+    path: "/directory/",
+    component: DirectoryList,
+  },
+  {
+    path: "/directory/view/",
+    component: DirectoryPage,
+  },
+  {
+    path: "/directory/edit/",
+    component: DirectoryEdit,
   },
   {
     path: "/locations/",

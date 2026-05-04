@@ -99,6 +99,7 @@
     "absencePlaceholder": "Please leave a reason why you were abscent",
     "calednarView": "Calendar View",
     "uploadDocument": "Upload Supporting Document",
-    "uploading": "Uploading file..."
+    "uploading": "Uploading file...",
+    "directory": "FCF Directory"
   }
 }

@@ -466,3 +466,52 @@ select:-webkit-autofill:focus {
   overflow: hidden;    /* Hides the overflowing text */
   text-overflow: ellipsis; /* Applies ellipsis to end */
 }
+.margin-right-4 {
+  margin-right: 4px;
+}
+.type-volunteer {
+  border-left: 8px solid #2196f3;
+}
+.color-volunteer {
+  background-color: #2196f3 !important;
+}
+.type-staff {
+  border-left: 8px solid #ff6b22;
+}
+.color-staff {
+  background-color: #ff6b22 !important;
+}
+.is-director {
+  border-left: 8px solid #673ab7;
+}
+.color-director {
+  background-color: #673ab7 !important
+}
+.hideProject, .hideProject.showPerson {
+  display: none !important;
+}
+.showProject, .showProject.showPerson {
+  display: block !important;
+}
+.hidePerson, .hidePerson.showProject {
+  display: none !important;
+}
+.showPerson, .showPerson.showProject {
+  display: block !important;
+}
+.lighter {
+  opacity: 0.6;
+}
+hr {
+  border: 0px solid #FFF;
+  border-top: 1px solid #CCC;
+  opacity: 0.4;
+}
+.directory-block .block {
+  font-size: 16px;
+}
+.no-box-shadow .left, .no-box-shadow .right {
+  box-shadow: none !important;
+  scale: 1.2;
+  margin: 0 15px !important;
+}
