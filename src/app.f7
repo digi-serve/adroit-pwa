@@ -43,6 +43,14 @@
                         </div>
                       </a>
                      </li>
+                     <li>
+                      <a href="/directory/" class="item-content item-link panel-close">
+                        <div class="item-media"><i class="material-icons">contacts</i></div>
+                        <div class="item-inner">
+                          <div class="item-title">${i18next.t("directory")}</div>
+                        </div>
+                      </a>
+                     </li>
                     ${isApprover.value ? $h`
                      <li>
                       <a href="/approvals/" class="item-content item-link panel-close">

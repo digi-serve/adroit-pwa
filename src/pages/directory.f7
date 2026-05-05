@@ -37,10 +37,10 @@
       <div class="searchbar-backdrop"></div>
       <div class="list list-strong inset list-dividers-ios simple-list searchbar-not-found">
         <ul>
-          <li>Nothing found</li>
+          <li>${i18next.t("nothingFound")}</li>
         </ul>
       </div>
-      <div class="block text-align-center no-margin search-list searchbar-found">
+      <div class="block text-align-center no-margin searchbar-hide-on-search">
         <!-- block content -->
         <div style="position: relative; width: 250px; margin: 0 auto; height: 0px;">
           <i style="left: 65px; top: 170px; background: #f44336;" @click="${profilePhoto}" class="material-icons uploadProfileFail icon-circle hidden text-color-white">priority_high</i>
@@ -58,7 +58,7 @@
         <p style="margin-top: 5px;">
           ${gotUser.value ? $h`
             <i style="position: unset; margin-right: 10px;" class="material-icons uploadProfile icon-circle text-color-white popup-open" data-popup=".edit-profile">edit</i>
-            ${isSwitcheroo.value ? $h`${i18next.t("viewingAppAs")}` : $h`${i18next.t("welcome")},`} ${user.value["Full Name"]}
+            ${isSwitcheroo.value ? $h`${i18next.t("viewingAppAs")}` : $h`${i18next.t("welcome")},`} ${user.value[trans({'en':'Full Name','th':'Full Name Thai'})]}
           ` : $h`
             <span class="skeleton-text skeleton-effect-fade">Welcome, Your profile</span>
           `}
@@ -94,14 +94,7 @@
             `)}
           </ul>
         ` : $h`
-          ${fcfStaffVolunteers.value.length == 0 ? $h`
-            <div style="display: block; font-size: 180px; background-color: #00BCD4; color: transparent; text-shadow: 0px 1px 1px #2196F3; -webkit-background-clip: text; -moz-background-clip: text; background-clip: text; margin: 20vh auto 20px;" class="icon material-icons">verified</div>
-            <div class="block no-margin-top text-align-center">
-              <p style="color: gray;">
-                <small><b>${i18next.t("congratulations")}</b><br/>${i18next.t("approvalsCaughtUp")}</small>
-              </p>
-            </div>
-          ` : $h`
+          ${fcfStaffVolunteers.value.length == 0 ? $h`` : $h`
             <ul>
               ${fcfStaffVolunteers.value.map((listing) => $h`
                 <li class="swipeout person ${listing.Project__relation.map((project) => $h`${project.Code.toLowerCase()}`).join(' ')} ${listing.isDirector ? $h`is-director` : `type-${listing['Person Type'].toLowerCase()}`}">
@@ -112,7 +105,13 @@
                       </div>
                       <div class="item-inner">
                         <div class="item-title-row">
-                          <div class="item-title">${listing["First Name"]} ${(listing["Preferred Name"] != listing["First Name"] && listing["Preferred Name"] != "") ? $h` (${listing["Preferred Name"]}) ` : $h``} ${listing["Last Name"]}</div>
+                          <div class="item-title">
+                            ${(listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != listing[trans({'en':'First Name','th':'First Name Thai'})] && listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != "") ? $h`
+                              ${listing[trans({'en':'First Name','th':'First Name Thai'})]} (${(new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) ? $h`${i18next.t("pi")}` : $h`${i18next.t("nong")}`}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})
+                            ` : $h`
+                              ${(new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) ? $h`${i18next.t("pi")}` : $h`${i18next.t("nong")}`}${listing[trans({'en':'First Name','th':'First Name Thai'})]}
+                            `} ${listing[trans({'en':'Last Name','th':'Last Name Thai'})]}
+                          </div>
                         </div>
                         <div class="">
                           ${listing.Project__relation.map((project) => $h`
@@ -130,7 +129,10 @@
                     </div>
                   </a>
                   <div class="swipeout-actions-left">
-                    <a class="color-${listing['Person Type'].toLowerCase()}">${listing["Person Type"]}</a>
+                    ${listing.isDirector ? $h`
+                    <a class="color-director">${i18next.t("director")}</a>
+                    `: $h``}
+                    <a class="color-${listing['Person Type'].toLowerCase()}">${i18next.t(listing["Person Type"])}</a>
                   </div>
                 </li>
               `)}
@@ -149,12 +151,12 @@
                 <select @change="${filterProject}" name="project">
                   <option value="all" selected>All Projects</option>
                   ${allProjects.value.map((project) => $h`
-                    <option value="${project.Code}">${project["PP"]}</option>
+                    <option value="${project.Code}">${project[trans({'en':'PP','th':'Project Name TH'})]}</option>
                   `)}
                 </select>
                 <div class="item-content">
                   <div class="item-inner">
-                    <div class="item-title">Project</div>
+                    <div class="item-title">${i18next.t("project")}</div>
                   </div>
                 </div>
                 </form>
@@ -163,7 +165,7 @@
             <li>
               <label class="item-content">
                 <div class="item-inner">
-                  <div class="item-title">Staff</div>
+                  <div class="item-title">${i18next.t("Staff")}</div>
                   <div class="item-after">
                     <div class="toggle toggle-init color-deeporange">
                       <input @click="${showStaff}" type="checkbox" checked />
@@ -176,7 +178,7 @@
             <li>
               <label class="item-content">
                 <div class="item-inner">
-                  <div class="item-title">Volunteer</div>
+                  <div class="item-title">${i18next.t("Volunteer")}</div>
                   <div class="item-after">
                     <div class="toggle toggle-init color-blue">
                       <input @click="${showVolunteer}" type="checkbox" checked />
@@ -189,7 +191,7 @@
             <li>
               <label class="item-content">
                 <div class="item-inner">
-                  <div class="item-title">Directors</div>
+                  <div class="item-title">${i18next.t("director")}</div>
                   <div class="item-after">
                     <div class="toggle toggle-init color-deeppurple">
                       <input @click="${showDirector}" type="checkbox" checked />
@@ -228,7 +230,7 @@
               <div class="left">
                 <a class="link popup-close"><i class="icon icon-close"></i></a>
               </div>
-              <div class="title">Your Profile</div>
+              <div class="title">${i18next.t("yourProfile")}</div>
               <div class="right bg-color-blue">
                 <a @click="${saveProfile}" class="link text-color-white"><i class="icon material-icons">checkmark</i></a>
               </div>
@@ -240,27 +242,27 @@
                 <ul>
                   <li class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Nickname (English)</div>
+                      <div class="item-title item-label">${i18next.t("nicknameEnglish")}</div>
                       <div class="item-input-wrap">
-                        <input name="nicknameEnglish" type="text" placeholder="Your nickname in English" value="${user.value['Preferred Name']}"/>
+                        <input name="nicknameEnglish" type="text" placeholder="${i18next.t('nicknamePlaceholderEnglish')}" value="${user.value['Preferred Name']}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
                   </li>
                   <li class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Nickname (Thai)</div>
+                      <div class="item-title item-label">${i18next.t("nicknameThai")}</div>
                       <div class="item-input-wrap">
-                        <input name="nicknameThai" type="text" placeholder="Your nickname in Thai" value="${user.value['Preferred Name Thai']}"/>
+                        <input name="nicknameThai" type="text" placeholder="${i18next.t('nicknamePlaceholderThai')}" value="${user.value['Preferred Name Thai']}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
                   </li>
                   <li class="item-content item-input">
                     <div class="item-inner">
-                      <div class="item-title item-label">Job title</div>
+                      <div class="item-title item-label">${i18next.t("jobTitle")}</div>
                       <div class="item-input-wrap">
-                        <input name="jobTitle" type="text" placeholder="Your job title" value="${user.value['Job Title']}"/>
+                        <input name="jobTitle" type="text" placeholder="${i18next.t('jobTitlePlaceholder')}" value="${user.value['Job Title']}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
@@ -272,7 +274,7 @@
                   <li class="align-top">
                     <div class="item-content item-input">
                       <div class="item-inner">
-                        <div class="item-title item-label">About me...</div>
+                        <div class="item-title item-label">${i18next.t("bio")}</div>
                         <div class="item-input-wrap">
                           <textarea style="min-height: 70px;" id="bio" name="bio" @input=${characterCounter} placeholder="${i18next.t('bioPlaceholder')}" class="resizable charCount">${user.value.Bio}</textarea>
                           <div class="item-input-info charCountHolder">0/240 ${i18next.t("characters")}</div>
@@ -283,7 +285,7 @@
                 </ul>
               </div>
             </form>
-            <div class="block-title">Contact Info</div>
+            <div class="block-title">${i18next.t("contactInfo")}</div>
             ${user.value.Person305__relation.map((contact) => $h`
             <form class="contactForms" id="contact-${contact.uuid}">
               <input type="hidden" name="id" value="${contact.uuid}" />
@@ -294,7 +296,7 @@
                     <a class="item">
                       <div class="item-content">
                         <div class="item-inner">
-                          <div class="item-title text-color-white">Type</div>
+                          <div class="item-title text-color-white">${i18next.t("typeContact")}</div>
                           <div class="item-after">${contact.Type}</div>
                         </div>
                       </div>
@@ -302,7 +304,7 @@
                   </li>
                   <li>
                     <a class="item-link smart-select smart-select-init" data-open-in="popover">
-                      <select name="Description">
+                      <select required validate name="Description">
                         ${contact.Type == "Phone" ? $h`
                           ${contact.Description == "Mobile" ? $h`
                             <option selected>Mobile</option>
@@ -318,11 +320,6 @@
                             <option selected>Work</option>
                           ` : $h`
                             <option>Work</option>
-                          `}
-                          ${contact.Description == "School" ? $h`
-                            <option selected>School</option>
-                          ` : $h`
-                            <option>School</option>
                           `}
                           ${contact.Description == "School" ? $h`
                             <option selected>School</option>
@@ -392,16 +389,16 @@
                       </select>
                       <div class="item-content">
                         <div class="item-inner">
-                          <div class="item-title">Label</div>
+                          <div class="item-title">${i18next.t("label")}</div>
                         </div>
                       </div>
                     </a>
                   </li>
                   <li class="item-content ">
                     <div class="item-inner">
-                      <div class="item-title">Value</div>
+                      <div class="item-title">${i18next.t("value")}</div>
                       <div class="item-after">
-                        <input type="text" name="Contact" placeholder="Value" value="${contact.Contact}"/>
+                        <input type="text" name="Contact" required validate placeholder="Value" value="${contact.Contact}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
@@ -415,7 +412,7 @@
                       `}
                       <i class="icon icon-checkbox"></i>
                       <div class="item-inner">
-                        <div class="item-title">Visible to FCF staff and volunteers</div>
+                        <div class="item-title">${i18next.t("visible")}</div>
                       </div>
                     </label>
                   </li>
@@ -434,7 +431,7 @@
                    <li>
                     <div class="item-content">
                       <div class="item-inner">
-                        <div class="item-title">Type</div>
+                        <div class="item-title">${i18next.t("typeContact")}</div>
                         <div class="item-after">
                           <input @click="${openPicker}" type="text" placeholder="Select type" readonly="readonly" id="typePicker" />
                         </div>
@@ -443,9 +440,9 @@
                   </li>
                   <li class="item-content ">
                     <div class="item-inner">
-                      <div class="item-title">Value</div>
+                      <div class="item-title">${i18next.t("value")}</div>
                       <div class="item-after">
-                        <input type="text" name="Contact" placeholder=""/>
+                        <input id="addContactValue" type="text" required validate name="Contact" placeholder="Value"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
@@ -455,7 +452,7 @@
                       <input type="checkbox" checked name="Public" value="Public"  />
                       <i class="icon icon-checkbox"></i>
                       <div class="item-inner">
-                        <div class="item-title">Visible to FCF staff and volunteers</div>
+                        <div class="item-title">${i18next.t("visible")}</div>
                       </div>
                     </label>
                   </li>
@@ -491,6 +488,7 @@
     let popoverEmail;
     let popoverPhone;
     let pickerDependent;
+    let toastIcon;
 
     let directorySkeleton = [1,2,3,4,5,6,7,8];
     const fcfStaffVolunteers = $store.getters.fcfStaffVolunteers;
@@ -505,7 +503,7 @@
     const isSwitcheroo = $store.getters.switcheroo;
     const hasSwitcheroo = $store.getters.hasSwitcheroo;
 
-    store.dispatch("getUser");
+    $store.dispatch("getUser");
     $store.dispatch('getAllProjects');
 
     i18next.init({
@@ -549,15 +547,6 @@
           },
         ]
       });
-
-      // pickerDependent.resizeCols(); // Recalculate size inside popup
-
-      // app.on('popup:open', (mypopup) => {
-      //   debugger;
-      //   if (mypopup.$el.find('#typePicker').length > 0) {
-      //     pickerDependent.resizeCols(); // Recalculate size inside popup
-      //   }
-      // });
 
     })
 
@@ -662,10 +651,29 @@
       // Create popup
       console.log(listing);
 
+      let older = "";
+      if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) {
+        older = "<i class='icon material-icons'>favorite_border</i>";
+      }
+
       let name = [];
-      name.push(listing["First Name"]);
-      name.push((listing["Preferred Name"] != listing["First Name"] && listing["Preferred Name"] != "") ? `(${listing["Preferred Name"]})` : "");
-      name.push(listing["Last Name"]);
+      
+      
+      if ((listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != listing[trans({'en':'First Name','th':'First Name Thai'})] && listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != "")) {
+        name.push(listing[trans({'en':'First Name','th':'First Name Thai'})]);
+        if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"]) ) {
+          name.push(`(${i18next.t('pi')}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})`);       
+        } else {
+          name.push(`(${i18next.t('nong')}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})`);        
+        }
+      } else {
+        if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"]) ) {
+          name.push(`${i18next.t('pi')}${listing[trans({'en':'First Name','th':'First Name Thai'})]}`)        
+        } else {
+          name.push(`${i18next.t('nong')}${listing[trans({'en':'First Name','th':'First Name Thai'})]}`)
+        }
+      }
+      name.push(listing[trans({'en':'Last Name','th':'Last Name Thai'})]);
       
       let pro = "";
       listing.Project__relation.forEach((project) => {
@@ -763,24 +771,24 @@
                   </div>
                 </div>
                 <div class="block block-strong inset no-margin-top">
-                  <div>Project</div> 
+                  <div>${i18next.t("project")}</div> 
                   <div>${pro}</div>
                   <hr/>
-                  <div>Job Title</div> 
+                  <div>${i18next.t("jobTitle")}</div> 
                   <div class="lighter">${listing["Job Title"]}<br/></div>
                   <hr/>
-                  <div>Type</div> 
+                  <div>${i18next.t("type")}</div> 
                   <div>
                     <div class="chip margin-right-4 color-${listing["Person Type"].toLowerCase()}">
-                      <div class="chip-label">${listing["Person Type"]}</div>
+                      <div class="chip-label">${i18next.t(listing["Person Type"])}</div>
                     </div>
                   </div>  
                   <hr/>
-                  <div>Birthday</div> 
-                  <div class="lighter">${new Date(listing["Birth Date"]).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</div>
+                  <div>${i18next.t("birthday")}</div> 
+                  <div class="lighter">${older} ${new Date(listing["Birth Date"]).toLocaleDateString(locale.value, { month: 'long', day: 'numeric' })}</div>
                   <hr/>
-                  <div>About me...</div> 
-                  <div class="lighter"><br/><br/><br/></div>                                    
+                  <div>${i18next.t("bio")}</div> 
+                  <div class="lighter">${listing["Bio"]}</div>                                    
                 </div>
               </div>
             </div>
@@ -789,33 +797,6 @@
       });
       // Open it
       popup.open();
-
-      // Function to start the accelerometer effect
-      function initMotion() {
-          // Check if permission is needed (iOS 13+)
-          if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-              DeviceOrientationEvent.requestPermission()
-                  .then(state => {
-                      if (state === 'granted') {
-                          window.addEventListener('deviceorientation', handleOrientation);
-                      }
-                  });
-          } else {
-              window.addEventListener('deviceorientation', handleOrientation);
-          }
-      }
-
-      function handleOrientation(event) {
-          const x = event.gamma; // Range: -90 to 90
-          const y = event.beta;  // Range: -180 to 180
-
-          const moveX = x * 0.5; // Sensitivity adjustment
-          const moveY = y * 0.5;
-
-          // Apply movement to a background element
-          const bg = document.querySelector('#listingPhotoMove');
-          bg.style.transform = `translate(${moveX}px, ${moveY}px)`;
-      }
     }
 
     const characterCounter = (e) => {
@@ -854,21 +835,19 @@
     }
 
     const addContact = () => {
+      let valid = app.f7.input.validateInputs('#newContact');
+      if (!valid) {
+        return false;
+      }
       var formData = $f7.form.convertToData('#newContact');
       let vals = pickerDependent.getValue();
       if (vals && vals.length == 2) {
         formData.Type = vals[0];
         formData.Description = vals[1];
       } else {
-        alert("oops");
         return false;
       }
       formData.Person = user.value.uuid;
-
-      if (!formData.Contact) {
-        alert("oops");
-        return false;
-      }
       const urlContact = Api.urls.addContact();
       const optionsContact = {
         method: 'POST',
@@ -883,6 +862,18 @@
       fetchJson(urlContact, optionsContact)
         .then(response => {
           console.log(response);
+          $store.dispatch("getUser");
+          document.getElementById("addContactValue").value = "";
+          if (!toastIcon) {
+            toastIcon = $f7.toast.create({
+              icon: '<i class="f7-icons">star_fill</i>',
+              text: 'Saved',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+          // Open it
+          toastIcon.open();
         })
         .catch(async error => {
           console.log(error);
@@ -938,9 +929,19 @@
       // this.status = ActivityStatus.saving;
       fetchJson(url, options)
         .then(response => {
-          // $f7.view.main.router.back();
-          // $store.dispatch('getActivities');
           console.log(response);
+          $store.dispatch("fetchFCFStaffVolunteers");
+          // Create toast
+          if (!toastIcon) {
+            toastIcon = $f7.toast.create({
+              icon: '<i class="f7-icons">star_fill</i>',
+              text: 'Saved',
+              position: 'center',
+              closeTimeout: 2000,
+            });
+          }
+          // Open it
+          toastIcon.open();
         })
         .catch(async error => {
           console.log(error);

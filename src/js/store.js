@@ -16,10 +16,11 @@ function parse(records, state) {
       if (
         propt.indexOf("__relation") > -1 ||
         (propt != "translations" &&
+          theseRecords != undefined &&
           theseRecords[propt] != null &&
           theseRecords[propt].forEach)
       ) {
-        if (theseRecords[propt] != null) {
+        if (theseRecords != undefined && theseRecords[propt] != null) {
           theseRecords[propt] = parse(theseRecords[propt], state);
         }
       } else if (propt == "translations") {
@@ -768,7 +769,7 @@ const store = createStore({
           // console.log(e);
         });
     },
-    fetchFCFStaffVolunteers({ state }) {
+    fetchFCFStaffVolunteers({ state }, done) {
       fetchJson(
         `${
           Api.urls.fcfStaffVolunteers.url
@@ -779,6 +780,7 @@ const store = createStore({
         )}&sort=${JSON.stringify(Api.urls.fcfStaffVolunteers.sort)}`
       )
         .then((result) => {
+          debugger;
           let data = parse(result.json.data.data, state);
           state.fcfStaffVolunteersLoading = false;
           // identify if they are the director inside the list of projects they are working for
@@ -798,6 +800,9 @@ const store = createStore({
             });
           });
           state.fcfStaffVolunteers = data;
+          if (done) {
+            done();
+          }
         })
         .catch((e) => {
           // console.log(e);
@@ -851,9 +856,9 @@ const store = createStore({
     },
     getAllProjects({ state }) {
       fetchJson(
-        `${Api.urls.allProjects.url}?skipPack=true&sort=${JSON.stringify(
-          Api.urls.allProjects.sort
-        )}`,
+        `${Api.urls.allProjects.url}?skipPack=true&where=${JSON.stringify(
+          Api.urls.allProjects.where
+        )}&sort=${JSON.stringify(Api.urls.allProjects.sort)}`,
         { method: "GET" }
       )
         .then((result) => {

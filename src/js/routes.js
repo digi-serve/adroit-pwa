@@ -36,8 +36,7 @@ var routes = [
   },
   {
     path: "/",
-    component: DirectoryList,
-    // component: HomePage,
+    component: HomePage,
   },
   {
     path: "/help/",
@@ -67,14 +66,6 @@ var routes = [
   {
     path: "/directory/",
     component: DirectoryList,
-  },
-  {
-    path: "/directory/view/",
-    component: DirectoryPage,
-  },
-  {
-    path: "/directory/edit/",
-    component: DirectoryEdit,
   },
   {
     path: "/locations/",

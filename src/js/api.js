@@ -164,7 +164,13 @@ const Api = {
       url: "/app_builder/model/55530a46-3b77-4b22-8221-bf52a68c6cbc",
       where: {
         glue: "and",
-        rules: [],
+        rules: [
+          {
+            key: "4f358df9-5697-479c-8839-2959a6bc063e",
+            rule: "not_equal",
+            value: "",
+          },
+        ],
       },
       sort: [{ key: "5c5e86b1-fd6a-43bf-bb7f-ebb6d1eadba5", dir: "asc" }],
     },
