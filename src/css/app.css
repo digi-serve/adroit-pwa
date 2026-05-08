@@ -515,3 +515,11 @@ hr {
   scale: 1.2;
   margin: 0 15px !important;
 }
+.bday {
+  position: absolute !important;
+  top: -40px;
+  z-index: 300;
+  rotate: 221deg;
+  left: 42px;
+  color: #ff2d55;
+}

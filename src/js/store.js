@@ -116,6 +116,7 @@ const store = createStore({
     user: { "Full Name": "" },
     username: "",
     version: "",
+    staff: false,
     switcheroo: false,
     hasSwitcheroo: false,
     locale: "en",
@@ -208,6 +209,9 @@ const store = createStore({
     },
     photoProgress({ state }) {
       return state.photoProgress;
+    },
+    staff({ state }) {
+      return state.staff;
     },
     switcheroo({ state }) {
       return state.switcheroo;
@@ -780,7 +784,6 @@ const store = createStore({
         )}&sort=${JSON.stringify(Api.urls.fcfStaffVolunteers.sort)}`
       )
         .then((result) => {
-          debugger;
           let data = parse(result.json.data.data, state);
           state.fcfStaffVolunteersLoading = false;
           // identify if they are the director inside the list of projects they are working for
@@ -1017,6 +1020,7 @@ const store = createStore({
           // debugger;
           // console.log("you are logged in already");
           state.user = res.json.data.data[0];
+          state.staff = state.user["Person Type"] == "Staff" ? true : false;
           state.gotUser = true;
         })
         .catch(function (err) {

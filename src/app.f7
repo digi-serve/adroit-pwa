@@ -35,6 +35,7 @@
                 </div>
                 <div class="list" style="margin-top: 0px;">
                    <ul>
+                    ${isStaff.value == false ? $h`
                      <li>
                       <a href="/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">photo</i></div>
@@ -43,6 +44,7 @@
                         </div>
                       </a>
                      </li>
+                     ` : $h``}
                      <li>
                       <a href="/directory/" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">contacts</i></div>
@@ -84,6 +86,7 @@
                         </div>
                       </a>
                      </li>
+                     ${isStaff.value == false ? $h`
                      <li>
                       <a href="#" @click="${showTutorial}" class="item-content item-link panel-close">
                         <div class="item-media"><i class="material-icons">play_circle</i></div>
@@ -108,6 +111,7 @@
                         </div>
                       </a>
                      </li>
+                     ` : $h``}
                      ${isSwitcheroo.value ? $h`
                      <li>
                         <a href="#" @click="${deleteSwitcheroo}" class="item-content text-color-white panel-close">
@@ -254,7 +258,7 @@
   import english from '/js/locales/english.json';
   import thai from '/js/locales/thai.json';
 
-  export default (props, { $, $f7, $update, $store }) => {
+  export default (props, { $, $f7, $update, $store, $f7route }) => {
 
     // store.dispatch("getToken");
     store.dispatch("getUser");
@@ -266,9 +270,12 @@
     const approvalCount = $store.getters.approvalCount;
     const versionNumber = $store.getters.version.value;
     const isSwitcheroo = $store.getters.switcheroo;
+    const isStaff = $store.getters.staff;
     const hasSwitcheroo = $store.getters.hasSwitcheroo;
     const locale = $store.getters.locale;
     const siteUserId = $store.getters.siteUserId;
+    const params = new URLSearchParams(window.location.search);
+    const page = params.get('page');
 
     i18next.init({
       lng: locale.value,
@@ -293,6 +300,22 @@
       if (isSwitcheroo.value == false && hasSwitcheroo.value == true && user.value.uuid && user.value["Full Name"] && Sentry && OneSignal) {
         Sentry.setUser({id: user.value.uuid, username: user.value["Full Name"]});
         OneSignal.login(user.value.uuid);
+      }
+
+      if (isStaff.value || page == "directory") {
+        $f7.view.main.router.navigate("/directory/", {
+          ignoreCache: true,
+          animate: false
+        });
+      }
+    })
+
+    isStaff.onUpdated(() => {
+      if (isStaff.value || page == "directory") {
+        $f7.view.main.router.navigate("/directory/", {
+          ignoreCache: true,
+          animate: false
+        });
       }
     })
 

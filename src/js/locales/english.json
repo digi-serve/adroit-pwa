@@ -104,6 +104,7 @@
     "nothingFound": "No matches found",
     "pi": "P'",
     "nong": "N'",
+    "khun": "Khun ",
     "project": "Project",
     "jobTitle": "Job Title",
     "jobTitlePlaceholder": "Your job title",
@@ -124,6 +125,24 @@
     "value": "Value",
     "visible": "Visible to FCF staff and volunteers",
     "contactInfo": "Contact Info",
-    "typeContact": "Type"
+    "typeContact": "Type",
+    "remove": "Remove",
+    "addNew": "Add New",
+    "Phone": "Phone",
+    "Email": "Email",
+    "Social": "Social",
+    "Mobile": "Mobile",
+    "Home": "Home",
+    "Work": "Work",
+    "School": "School",
+    "Main": "Main",
+    "Other": "Other",
+    "LINE": "LINE",
+    "Facebook": "Facebook",
+    "Instagram": "Instagram",
+    "contact": "Contact",
+    "search": "Search",
+    "selectType": "Select type",
+    "birthdaySoon": "Upcoming Birthdays"
   }
 }

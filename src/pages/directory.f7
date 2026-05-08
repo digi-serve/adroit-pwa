@@ -21,7 +21,7 @@
         <form data-search-container=".search-list" data-search-in=".item-title" class="searchbar searchbar-expandable searchbar-demo searchbar-init">
           <div class="searchbar-inner">
             <div class="searchbar-input-wrap">
-              <input type="search" placeholder="Search" />
+              <input type="search" placeholder="${i18next.t('search')}" />
               <i class="searchbar-icon"></i>
               <span class="input-clear-button"></span>
             </div>
@@ -97,9 +97,10 @@
           ${fcfStaffVolunteers.value.length == 0 ? $h`` : $h`
             <ul>
               ${fcfStaffVolunteers.value.map((listing) => $h`
-                <li class="swipeout person ${listing.Project__relation.map((project) => $h`${project.Code.toLowerCase()}`).join(' ')} ${listing.isDirector ? $h`is-director` : `type-${listing['Person Type'].toLowerCase()}`}">
+                <li class="swipeout person ${isBirthdayWithinOneWeek(listing['Birth Date']) ? $h`bDaySoon` : $h` `} ${listing.Project__relation.map((project) => $h`${project.Code.toLowerCase()}`).join(' ')} ${listing.isDirector ? $h`is-director` : `type-${listing['Person Type'].toLowerCase()}`}">
                   <a @click="${() => createPopup(listing)}" class="item-link">
                     <div class="item-content swipeout-content">
+                      ${isBirthdayWithinOneWeek(listing["Birth Date"]) ? $h`<div style="position: relative;"><i class="icon material-icons bday">tornado</i></div>` : $h``}
                       <div class="item-media"><img style="border-radius: 100%; object-fit: cover;"
                           src="${Api.absoluteUrl('/file/')}${listing.Photo||'69ac639f-1272-4f4e-bcc5-c36f2863ef31'}" width="60" height="60" />
                       </div>
@@ -107,9 +108,9 @@
                         <div class="item-title-row">
                           <div class="item-title">
                             ${(listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != listing[trans({'en':'First Name','th':'First Name Thai'})] && listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != "") ? $h`
-                              ${listing[trans({'en':'First Name','th':'First Name Thai'})]} (${(new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) ? $h`${i18next.t("pi")}` : $h`${i18next.t("nong")}`}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})
+                              ${listing[trans({'en':'First Name','th':'First Name Thai'})]} (${i18next.t(phiNongKhun(listing["Birth Date"], user.value["Birth Date"]))}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})
                             ` : $h`
-                              ${(new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) ? $h`${i18next.t("pi")}` : $h`${i18next.t("nong")}`}${listing[trans({'en':'First Name','th':'First Name Thai'})]}
+                              ${i18next.t(phiNongKhun(listing["Birth Date"], user.value["Birth Date"]))}${listing[trans({'en':'First Name','th':'First Name Thai'})]}
                             `} ${listing[trans({'en':'Last Name','th':'Last Name Thai'})]}
                           </div>
                         </div>
@@ -124,6 +125,14 @@
                               <div class="chip-label">${project[trans({'en':'PP','th':'Project Name TH'})]}</div> 
                             </div> 
                           `)}
+                          ${isBirthdayWithinOneWeek(listing['Birth Date']) ? $h`
+                          <div class="chip margin-right-4">
+                            <div class="chip-media bg-color-pink">
+                              <i class="icon material-icons">cake</i>
+                            </div>
+                            <div class="chip-label">${new Date(listing["Birth Date"]).toLocaleDateString(locale.value, { month: 'long', day: 'numeric' })}</div> 
+                          </div>
+                          ` : $h` `}
                         </div>
                       </div>
                     </div>
@@ -167,7 +176,7 @@
                 <div class="item-inner">
                   <div class="item-title">${i18next.t("Staff")}</div>
                   <div class="item-after">
-                    <div class="toggle toggle-init color-deeporange">
+                    <div class="toggle toggle-init color-deeporange stafftoggle">
                       <input @click="${showStaff}" type="checkbox" checked />
                       <span class="toggle-icon"></span>
                     </div>
@@ -180,7 +189,7 @@
                 <div class="item-inner">
                   <div class="item-title">${i18next.t("Volunteer")}</div>
                   <div class="item-after">
-                    <div class="toggle toggle-init color-blue">
+                    <div class="toggle toggle-init color-blue volunteertoggle">
                       <input @click="${showVolunteer}" type="checkbox" checked />
                       <span class="toggle-icon"></span>
                     </div>
@@ -193,8 +202,21 @@
                 <div class="item-inner">
                   <div class="item-title">${i18next.t("director")}</div>
                   <div class="item-after">
-                    <div class="toggle toggle-init color-deeppurple">
+                    <div class="toggle toggle-init color-deeppurple directortoggle">
                       <input @click="${showDirector}" type="checkbox" checked />
+                      <span class="toggle-icon"></span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </li>
+            <li>
+              <label class="item-content">
+                <div class="item-inner">
+                  <div class="item-title">${i18next.t("birthdaySoon")}</div>
+                  <div class="item-after">
+                    <div class="toggle toggle-init color-pink bdaytoggle">
+                      <input @click="${showUpcomingBirthdays}" type="checkbox" />
                       <span class="toggle-icon"></span>
                     </div>
                   </div>
@@ -276,7 +298,7 @@
                       <div class="item-inner">
                         <div class="item-title item-label">${i18next.t("bio")}</div>
                         <div class="item-input-wrap">
-                          <textarea style="min-height: 70px;" id="bio" name="bio" @input=${characterCounter} placeholder="${i18next.t('bioPlaceholder')}" class="resizable charCount">${user.value.Bio}</textarea>
+                          <textarea id="bio" name="bio" @input=${characterCounter} placeholder="${i18next.t('bioPlaceholder')}" class="resizable charCount">${user.value.Bio}</textarea>
                           <div class="item-input-info charCountHolder">0/240 ${i18next.t("characters")}</div>
                         </div>
                       </div>
@@ -297,7 +319,7 @@
                       <div class="item-content">
                         <div class="item-inner">
                           <div class="item-title text-color-white">${i18next.t("typeContact")}</div>
-                          <div class="item-after">${contact.Type}</div>
+                          <div class="item-after">${i18next.t(contact.Type)}</div>
                         </div>
                       </div>
                     </a>
@@ -307,83 +329,78 @@
                       <select required validate name="Description">
                         ${contact.Type == "Phone" ? $h`
                           ${contact.Description == "Mobile" ? $h`
-                            <option selected>Mobile</option>
+                            <option value="Mobile" selected>${i18next.t("Mobile")}</option>
                           ` : $h`
-                            <option>Mobile</option>
+                            <option value="Mobile">${i18next.t("Mobile")}</option>
                           `}
                           ${contact.Description == "Home" ? $h`
-                            <option selected>Home</option>
+                            <option value="Home" selected>${i18next.t("Home")}</option>
                           ` : $h`
-                            <option>Home</option>
+                            <option value="Home">${i18next.t("Home")}</option>
                           `}
                           ${contact.Description == "Work" ? $h`
-                            <option selected>Work</option>
+                            <option value="Work" selected>${i18next.t("Work")}</option>
                           ` : $h`
-                            <option>Work</option>
+                            <option value="Work">${i18next.t("Work")}</option>
                           `}
                           ${contact.Description == "School" ? $h`
-                            <option selected>School</option>
+                            <option value="School" selected>${i18next.t("School")}</option>
                           ` : $h`
-                            <option>School</option>
+                            <option value="School">${i18next.t("School")}</option>
                           `}
                           ${contact.Description == "Main" ? $h`
-                            <option selected>Main</option>
+                            <option value="Main" selected>${i18next.t("Main")}</option>
                           ` : $h`
-                            <option>Main</option>
+                            <option value="Main">${i18next.t("Main")}</option>
                           `}
                           ${contact.Description == "Other" ? $h`
-                            <option selected>Other</option>
+                            <option value="Other" selected>${i18next.t("Other")}</option>
                           ` : $h`
-                            <option>Other</option>
+                            <option value="Other">${i18next.t("Other")}</option>
                           `}
                         ` : $h``}
                         ${contact.Type == "Email" ? $h`
                           ${contact.Description == "Home" ? $h`
-                            <option selected>Home</option>
+                            <option value="Home" selected>${i18next.t("Home")}</option>
                           ` : $h`
-                            <option>Home</option>
+                            <option value="Home">${i18next.t("Home")}</option>
                           `}
                           ${contact.Description == "Work" ? $h`
-                            <option selected>Work</option>
+                            <option value="Work" selected>${i18next.t("Work")}</option>
                           ` : $h`
-                            <option>Work</option>
+                            <option value="Work" >${i18next.t("Work")}</option>
                           `}
                           ${contact.Description == "School" ? $h`
-                            <option selected>School</option>
+                            <option value="School" selected>${i18next.t("School")}</option>
                           ` : $h`
-                            <option>School</option>
-                          `}
-                          ${contact.Description == "School" ? $h`
-                            <option selected>School</option>
-                          ` : $h`
-                            <option>School</option>
+                            <option value="School">${i18next.t("School")}</option>
                           `}
                           ${contact.Description == "Other" ? $h`
-                            <option selected>Other</option>
+                            <option value="Other" selected>${i18next.t("Other")}</option>
                           ` : $h`
-                            <option>Other</option>
+                            <option value="Other">${i18next.t("Other")}</option>
                           `}
                         ` : $h``}
                         ${contact.Type == "Social" ? $h`
                           ${contact.Description == "LINE" ? $h`
-                            <option selected>LINE</option>
+                            <option value="LINE" selected>${i18next.t("LINE")}</option>
                           ` : $h`
-                            <option>LINE</option>
+                            <option value="LINE">${i18next.t("LINE")}</option>
                           `}
                           ${contact.Description == "Facebook" ? $h`
-                            <option selected>Facebook</option>
+                            <option value="Facebook" selected>${i18next.t("Facebook")}</option>
                           ` : $h`
-                            <option>Facebook</option>
+                            <option value="Facebook">${i18next.t("Facebook")}</option>
                           `}
                           ${contact.Description == "Instagram" ? $h`
-                            <option selected>Instagram</option>
+                            <option value="Instagram" selected>${i18next.t("Instagram")}</option>
                           ` : $h`
-                            <option>Instagram</option>
+                            <option value="Instagram">${i18next.t("Instagram")}</option>
                           `}
                           ${contact.Description == "Other" ? $h`
-                            <option selected>Other</option>
+                            <option value="Other" selected>${i18next.t("Other")}</option>
                           ` : $h`
-                            <option>Other</option>
+                            <option value="Other">${i18next.t("Other")}</option>
                           `}
                         ` : $h``}
                       </select>
@@ -398,7 +415,7 @@
                     <div class="item-inner">
                       <div class="item-title">${i18next.t("value")}</div>
                       <div class="item-after">
-                        <input type="text" name="Contact" required validate placeholder="Value" value="${contact.Contact}"/>
+                        <input type="text" name="Contact" required validate placeholder="${i18next.t('value')}" value="${contact.Contact}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
@@ -418,7 +435,7 @@
                   </li>
                   <li>
                     <div class="block padding no-margin">
-                      <a href="#" @click="${() => removeContact(contact.uuid)}" class="button button-fill button-round color-red">Remove</a>
+                      <a href="#" @click="${() => removeContact(contact.uuid)}" class="button button-fill button-round color-red">${i18next.t("remove")}</a>
                     </div>
                   </li>
                 </ul>
@@ -433,7 +450,7 @@
                       <div class="item-inner">
                         <div class="item-title">${i18next.t("typeContact")}</div>
                         <div class="item-after">
-                          <input @click="${openPicker}" type="text" placeholder="Select type" readonly="readonly" id="typePicker" />
+                          <input @click="${openPicker}" type="text" placeholder="${i18next.t('selectType')}" readonly="readonly" id="typePicker" />
                         </div>
                       </div>
                     </div>
@@ -442,7 +459,7 @@
                     <div class="item-inner">
                       <div class="item-title">${i18next.t("value")}</div>
                       <div class="item-after">
-                        <input id="addContactValue" type="text" required validate name="Contact" placeholder="Value"/>
+                        <input id="addContactValue" type="text" required validate name="Contact" placeholder="${i18next.t('value')}"/>
                         <span class="input-clear-button"></span>
                       </div>
                     </div>
@@ -458,7 +475,7 @@
                   </li>
                   <li>
                     <div class="block padding no-margin">
-                      <a href="#" @click="${() => addContact()}" class="button button-fill button-round color-blue">Add New</a>
+                      <a href="#" @click="${() => addContact()}" class="button button-fill button-round color-blue">${i18next.t("addNew")}</a>
                     </div>
                   </li>
                 </ul>
@@ -480,6 +497,44 @@
   import i18next from 'i18next';
   import english from '/js/locales/english.json';
   import thai from '/js/locales/thai.json';
+
+  function phiNongKhun(thierBirthday, yourBirthday) {
+    const yourBDay = new Date(yourBirthday);
+    const theirBDay = new Date(thierBirthday);
+    const oneYearEarlier = new Date(yourBirthday);
+    oneYearEarlier.setFullYear(oneYearEarlier.getFullYear() - 1);
+    const oneYearLater = new Date(yourBirthday);
+    oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
+    let say = "khun";
+    if (oneYearEarlier > theirBDay) {
+      say = "pi";
+    } else if (oneYearEarlier < theirBDay && oneYearLater > theirBDay) {
+      say = "khun";
+    } else if (oneYearLater < theirBDay) {
+      say = "nong";
+    }
+    return say;
+  }
+
+  function isBirthdayWithinOneWeek(birthDateString) {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const birthDate = new Date(birthDateString);
+
+    // Set the birthdate to the current year for comparison
+    let nextBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
+
+    // If the birthday already passed this year, check next year's date
+    if (nextBirthday < today) {
+      nextBirthday.setFullYear(today.getFullYear() + 1);
+    }
+
+    // Calculate the difference in milliseconds and convert to days
+    const diffInMs = nextBirthday - today;
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    return diffInDays >= 0 && diffInDays <= 7;
+  }
 
   export default (props, { $, $f7, $on, $update, $store }) => {
     const fcfStaffVolunteersLoading = $store.getters.fcfStaffVolunteersLoading;
@@ -516,34 +571,39 @@
 
     $on('pageInit', () => {
       $store.dispatch("fetchFCFStaffVolunteers");
-      console.log(user);
+      // console.log(user);
 
       var contactTypes = {
         Phone: ['Mobile', 'Home', 'Work', 'School', 'Main', 'Other'],
         Email: ['Home', 'Work', 'School', 'Other'],
         Social: ['LINE', 'Facebook', 'Instagram', 'Other']
       };
+      var contactTypesTranslated = {
+        Phone: [i18next.t('Mobile'), i18next.t('Home'), i18next.t('Work'), i18next.t('School'), i18next.t('Main'), i18next.t('Other')],
+        Email: [i18next.t('Home'), i18next.t('Work'), i18next.t('School'), i18next.t('Other')],
+        Social: [i18next.t('LINE'), i18next.t('Facebook'), i18next.t('Instagram'), i18next.t('Other')]
+      };
 
       pickerDependent = $f7.picker.create({
         inputEl: '#typePicker',
         rotateEffect: true,
-        on: {
-          change: function (picker, values) {
-            document.getElementById("typePicker").placeholder = values[0] + ": " + values[1];
-          },
+        formatValue: function (values) {
+          return i18next.t(values[0]) + ": " + i18next.t(values[1]);
         },
         cols: [
           {
             textAlign: 'left',
             values: ['Phone', 'Email', 'Social'],
+            displayValues: [i18next.t('Phone'), i18next.t('Email'), i18next.t('Social')],
             onChange: function (picker, type) {
               if (picker.cols[1].replaceValues) {
-                picker.cols[1].replaceValues(contactTypes[type]);
+                picker.cols[1].replaceValues(contactTypesTranslated[type]);
               }
             }
           },
           {
-            values: contactTypes.Phone
+            values: contactTypes.Phone,
+            displayValues: contactTypesTranslated.Phone
           },
         ]
       });
@@ -555,7 +615,11 @@
     });
 
     $on('pageReinit', () => {
-    })
+    });
+
+    $on('pageAfterIn', (e, page) => {
+      characterCounter();
+    });
 
     user.onUpdated(() => {
       // characterCounter();
@@ -612,6 +676,38 @@
         }
       });
     }
+
+    const showUpcomingBirthdays = () => {
+      var bdayToggle = app.f7.toggle.get('.bdaytoggle');
+      var staffToggle = app.f7.toggle.get('.stafftoggle');
+      var volunteertoggle = app.f7.toggle.get('.volunteertoggle');
+      var directorToggle = app.f7.toggle.get('.directortoggle');
+      if (!staffToggle.checked) {
+        staffToggle.toggle();
+      }
+      if (!volunteertoggle.checked) {
+        volunteertoggle.toggle();
+      }
+      if (!directorToggle.checked) {
+        directorToggle.toggle();
+      }
+      if (bdayToggle.checked) {
+        document.querySelectorAll('.person').forEach(el => {
+          if (el.classList.contains("bDaySoon")) {
+            el.classList.remove('hidePerson');
+            el.classList.add('showPerson');
+          } else {
+            el.classList.add('hidePerson');
+            el.classList.remove('showPerson');
+          }
+        });
+      } else {
+        document.querySelectorAll('.person').forEach(el => {
+          el.classList.remove('hidePerson');
+          el.classList.add('showPerson');
+        });        
+      }
+    }
    
     const filterProject = (e) => {
       var formData = $f7.form.convertToData('#filterProject');
@@ -639,7 +735,7 @@
           e.target.src = e.target.src;
 
           e.target.dataset.retry = (!e.target.dataset.retry) ? 1 : (parseInt(e.target.dataset.retry) + 1);
-          console.log(`trying to load image: ${e.target.dataset.retry}`)
+          // console.log(`trying to load image: ${e.target.dataset.retry}`)
         }, 2000);
       } else {
         // e.target.src = "/pwa/www/assets/images/1024.png";
@@ -649,10 +745,11 @@
 
     const createPopup = (listing) => {
       // Create popup
-      console.log(listing);
+      // console.log(listing);
 
+      let isOlder = phiNongKhun(listing["Birth Date"], user.value["Birth Date"]);
       let older = "";
-      if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"])) {
+      if (isOlder == "pi") {
         older = "<i class='icon material-icons'>favorite_border</i>";
       }
 
@@ -661,17 +758,9 @@
       
       if ((listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != listing[trans({'en':'First Name','th':'First Name Thai'})] && listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})] != "")) {
         name.push(listing[trans({'en':'First Name','th':'First Name Thai'})]);
-        if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"]) ) {
-          name.push(`(${i18next.t('pi')}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})`);       
-        } else {
-          name.push(`(${i18next.t('nong')}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})`);        
-        }
+        name.push(`(${i18next.t(isOlder)}${listing[trans({'en':'Preferred Name','th':'Preferred Name Thai'})]})`); 
       } else {
-        if (new Date(listing["Birth Date"]) < new Date(user.value["Birth Date"]) ) {
-          name.push(`${i18next.t('pi')}${listing[trans({'en':'First Name','th':'First Name Thai'})]}`)        
-        } else {
-          name.push(`${i18next.t('nong')}${listing[trans({'en':'First Name','th':'First Name Thai'})]}`)
-        }
+        name.push(`${i18next.t(isOlder)}${listing[trans({'en':'First Name','th':'First Name Thai'})]}`)        
       }
       name.push(listing[trans({'en':'Last Name','th':'Last Name Thai'})]);
       
@@ -709,7 +798,13 @@
               social += "<hr/>";
             }
             social += '<div>' + (item.Description ? item.Description : "Social media") + '</div>'; 
-            social += `<div class="lighter">${item.Contact}</div>`;
+            if (item.Description == "Facebook") {
+              social += `<div class="lighter"><a class="external color-white" href="https://www.facebook.com/${item.Contact}"><i class="icon material-icons small">link</i> ${item.Contact}</a></div>`;
+            } else if (item.Description == "Instagram") {
+              social += `<div class="lighter"><a class="external color-white" href="https://www.instagram.com/${item.Contact}"><i class="icon material-icons small">link</i> ${item.Contact}</a></div>`;
+            } else {
+              social += `<div class="lighter">${item.Contact}</div>`;
+            }
           } else if (item.Type == "Email") {
             if (email.length) {
               email += "<hr/>";
@@ -826,10 +921,10 @@
         // this.status = ActivityStatus.saving;
         fetchJson(urlContact, optionsContact)
           .then(response => {
-            console.log(response);
+            // console.log(response);
           })
           .catch(async error => {
-            console.log(error);
+            // console.log(error);
           });
       });
     }
@@ -858,10 +953,11 @@
       } else {
         formData.Public = null;
       }
+      // console.log("optionsContact: ", optionsContact);
       // this.status = ActivityStatus.saving;
       fetchJson(urlContact, optionsContact)
         .then(response => {
-          console.log(response);
+          // console.log(response);
           $store.dispatch("getUser");
           document.getElementById("addContactValue").value = "";
           if (!toastIcon) {
@@ -876,7 +972,7 @@
           toastIcon.open();
         })
         .catch(async error => {
-          console.log(error);
+          // console.log(error);
         });
     }
 
@@ -896,7 +992,7 @@
         contactVals.push(tempVals);
 
         const urlContact = Api.urls.updateContact(tempVals.id);
-        console.log("body: ", tempVals);
+        // console.log("body: ", tempVals);
         const optionsContact = {
           method: 'PUT',
           params: tempVals,
@@ -905,10 +1001,10 @@
         // this.status = ActivityStatus.saving;
         fetchJson(urlContact, optionsContact)
           .then(response => {
-            console.log(response);
+            // console.log(response);
           })
           .catch(async error => {
-            console.log(error);
+            // console.log(error);
           });
 
       })
@@ -920,7 +1016,7 @@
       body['Preferred Name Thai'] = formData.nicknameThai;
       body['Job Title'] = formData.jobTitle;
       body['Bio'] = formData.bio;
-      console.log("body: ", body);
+      // console.log("body: ", body);
       const options = {
         method: 'PUT',
         params: body,
@@ -929,7 +1025,7 @@
       // this.status = ActivityStatus.saving;
       fetchJson(url, options)
         .then(response => {
-          console.log(response);
+          // console.log(response);
           $store.dispatch("fetchFCFStaffVolunteers");
           // Create toast
           if (!toastIcon) {
@@ -944,11 +1040,10 @@
           toastIcon.open();
         })
         .catch(async error => {
-          console.log(error);
+          // console.log(error);
         });
 
     }
-
 
     return $render;
   }
